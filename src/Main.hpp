@@ -12,6 +12,9 @@ private:
     GUI gui;
     Render render;
 
+    float speed = 0.2f;
+    glm::vec3 position;
+    Angles orientation;
     std::unique_ptr<Camera> camera;
 
 public:

@@ -235,6 +235,9 @@ static bool sdl_poll_events()
     SDL_GameController* controller;
     SDL_GameControllerAxis axis;
 
+    sdl_captured_mouse_delta_x = 0;
+    sdl_captured_mouse_delta_y = 0;
+
     while (SDL_PollEvent(&event))
     {
         switch (event.type)
@@ -262,19 +265,31 @@ static bool sdl_poll_events()
             break;
 
         case SDL_MOUSEMOTION:
-            break;
+            sdl_mouse_x = event.motion.x;
+            sdl_mouse_y = event.motion.y;
+            sdl_mouse_delta_x = event.motion.xrel;
+            sdl_mouse_delta_y = event.motion.yrel;;
 
-        case SDL_WINDOWEVENT:
-            switch (event.window.event)
+            if (sdl_mouse_captured)
             {
-                case SDL_WINDOWEVENT_RESIZED:
-                {
-                    break;
-                }
+                sdl_captured_mouse_x = event.motion.x;
+                sdl_captured_mouse_y = event.motion.y;
+                sdl_captured_mouse_delta_x = event.motion.xrel;
+                sdl_captured_mouse_delta_y = event.motion.yrel;
             }
+            break;
 
         case SDL_MOUSEBUTTONUP:
-            break;
+            if (event.button.button == SDL_BUTTON_LEFT)
+            {
+                if (!sdl_mouse_captured && event.button.clicks == 2)
+                {
+                    sdl_captured_mouse_delta_x = 0;
+                    sdl_captured_mouse_delta_y = 0;
+                    sdl_mouse_captured = true;
+                    SDL_SetRelativeMouseMode(static_cast<SDL_bool>(sdl_mouse_captured));
+                }
+            }
 
         case SDL_MOUSEBUTTONDOWN:
             if (event.button.button == SDL_BUTTON_LEFT)
@@ -310,6 +325,15 @@ static bool sdl_poll_events()
             }
             break;
 
+        case SDL_WINDOWEVENT:
+            switch (event.window.event)
+            {
+                case SDL_WINDOWEVENT_RESIZED:
+                {
+                    break;
+                }
+            }
+
         case SDL_TEXTINPUT:
             io.AddInputCharactersUTF8(event.text.text);
             break;
@@ -327,6 +351,13 @@ static bool sdl_poll_events()
             io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
             io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
             io.KeySuper = false;
+
+            if (key == 41)
+            {
+                sdl_mouse_captured = false;
+                SDL_SetRelativeMouseMode(static_cast<SDL_bool>(sdl_mouse_captured));
+            }
+
             break;
 
         case SDL_CONTROLLERAXISMOTION:

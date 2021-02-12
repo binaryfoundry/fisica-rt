@@ -53,5 +53,7 @@ public:
     void SetAngles(
         Angles value);
 
+    void Strafe(float speed);
+
     void Validate();
 };

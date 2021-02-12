@@ -82,6 +82,18 @@ void Camera::Perspective(
     projection = glm::make_mat4(matrix_values);
 }
 
+void Camera::Strafe(float speed)
+{
+    glm::vec3 strafe_direction = glm::cross(up, direction);
+
+    if (glm::length(strafe_direction) > 0.001f)
+    {
+        strafe_direction = glm::normalize(strafe_direction);
+    }
+
+    position += strafe_direction * speed;
+}
+
 void Camera::LookAt(glm::vec3 target) {
     view = glm::lookAt(
         position,

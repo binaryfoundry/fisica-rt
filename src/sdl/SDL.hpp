@@ -20,6 +20,16 @@ extern SDL_Window* sdl_window;
 extern int sdl_window_width;
 extern int sdl_window_height;
 
+extern bool sdl_mouse_captured;
+extern int16_t sdl_mouse_x;
+extern int16_t sdl_mouse_y;
+extern int16_t sdl_mouse_delta_x;
+extern int16_t sdl_mouse_delta_y;
+extern int16_t sdl_captured_mouse_x;
+extern int16_t sdl_captured_mouse_y;
+extern int16_t sdl_captured_mouse_delta_x;
+extern int16_t sdl_captured_mouse_delta_y;
+
 extern std::function<void()> sdl_app_init;
 extern std::function<void()> sdl_app_deinit;
 extern std::function<void()> sdl_app_update;
