@@ -16,11 +16,13 @@ option(EMSCRIPTEN "Web Compilation" OFF)
 
 set(SOURCES
     "src/Main.cpp"
-    "src/GUI.cpp")
+    "src/GUI.cpp"
+    "src/Render.cpp")
 
 set(HEADERS
     "src/Main.hpp"
-    "src/GUI.hpp")
+    "src/GUI.hpp"
+    "src/Render.hpp")
 
 set(SOURCES_SDL
     src/sdl/SDL.cpp
