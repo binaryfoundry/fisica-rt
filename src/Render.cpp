@@ -28,6 +28,11 @@ static const std::string fragment_shader_string =
     vec3 to_gamma_approx(vec3 v) { return pow(v, vec3(1.0 / 2.2)); }
     void main()
     {
+        if (flip == 1)
+        {
+            gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+            return;
+        }
         vec2 tc = flip == 1 ? vec2(v_texcoord.x, 1.0 - v_texcoord.y) : v_texcoord;
         vec3 c = texture2D(tex, tc).xyz;
         gl_FragColor = vec4(c, 1.0);
@@ -143,7 +148,7 @@ void Render::Draw(
         frame_buffer.width,
         frame_buffer.height);
 
-    glClearColor(1, 1, 1, 0);
+    glClearColor(0, 0, 0, 0);
 
     glClear(
         GL_COLOR_BUFFER_BIT |
@@ -164,21 +169,18 @@ void Render::Draw(
         view_fb,
         glm::vec3(frame_buffer.width, frame_buffer.height, 1.0f));
 
+    DrawQuad(
+        proj_fb,
+        view_fb,
+        0,
+        true);
+
     glBindFramebuffer(
         GL_FRAMEBUFFER,
         0);
 
     // Render to front buffer
 
-    DrawDisplay(
-        window_width,
-        window_height);
-}
-
-void Render::DrawDisplay(
-    const uint32_t window_width,
-    const uint32_t window_height)
-{
     glViewport(
         0,
         0,
@@ -227,6 +229,19 @@ void Render::DrawDisplay(
         view,
         scale);
 
+    DrawQuad(
+        proj,
+        view,
+        frame_buffer.texture,
+        false);
+}
+
+void Render::DrawQuad(
+    const glm::mat4 proj,
+    const glm::mat4 view,
+    const GLuint texture,
+    const bool flip)
+{
     glUseProgram(
         gl_shader_program);
 
@@ -244,14 +259,14 @@ void Render::DrawDisplay(
 
     glUniform1i(
         texture_uniform_flip,
-        false);
+        flip ? 1 : 0);
 
     glActiveTexture(
         GL_TEXTURE0);
 
     glBindTexture(
         GL_TEXTURE_2D,
-        frame_buffer.texture);
+        texture);
 
     glGenerateMipmap(
         GL_TEXTURE_2D);

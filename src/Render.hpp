@@ -29,9 +29,11 @@ private:
 
     OpenGL::FrameBuffer frame_buffer;
 
-    void DrawDisplay(
-        const uint32_t window_width,
-        const uint32_t window_height);
+    void Render::DrawQuad(
+        const glm::mat4 proj,
+        const glm::mat4 view,
+        const GLuint texture,
+        const bool flip);
 
 public:
     Render();
