@@ -7,6 +7,12 @@
 
 void Main::Init()
 {
+    camera = std::make_unique<Camera>(
+        1.0f,
+        75.0f,
+        glm::vec3(0, 0, 0),
+        Angles());
+
     render.Init(
         1280,
         720);

@@ -17,12 +17,16 @@ option(EMSCRIPTEN "Web Compilation" OFF)
 set(SOURCES
     "src/Main.cpp"
     "src/GUI.cpp"
-    "src/Render.cpp")
+    "src/Render.cpp"
+    "src/Camera.cpp"
+    "src/Math.cpp")
 
 set(HEADERS
     "src/Main.hpp"
     "src/GUI.hpp"
-    "src/Render.hpp")
+    "src/Render.hpp"
+    "src/Camera.hpp"
+    "src/Math.hpp")
 
 set(SOURCES_SDL
     src/sdl/SDL.cpp
