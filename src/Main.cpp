@@ -24,11 +24,7 @@
 
 void Main::Init()
 {
-    camera = std::make_unique<Camera>(
-        1.0f,
-        75.0f,
-        glm::vec3(0, 0, 0),
-        Angles());
+    camera = std::make_unique<Camera>();
 
     render.Init(
         1280,
@@ -75,10 +71,12 @@ void Main::Update()
 
     camera->SetPosition(position);
     camera->SetAngles(orientation);
+    camera->Validate();
 
     render.Draw(
         sdl_window_width,
-        sdl_window_height);
+        sdl_window_height,
+        camera);
 
     gui.Draw(
         sdl_window_width,

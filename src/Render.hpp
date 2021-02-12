@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Camera.hpp"
+
 #include "gl/GL.hpp"
 #include "gl/Math.hpp"
 
@@ -40,6 +42,7 @@ public:
     void Deinit();
     void Draw(
         const uint32_t window_width,
-        const uint32_t window_height);
+        const uint32_t window_height,
+        const std::unique_ptr<Camera>& camera);
 };
 

@@ -32,11 +32,7 @@ private:
     glm::vec3 direction;
 
 public:
-    Camera(
-        float aspect_ratio,
-        float fov,
-        glm::vec3 position,
-        Angles orientation);
+    Camera();
 
     const glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
 

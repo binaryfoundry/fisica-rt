@@ -13,7 +13,7 @@ private:
     Render render;
 
     float speed = 0.2f;
-    glm::vec3 position;
+    glm::vec3 position = glm::vec3(0, 5, 35);
     Angles orientation;
     std::unique_ptr<Camera> camera;
 

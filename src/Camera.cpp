@@ -1,14 +1,8 @@
 #include "Camera.hpp"
 
-Camera::Camera(
-    float aspect_ratio,
-    float fov,
-    glm::vec3 position,
-    Angles orientation)
+Camera::Camera()
 {
-    SetPosition(position);
-    SetAngles(orientation);
-    Perspective(aspect_ratio, fov);
+    Perspective(1.0f, 80.0f);
     Validate();
 }
 

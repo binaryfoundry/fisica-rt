@@ -124,8 +124,11 @@ void Render::Deinit()
 
 void Render::Draw(
     const uint32_t window_width,
-    const uint32_t window_height)
+    const uint32_t window_height,
+    const std::unique_ptr<Camera>& camera)
 {
+    camera->Validate();
+
     glDisable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
