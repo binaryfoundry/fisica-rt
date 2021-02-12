@@ -1,15 +1,15 @@
 #include "Render.hpp"
 
 static const std::string vertex_shader_string =
-    R"(#version 100
+    R"(#version 300 es
     #ifdef GL_ES
     precision mediump float;
     #endif
     uniform mat4 projection;
     uniform mat4 view;
-    attribute vec3 position;
-    attribute vec2 texcoord;
-    varying vec2 v_texcoord;
+    layout(location = 0) in vec3 position;
+    layout(location = 1) in vec2 texcoord;
+    out vec2 v_texcoord;
     void main()
     {
         v_texcoord = texcoord;
@@ -17,25 +17,26 @@ static const std::string vertex_shader_string =
     })";
 
 static const std::string fragment_shader_string =
-    R"(#version 100
+    R"(#version 300 es
     #ifdef GL_ES
     precision mediump float;
     #endif
-    varying vec2 v_texcoord;
+    in vec2 v_texcoord;
     uniform sampler2D tex;
     uniform int flip;
     vec3 to_linear_approx(vec3 v) { return pow(v, vec3(2.2)); }
     vec3 to_gamma_approx(vec3 v) { return pow(v, vec3(1.0 / 2.2)); }
+    layout(location = 0) out vec4 out_color;
     void main()
     {
         if (flip == 1)
         {
-            gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+            out_color = vec4(1.0, 1.0, 1.0, 1.0);
             return;
         }
         vec2 tc = flip == 1 ? vec2(v_texcoord.x, 1.0 - v_texcoord.y) : v_texcoord;
-        vec3 c = texture2D(tex, tc).xyz;
-        gl_FragColor = vec4(c, 1.0);
+        vec3 c = texture(tex, tc).xyz;
+        out_color = vec4(c, 1.0);
     })";
 
 static const std::vector<float> quad_vertices_data
