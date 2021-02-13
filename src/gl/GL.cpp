@@ -222,15 +222,51 @@ namespace OpenGL
         return gl_texture_handle;
     }
 
-    void GenFrameBufferRGBA8(
+    static void GetTextureFormat(
+        TextureFormat format,
+        GLuint& gl_type,
+        GLuint& gl_format,
+        GLuint& gl_internal_format)
+    {
+        switch (format)
+        {
+        case TextureFormat::RGBA32F:
+            gl_type = GL_FLOAT;
+            gl_format = GL_RGBA;
+            gl_internal_format = GL_RGBA32F;
+            break;
+        case TextureFormat::SRGB8_ALPHA8:
+            gl_type = GL_UNSIGNED_BYTE;
+            gl_format = GL_RGBA;
+            gl_internal_format = GL_SRGB8_ALPHA8;
+            break;
+        case TextureFormat::RGBA8:
+            gl_type = GL_UNSIGNED_BYTE;
+            gl_format = GL_RGBA;
+            gl_internal_format = GL_RGBA8;
+            break;
+        default:
+            // not implemented
+            assert(false);
+        }
+    }
+
+    void GenFrameBuffer(
         const uint32_t width,
         const uint32_t height,
+        const TextureFormat format,
         const bool mipmaps,
         FrameBuffer& fb)
     {
-        const GLuint gl_type = GL_UNSIGNED_BYTE;
-        const GLuint gl_format = GL_RGBA;
-        const GLuint gl_internal_format = GL_RGBA;
+        GLuint gl_type = GL_UNSIGNED_BYTE;
+        GLuint gl_format = GL_RGBA;
+        GLuint gl_internal_format = GL_RGBA;
+
+        GetTextureFormat(
+            format,
+            gl_type,
+            gl_format,
+            gl_internal_format);
 
         fb.width = width;
         fb.height = height;

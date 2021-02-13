@@ -29,6 +29,13 @@ namespace OpenGL
         }
     }
 
+    enum class TextureFormat
+    {
+        RGBA8,
+        SRGB8_ALPHA8,
+        RGBA32F
+    };
+
     struct FrameBuffer
     {
     public:
@@ -67,9 +74,10 @@ namespace OpenGL
         const uint32_t height,
         uint8_t* data);
 
-    void GenFrameBufferRGBA8(
+    void GenFrameBuffer(
         const uint32_t width,
         const uint32_t height,
+        const TextureFormat format,
         const bool mipmaps,
         FrameBuffer& fb);
 }

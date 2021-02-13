@@ -62,9 +62,10 @@ void Render::Init(
     display_width = width;
     display_height = height;
 
-    OpenGL::GenFrameBufferRGBA8(
+    OpenGL::GenFrameBuffer(
         display_width,
         display_height,
+        OpenGL::TextureFormat::RGBA32F,
         true,
         frame_buffer);
 
