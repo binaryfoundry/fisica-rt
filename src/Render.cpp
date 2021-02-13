@@ -29,6 +29,12 @@ void Render::Init(
     const uint32_t framebuffer_width,
     const uint32_t framebuffer_height)
 {
+    quad_vertex_buffer = OpenGL::GenBuffer(
+        quad_vertices_data);
+
+    quad_index_buffer = OpenGL::GenBufferIndex(
+        quad_indices_data);
+
     OpenGL::GenFrameBuffer(
         framebuffer_width,
         framebuffer_height,
@@ -36,19 +42,11 @@ void Render::Init(
         true,
         framebuffer);
 
-    transform = std::make_unique<OpenGL::UniformBuffer<Transform>>();
-
     frontbuffer_shader_program = OpenGL::LinkShader(
         frontbuffer_vertex_shader_string,
         frontbuffer_fragment_shader_string);
 
     OpenGL::GLCheckError();
-
-    quad_vertex_buffer = OpenGL::GenBuffer(
-        quad_vertices_data);
-
-    quad_index_buffer = OpenGL::GenBufferIndex(
-        quad_indices_data);
 
     frontbuffer_position_attribute_location = glGetAttribLocation(
         frontbuffer_shader_program,
@@ -69,6 +67,14 @@ void Render::Init(
     frontbuffer_texture_uniform_location = glGetUniformLocation(
         frontbuffer_shader_program,
         "tex");
+
+    raytracing_shader_program = OpenGL::LinkShader(
+        raytracing_vertex_shader_string,
+        raytracing_fragment_shader_string_test);
+
+    OpenGL::GLCheckError();
+
+    transform = std::make_unique<OpenGL::UniformBuffer<Transform>>();
 
     OpenGL::GLCheckError();
 }
@@ -100,7 +106,7 @@ void Render::Draw(
 
     // Draw to FBO
 
-    /*glBindFramebuffer(
+    glBindFramebuffer(
         GL_FRAMEBUFFER,
         framebuffer.frame);
 
@@ -109,34 +115,17 @@ void Render::Draw(
         framebuffer.width,
         framebuffer.height);
 
-    glClearColor(0, 0, 0, 0);
+    glUseProgram(
+        raytracing_shader_program);
 
-    glClear(
-        GL_COLOR_BUFFER_BIT |
-        GL_DEPTH_BUFFER_BIT |
-        GL_STENCIL_BUFFER_BIT);
+    DrawQuad();
 
-    const glm::mat4 proj_fb = glm::ortho<float>(
-        0,
-        static_cast<float>(framebuffer.width),
-        static_cast<float>(framebuffer.height),
-        0,
-        -1.0f,
-        1.0f);
-
-    glm::mat4 view_fb;
-
-    view_fb = glm::scale(
-        view_fb,
-        glm::vec3(framebuffer.width, framebuffer.height, 1.0f));
-
-    DrawQuad(
-        proj_fb,
-        view_fb);
+    glUseProgram(
+        NULL);
 
     glBindFramebuffer(
         GL_FRAMEBUFFER,
-        0);*/
+        0);
 
     // Render to front buffer
 

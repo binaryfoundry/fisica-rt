@@ -35,29 +35,28 @@ R"(#version 300 es
 
 const std::string raytracing_vertex_shader_string =
     R"(#version 300 es
-    #if defined(GLES)
+    #ifdef GL_ES
     precision lowp float;
     precision lowp int;
     #endif
-
     in vec4 position;
     in vec2 texcoord;
-
     out vec2 v_texcoord;
-
-    layout(std140) uniform transform{
-        mat4 view;
-        mat4 projection;
-        mat4 inverse_projection;
-        mat4 inverse_view_rotation;
-        vec4 viewport;
-        vec4 camera_position;
-        vec4 exposure;
-    };
-
     void main() {
         v_texcoord = texcoord;
-        gl_Position = vec4(position.xy, -1.0, 1.0);
+        gl_Position = vec4((position.xy - vec2(0.5))  * 2.0, -1.0, 1.0);
+    })";
+
+const std::string raytracing_fragment_shader_string_test =
+    R"(#version 300 es
+    #ifdef GL_ES
+    precision lowp float;
+    precision lowp int;
+    #endif
+    in vec2 v_texcoord;
+    layout(location = 0) out vec4 out_color;
+    void main() {
+        out_color = vec4(v_texcoord, 0.0, 1.0);
     })";
 
 const std::string raytracing_fragment_shader_string =

@@ -23,6 +23,8 @@ private:
     GLuint frontbuffer_view_uniform_location = 0;
     GLuint frontbuffer_texture_uniform_location = 0;
 
+    GLuint raytracing_shader_program = 0;
+
     OpenGL::FrameBuffer framebuffer;
 
     std::shared_ptr<OpenGL::UniformBuffer<Transform>> transform;
