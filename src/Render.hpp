@@ -1,11 +1,13 @@
 #pragma once
 
 #include "Camera.hpp"
+#include "Uniforms.hpp"
 
 #include "gl/GL.hpp"
 #include "gl/Math.hpp"
 
 #include <vector>
+#include <memory>
 
 class Render
 {
@@ -28,6 +30,7 @@ private:
     uint32_t display_height = 0;
 
     OpenGL::FrameBuffer frame_buffer;
+    std::shared_ptr<OpenGL::UniformBuffer<Transform>> transform;
 
     void Render::DrawQuad(
         const glm::mat4 proj,

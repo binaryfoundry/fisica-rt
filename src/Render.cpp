@@ -69,6 +69,8 @@ void Render::Init(
         true,
         frame_buffer);
 
+    transform = std::make_unique<OpenGL::UniformBuffer<Transform>>();
+
     gl_shader_program = OpenGL::LinkShader(
         quad_vertex_shader_string,
         quad_fragment_shader_string);
@@ -107,6 +109,7 @@ void Render::Init(
 void Render::Deinit()
 {
     frame_buffer.Delete();
+    transform->Delete();
 
     glDeleteProgram(
         gl_shader_program);

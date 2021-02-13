@@ -80,4 +80,56 @@ namespace OpenGL
         const TextureFormat format,
         const bool mipmaps,
         FrameBuffer& fb);
+
+    template <typename T>
+    class UniformBuffer
+    {
+    public:
+        T object;
+        GLuint buffer;
+
+        UniformBuffer()
+        {
+            glGenBuffers(1, &buffer);
+        }
+
+        void Delete()
+        {
+            glDeleteBuffers(1, &buffer);
+        }
+
+        void Update()
+        {
+            glBindBuffer(
+                GL_UNIFORM_BUFFER,
+                buffer);
+
+#if !defined(EMSCRIPTEN)
+            GLvoid* buffer_map;
+
+            buffer_map = glMapBufferRange(
+                GL_UNIFORM_BUFFER,
+                0,
+                sizeof(T),
+                GL_MAP_WRITE_BIT);
+
+            memcpy(
+                buffer_map,
+                (void*)&buffer,
+                sizeof(T));
+
+            glUnmapBuffer(GL_UNIFORM_BUFFER);
+#else
+            glBufferData(
+                GL_UNIFORM_BUFFER,
+                sizeof(T),
+                buffer,
+                GL_DYNAMIC_DRAW);
+
+            glBindBuffer(
+                GL_UNIFORM_BUFFER,
+                0);
+#endif
+        }
+    };
 }

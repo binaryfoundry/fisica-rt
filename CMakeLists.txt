@@ -20,7 +20,8 @@ set(SOURCES
     "src/Render.cpp"
     "src/Camera.cpp"
     "src/Math.cpp"
-    "src/Shaders.cpp")
+    "src/Shaders.cpp"
+    "src/Uniforms.cpp")
 
 set(HEADERS
     "src/Main.hpp"
@@ -28,7 +29,8 @@ set(HEADERS
     "src/Render.hpp"
     "src/Camera.hpp"
     "src/Math.hpp"
-    "src/Shaders.hpp")
+    "src/Shaders.hpp"
+    "src/Uniforms.hpp")
 
 set(SOURCES_SDL
     src/sdl/SDL.cpp
