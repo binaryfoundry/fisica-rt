@@ -1,36 +1,6 @@
 #include "Render.hpp"
 
-static const std::string quad_vertex_shader_string =
-    R"(#version 300 es
-    #ifdef GL_ES
-    precision mediump float;
-    #endif
-    uniform mat4 projection;
-    uniform mat4 view;
-    layout(location = 0) in vec3 position;
-    layout(location = 1) in vec2 texcoord;
-    out vec2 v_texcoord;
-    void main()
-    {
-        v_texcoord = texcoord;
-        gl_Position = projection * view * vec4(position, 1.0);
-    })";
-
-static const std::string quad_fragment_shader_string =
-    R"(#version 300 es
-    #ifdef GL_ES
-    precision mediump float;
-    #endif
-    in vec2 v_texcoord;
-    uniform sampler2D tex;
-    vec3 to_linear_approx(vec3 v) { return pow(v, vec3(2.2)); }
-    vec3 to_gamma_approx(vec3 v) { return pow(v, vec3(1.0 / 2.2)); }
-    layout(location = 0) out vec4 out_color;
-    void main()
-    {
-        vec3 c = texture(tex, v_texcoord).xyz;
-        out_color = vec4(to_gamma_approx(c), 1.0);
-    })";
+#include "Shaders.hpp"
 
 static const std::vector<float> quad_vertices_data
 {
@@ -56,69 +26,66 @@ Render::Render()
 }
 
 void Render::Init(
-    const uint32_t width,
-    const uint32_t height)
+    const uint32_t framebuffer_width,
+    const uint32_t framebuffer_height)
 {
-    display_width = width;
-    display_height = height;
-
     OpenGL::GenFrameBuffer(
-        display_width,
-        display_height,
+        framebuffer_width,
+        framebuffer_height,
         OpenGL::TextureFormat::RGBA32F,
         true,
-        frame_buffer);
+        framebuffer);
 
     transform = std::make_unique<OpenGL::UniformBuffer<Transform>>();
 
-    gl_shader_program = OpenGL::LinkShader(
-        quad_vertex_shader_string,
-        quad_fragment_shader_string);
+    frontbuffer_shader_program = OpenGL::LinkShader(
+        frontbuffer_vertex_shader_string,
+        frontbuffer_fragment_shader_string);
 
     OpenGL::GLCheckError();
 
-    position_attribute_location = glGetAttribLocation(
-        gl_shader_program,
-        "position");
-
-    texcoord_attribute_location = glGetAttribLocation(
-        gl_shader_program,
-        "texcoord");
-
-    projection_uniform_location = glGetUniformLocation(
-        gl_shader_program,
-        "projection");
-
-    view_uniform_location = glGetUniformLocation(
-        gl_shader_program,
-        "view");
-
-    texture_uniform_location = glGetUniformLocation(
-        gl_shader_program,
-        "tex");
-
-    vertex_buffer = OpenGL::GenBuffer(
+    quad_vertex_buffer = OpenGL::GenBuffer(
         quad_vertices_data);
 
-    index_buffer = OpenGL::GenBufferIndex(
+    quad_index_buffer = OpenGL::GenBufferIndex(
         quad_indices_data);
+
+    frontbuffer_position_attribute_location = glGetAttribLocation(
+        frontbuffer_shader_program,
+        "position");
+
+    frontbuffer_texcoord_attribute_location = glGetAttribLocation(
+        frontbuffer_shader_program,
+        "texcoord");
+
+    frontbuffer_projection_uniform_location = glGetUniformLocation(
+        frontbuffer_shader_program,
+        "projection");
+
+    frontbuffer_view_uniform_location = glGetUniformLocation(
+        frontbuffer_shader_program,
+        "view");
+
+    frontbuffer_texture_uniform_location = glGetUniformLocation(
+        frontbuffer_shader_program,
+        "tex");
 
     OpenGL::GLCheckError();
 }
 
 void Render::Deinit()
 {
-    frame_buffer.Delete();
+    framebuffer.Delete();
     transform->Delete();
 
     glDeleteProgram(
-        gl_shader_program);
+        frontbuffer_shader_program);
 
     glDeleteBuffers(
-        1, &vertex_buffer);
+        1, &quad_vertex_buffer);
 
     glDeleteBuffers(
-        1, &index_buffer);
+        1, &quad_index_buffer);
 }
 
 void Render::Draw(
@@ -133,14 +100,14 @@ void Render::Draw(
 
     // Draw to FBO
 
-    glBindFramebuffer(
+    /*glBindFramebuffer(
         GL_FRAMEBUFFER,
-        frame_buffer.frame);
+        framebuffer.frame);
 
     glViewport(
         0, 0,
-        frame_buffer.width,
-        frame_buffer.height);
+        framebuffer.width,
+        framebuffer.height);
 
     glClearColor(0, 0, 0, 0);
 
@@ -151,8 +118,8 @@ void Render::Draw(
 
     const glm::mat4 proj_fb = glm::ortho<float>(
         0,
-        static_cast<float>(frame_buffer.width),
-        static_cast<float>(frame_buffer.height),
+        static_cast<float>(framebuffer.width),
+        static_cast<float>(framebuffer.height),
         0,
         -1.0f,
         1.0f);
@@ -161,16 +128,15 @@ void Render::Draw(
 
     view_fb = glm::scale(
         view_fb,
-        glm::vec3(frame_buffer.width, frame_buffer.height, 1.0f));
+        glm::vec3(framebuffer.width, framebuffer.height, 1.0f));
 
     DrawQuad(
         proj_fb,
-        view_fb,
-        0);
+        view_fb);
 
     glBindFramebuffer(
         GL_FRAMEBUFFER,
-        0);
+        0);*/
 
     // Render to front buffer
 
@@ -222,28 +188,17 @@ void Render::Draw(
         view,
         scale);
 
-    DrawQuad(
-        proj,
-        view,
-        frame_buffer.texture);
-}
-
-void Render::DrawQuad(
-    const glm::mat4 proj,
-    const glm::mat4 view,
-    const GLuint texture)
-{
     glUseProgram(
-        gl_shader_program);
+        frontbuffer_shader_program);
 
     glUniformMatrix4fv(
-        projection_uniform_location,
+        frontbuffer_projection_uniform_location,
         1,
         false,
         &proj[0][0]);
 
     glUniformMatrix4fv(
-        view_uniform_location,
+        frontbuffer_view_uniform_location,
         1,
         false,
         &view[0][0]);
@@ -253,7 +208,7 @@ void Render::DrawQuad(
 
     glBindTexture(
         GL_TEXTURE_2D,
-        texture);
+        framebuffer.texture);
 
     glGenerateMipmap(
         GL_TEXTURE_2D);
@@ -279,17 +234,29 @@ void Render::DrawQuad(
         GL_CLAMP_TO_EDGE);
 
     glUniform1i(
-        texture_uniform_location,
+        frontbuffer_texture_uniform_location,
         0);
 
+    DrawQuad();
+
+    glUseProgram(
+        NULL);
+
+    glBindTexture(
+        GL_TEXTURE_2D,
+        NULL);
+}
+
+void Render::DrawQuad()
+{
     glBindBuffer(
         GL_ARRAY_BUFFER,
-        vertex_buffer);
+        quad_vertex_buffer);
 
     glEnableVertexAttribArray(0);
 
     glVertexAttribPointer(
-        position_attribute_location,
+        frontbuffer_position_attribute_location,
         3,
         GL_FLOAT,
         GL_FALSE,
@@ -299,7 +266,7 @@ void Render::DrawQuad(
     glEnableVertexAttribArray(1);
 
     glVertexAttribPointer(
-        texcoord_attribute_location,
+        frontbuffer_texcoord_attribute_location,
         2,
         GL_FLOAT,
         GL_FALSE,
@@ -308,18 +275,11 @@ void Render::DrawQuad(
 
     glBindBuffer(
         GL_ELEMENT_ARRAY_BUFFER,
-        index_buffer);
+        quad_index_buffer);
 
     glDrawElements(
         GL_TRIANGLES,
         static_cast<GLsizei>(quad_indices_data.size()),
         GL_UNSIGNED_INT,
         static_cast<char const*>(0));
-
-    glBindTexture(
-        GL_TEXTURE_2D,
-        NULL);
-
-    glUseProgram(
-        NULL);
 }

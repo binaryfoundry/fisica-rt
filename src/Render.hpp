@@ -12,37 +12,29 @@
 class Render
 {
 private:
-    GLuint gl_shader_program = 0;
-    GLuint gl_sampler_state = 0;
+    GLuint quad_vertex_buffer = 0;
+    GLuint quad_index_buffer = 0;
 
-    GLuint position_attribute_location = 0;
-    GLuint texcoord_attribute_location = 0;
-    GLuint projection_uniform_location = 0;
-    GLuint view_uniform_location = 0;
-    GLuint texture_uniform_location = 0;
-    GLuint texture_scale_uniform_location = 0;
-    GLuint texture_uniform_flip = 0;
+    GLuint frontbuffer_shader_program = 0;
+    GLuint frontbuffer_sampler_state = 0;
+    GLuint frontbuffer_position_attribute_location = 0;
+    GLuint frontbuffer_texcoord_attribute_location = 0;
+    GLuint frontbuffer_projection_uniform_location = 0;
+    GLuint frontbuffer_view_uniform_location = 0;
+    GLuint frontbuffer_texture_uniform_location = 0;
 
-    GLuint vertex_buffer = 0;
-    GLuint index_buffer = 0;
+    OpenGL::FrameBuffer framebuffer;
 
-    uint32_t display_width = 0;
-    uint32_t display_height = 0;
-
-    OpenGL::FrameBuffer frame_buffer;
     std::shared_ptr<OpenGL::UniformBuffer<Transform>> transform;
 
-    void Render::DrawQuad(
-        const glm::mat4 proj,
-        const glm::mat4 view,
-        const GLuint texture);
+    void Render::DrawQuad();
 
 public:
     Render();
 
     void Init(
-        const uint32_t display_width,
-        const uint32_t display_height);
+        const uint32_t framebuffer_width,
+        const uint32_t framebuffer_height);
     void Deinit();
     void Draw(
         const uint32_t window_width,
