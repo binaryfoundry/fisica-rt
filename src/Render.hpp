@@ -32,8 +32,7 @@ private:
     void Render::DrawQuad(
         const glm::mat4 proj,
         const glm::mat4 view,
-        const GLuint texture,
-        const bool flip);
+        const GLuint texture);
 
 public:
     Render();

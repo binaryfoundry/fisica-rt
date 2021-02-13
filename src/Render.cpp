@@ -23,19 +23,12 @@ static const std::string quad_fragment_shader_string =
     #endif
     in vec2 v_texcoord;
     uniform sampler2D tex;
-    uniform int flip;
     vec3 to_linear_approx(vec3 v) { return pow(v, vec3(2.2)); }
     vec3 to_gamma_approx(vec3 v) { return pow(v, vec3(1.0 / 2.2)); }
     layout(location = 0) out vec4 out_color;
     void main()
     {
-        if (flip == 1)
-        {
-            out_color = vec4(1.0, 1.0, 1.0, 1.0);
-            return;
-        }
-        vec2 tc = flip == 1 ? vec2(v_texcoord.x, 1.0 - v_texcoord.y) : v_texcoord;
-        vec3 c = texture(tex, tc).xyz;
+        vec3 c = texture(tex, v_texcoord).xyz;
         out_color = vec4(to_gamma_approx(c), 1.0);
     })";
 
@@ -100,10 +93,6 @@ void Render::Init(
     texture_uniform_location = glGetUniformLocation(
         gl_shader_program,
         "tex");
-
-    texture_uniform_flip = glGetUniformLocation(
-        gl_shader_program,
-        "flip");
 
     vertex_buffer = OpenGL::GenBuffer(
         quad_vertices_data);
@@ -173,8 +162,7 @@ void Render::Draw(
     DrawQuad(
         proj_fb,
         view_fb,
-        0,
-        true);
+        0);
 
     glBindFramebuffer(
         GL_FRAMEBUFFER,
@@ -233,15 +221,13 @@ void Render::Draw(
     DrawQuad(
         proj,
         view,
-        frame_buffer.texture,
-        false);
+        frame_buffer.texture);
 }
 
 void Render::DrawQuad(
     const glm::mat4 proj,
     const glm::mat4 view,
-    const GLuint texture,
-    const bool flip)
+    const GLuint texture)
 {
     glUseProgram(
         gl_shader_program);
@@ -257,10 +243,6 @@ void Render::DrawQuad(
         1,
         false,
         &view[0][0]);
-
-    glUniform1i(
-        texture_uniform_flip,
-        flip ? 1 : 0);
 
     glActiveTexture(
         GL_TEXTURE0);
