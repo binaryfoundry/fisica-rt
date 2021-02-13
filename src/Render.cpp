@@ -74,6 +74,10 @@ void Render::Init(
 
     OpenGL::GLCheckError();
 
+    raytracing_transform_uniform_location = glGetUniformBlockIndex(
+        raytracing_shader_program,
+        "transform");
+
     transform = std::make_unique<OpenGL::UniformBuffer<Transform>>();
 
     OpenGL::GLCheckError();
@@ -117,6 +121,34 @@ void Render::Draw(
 
     glUseProgram(
         raytracing_shader_program);
+
+    camera->Validate();
+
+    transform->object.view =
+        camera->view;
+    transform->object.projection =
+        camera->projection;
+    transform->object.inverse_projection =
+        camera->inverse_projection;
+    transform->object.inverse_view_rotation =
+        camera->inverse_view_rotation;
+    transform->object.viewport =
+        glm::vec4(0.0f, 0.0f, framebuffer.width, framebuffer.height);
+    transform->object.camera_position =
+        glm::vec4(camera->position, 1.0);
+    transform->object.exposure =
+        glm::vec4(1.0f);
+    transform->Update();
+
+    glBindBufferBase(
+        GL_UNIFORM_BUFFER,
+        raytracing_transform_uniform_location,
+        transform->buffer);
+
+    glUniformBlockBinding(
+        raytracing_shader_program,
+        raytracing_transform_uniform_location,
+        raytracing_transform_uniform_location);
 
     DrawQuad();
 

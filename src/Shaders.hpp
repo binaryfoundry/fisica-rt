@@ -55,8 +55,45 @@ const std::string raytracing_fragment_shader_string_test =
     #endif
     in vec2 v_texcoord;
     layout(location = 0) out vec4 out_color;
+
+    layout(std140) uniform transform{
+        mat4 view;
+        mat4 projection;
+        mat4 inverse_projection;
+        mat4 inverse_view_rotation;
+        vec4 viewport;
+        vec4 camera_position;
+        vec4 exposure;
+    };
+
+    struct Ray {
+        vec3 origin;
+        vec3 direction;
+    };
+
+    Ray Ray_screen(vec2 coords) {
+        float zoom = 0.5;
+        float aspect = viewport.w / viewport.z;
+        float size = 1.0 / zoom;
+
+        vec4 h = vec4(size * 2.0, 0.0, 0.0, 1.0);
+        vec4 v = vec4(0.0, size * 2.0 * aspect, 0.0, 1.0);
+        vec4 c = vec4(-size, -size * aspect, -1.5, 1.0);
+
+        //coords += rand2() * viewport.zw;
+
+        h = h * view;
+        v = v * view;
+        c = c * view;
+
+        vec4 direction = c + coords.x * h + coords.y * v;
+        return Ray(camera_position.xyz, direction.xyz);
+    }
+
     void main() {
-        out_color = vec4(v_texcoord, 0.0, 1.0);
+        Ray r = Ray_screen(v_texcoord);
+
+        out_color = vec4(abs(r.direction), 1.0);
     })";
 
 const std::string raytracing_fragment_shader_string =

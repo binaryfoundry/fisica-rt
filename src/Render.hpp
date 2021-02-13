@@ -24,6 +24,7 @@ private:
     GLuint frontbuffer_texture_uniform_location = 0;
 
     GLuint raytracing_shader_program = 0;
+    GLuint raytracing_transform_uniform_location = 0;
 
     OpenGL::FrameBuffer framebuffer;
 

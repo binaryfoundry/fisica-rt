@@ -104,7 +104,7 @@ namespace OpenGL
                 GL_UNIFORM_BUFFER,
                 buffer);
 
-#if !defined(EMSCRIPTEN)
+/*#if !defined(EMSCRIPTEN)
             GLvoid* buffer_map;
 
             buffer_map = glMapBufferRange(
@@ -115,21 +115,21 @@ namespace OpenGL
 
             memcpy(
                 buffer_map,
-                (void*)&buffer,
+                (void*)&object,
                 sizeof(T));
 
             glUnmapBuffer(GL_UNIFORM_BUFFER);
-#else
+#else*/
             glBufferData(
                 GL_UNIFORM_BUFFER,
                 sizeof(T),
-                buffer,
+                (void*)&object,
                 GL_DYNAMIC_DRAW);
 
             glBindBuffer(
                 GL_UNIFORM_BUFFER,
                 0);
-#endif
+//#endif
         }
     };
 }

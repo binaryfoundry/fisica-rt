@@ -20,6 +20,7 @@ private:
     float near_plane = 0.1f;
     float far_plane = 2200.0f;
 
+public:
     glm::mat4x4 view;
     glm::mat4x4 projection;
     glm::mat4x4 view_projection;
@@ -31,7 +32,6 @@ private:
     glm::vec3 translation;
     glm::vec3 direction;
 
-public:
     Camera();
 
     const glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
