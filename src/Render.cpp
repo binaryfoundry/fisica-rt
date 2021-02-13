@@ -1,6 +1,6 @@
 #include "Render.hpp"
 
-static const std::string vertex_shader_string =
+static const std::string quad_vertex_shader_string =
     R"(#version 300 es
     #ifdef GL_ES
     precision mediump float;
@@ -16,7 +16,7 @@ static const std::string vertex_shader_string =
         gl_Position = projection * view * vec4(position, 1.0);
     })";
 
-static const std::string fragment_shader_string =
+static const std::string quad_fragment_shader_string =
     R"(#version 300 es
     #ifdef GL_ES
     precision mediump float;
@@ -36,7 +36,7 @@ static const std::string fragment_shader_string =
         }
         vec2 tc = flip == 1 ? vec2(v_texcoord.x, 1.0 - v_texcoord.y) : v_texcoord;
         vec3 c = texture(tex, tc).xyz;
-        out_color = vec4(c, 1.0);
+        out_color = vec4(to_gamma_approx(c), 1.0);
     })";
 
 static const std::vector<float> quad_vertices_data
@@ -76,8 +76,8 @@ void Render::Init(
         frame_buffer);
 
     gl_shader_program = OpenGL::LinkShader(
-        vertex_shader_string,
-        fragment_shader_string);
+        quad_vertex_shader_string,
+        quad_fragment_shader_string);
 
     OpenGL::GLCheckError();
 

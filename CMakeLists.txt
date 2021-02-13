@@ -19,14 +19,16 @@ set(SOURCES
     "src/GUI.cpp"
     "src/Render.cpp"
     "src/Camera.cpp"
-    "src/Math.cpp")
+    "src/Math.cpp"
+    "src/Shaders.cpp")
 
 set(HEADERS
     "src/Main.hpp"
     "src/GUI.hpp"
     "src/Render.hpp"
     "src/Camera.hpp"
-    "src/Math.hpp")
+    "src/Math.hpp"
+    "src/Shaders.hpp")
 
 set(SOURCES_SDL
     src/sdl/SDL.cpp

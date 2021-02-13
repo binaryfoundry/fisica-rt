@@ -2,7 +2,7 @@
 
 #include "imgui/imgui.h"
 
-static const std::string vertex_shader_string =
+static const std::string imgui_vertex_shader_string =
     R"(#version 100
     #ifdef GL_ES
     precision mediump float;
@@ -20,7 +20,7 @@ static const std::string vertex_shader_string =
         gl_Position = ProjMtx * vec4(Position.xy, 0.0, 1.0);
     })";
 
-static const std::string fragment_shader_string =
+static const std::string imgui_fragment_shader_string =
     R"(#version 100
     #ifdef GL_ES
     precision mediump float;
@@ -54,8 +54,8 @@ void GUI::Init()
         &height);
 
     gl_shader_program = OpenGL::LinkShader(
-        vertex_shader_string,
-        fragment_shader_string);
+        imgui_vertex_shader_string,
+        imgui_fragment_shader_string);
 
     g_AttribLocationTex = glGetUniformLocation(
         gl_shader_program,
