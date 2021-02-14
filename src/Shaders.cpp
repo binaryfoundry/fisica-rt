@@ -141,7 +141,7 @@ std::string raytracing_fragment_shader_string_test =
         c = c * view;
 
         vec4 direction = c + coords.x * h + coords.y * v;
-        return Ray(camera_position.xyz, direction.xyz);
+        return Ray(camera_position.xyz, normalize(direction.xyz));
     }
 
     struct Sphere {
@@ -159,13 +159,17 @@ std::string raytracing_fragment_shader_string_test =
         vec2 refraction; // x = refractive, y = refract index
     };
 
+    vec3 environment_emissive(vec3 n) {
+        return texture(
+            environment_sampler,
+            spherical_to_equirect(n)).xyz;
+    }
+
     void main() {
         rand_init();
 
         Ray r = Ray_screen(v_texcoord);
-        vec3 c = texture(
-            environment_sampler,
-            spherical_to_equirect(r.direction)).xyz;
+        vec3 c = environment_emissive(r.direction);
 
         out_color = vec4(c * rand(), 1.0);
     })";
