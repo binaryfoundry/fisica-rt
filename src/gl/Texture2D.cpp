@@ -34,6 +34,8 @@ namespace GL
     {
         created = true;
 
+        SetFormat();
+
         glActiveTexture(
             GL_TEXTURE0);
 

@@ -64,7 +64,7 @@ void Main::Init()
         &env_data[0],
         env_raw_data,
         env_width * env_height * 4 * sizeof(float));
-    delete env_raw_data;
+    stbi_image_free(env_raw_data);
 
     environment->Create(
         env_width,

@@ -75,6 +75,10 @@ void Render::Init(
         raytracing_shader_program,
         "noise_sampler");
 
+    raytracing_environment_texture_uniform_location = glGetUniformLocation(
+        raytracing_shader_program,
+        "environment_sampler");
+
     framebuffer = std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
     transform = std::make_unique<GL::UniformBuffer<Transform>>();
 
@@ -163,6 +167,26 @@ void Render::Draw(
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glActiveTexture(
+        GL_TEXTURE1);
+
+    glUniform1i(
+        raytracing_noise_texture_uniform_location,
+        0);
+
+    glBindTexture(
+        GL_TEXTURE_2D,
+        environment->gl_texture_handle);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glUniform1i(
+        raytracing_environment_texture_uniform_location,
+        1);
 
     DrawQuad();
 
