@@ -2,7 +2,7 @@
 
 #include <assert.h>
 
-namespace OpenGL
+namespace GL
 {
     GLuint LoadShader(
         GLenum type,
@@ -312,7 +312,7 @@ namespace OpenGL
             width,
             height);
 
-        GLCheckError();
+        CheckError();
 
         glFramebufferRenderbuffer(
             GL_FRAMEBUFFER,

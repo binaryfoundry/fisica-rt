@@ -17,9 +17,9 @@
 #include <string>
 #include <vector>
 
-namespace OpenGL
+namespace GL
 {
-    static void GLCheckError()
+    static void CheckError()
     {
         GLenum err = GL_NO_ERROR;
         while ((err = glGetError()) != GL_NO_ERROR)

@@ -53,7 +53,7 @@ void GUI::Init()
         &width,
         &height);
 
-    gl_shader_program = OpenGL::LinkShader(
+    gl_shader_program = GL::LinkShader(
         imgui_vertex_shader_string,
         imgui_fragment_shader_string);
 
@@ -116,7 +116,7 @@ void GUI::Init()
 
     io.Fonts->TexID = (ImTextureID)(intptr_t)g_FontTexture;
 
-    OpenGL::GLCheckError();
+    GL::CheckError();
 }
 
 void GUI::Deinit()

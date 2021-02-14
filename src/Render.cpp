@@ -29,24 +29,24 @@ void Render::Init(
     const uint32_t framebuffer_width,
     const uint32_t framebuffer_height)
 {
-    quad_vertex_buffer = OpenGL::GenBuffer(
+    quad_vertex_buffer = GL::GenBuffer(
         quad_vertices_data);
 
-    quad_index_buffer = OpenGL::GenBufferIndex(
+    quad_index_buffer = GL::GenBufferIndex(
         quad_indices_data);
 
-    OpenGL::GenFrameBuffer(
+    GL::GenFrameBuffer(
         framebuffer_width,
         framebuffer_height,
-        OpenGL::TextureFormat::RGBA32F,
+        GL::TextureFormat::RGBA32F,
         true,
         framebuffer);
 
-    frontbuffer_shader_program = OpenGL::LinkShader(
+    frontbuffer_shader_program = GL::LinkShader(
         frontbuffer_vertex_shader_string,
         frontbuffer_fragment_shader_string);
 
-    OpenGL::GLCheckError();
+    GL::CheckError();
 
     frontbuffer_position_attribute_location = glGetAttribLocation(
         frontbuffer_shader_program,
@@ -68,20 +68,20 @@ void Render::Init(
         frontbuffer_shader_program,
         "tex");
 
-    raytracing_shader_program = OpenGL::LinkShader(
+    raytracing_shader_program = GL::LinkShader(
         raytracing_vertex_shader_string,
         raytracing_fragment_shader_string_test);
 
-    OpenGL::GLCheckError();
+    GL::CheckError();
 
     raytracing_transform_uniform_location = glGetUniformBlockIndex(
         raytracing_shader_program,
         "transform");
 
-    transform = std::make_unique<OpenGL::UniformBuffer<Transform>>();
-    environment = std::make_unique<OpenGL::Texture2D<OpenGL::TexDataFloatRGBA>>();
+    transform = std::make_unique<GL::UniformBuffer<Transform>>();
+    environment = std::make_unique<GL::Texture2D<GL::TexDataFloatRGBA>>();
 
-    OpenGL::GLCheckError();
+    GL::CheckError();
 }
 
 void Render::Deinit()
