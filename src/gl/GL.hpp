@@ -38,7 +38,6 @@ namespace GL
         RGBA32F
     };
 
-
     using TexDataByteRGBA = bvec4;
     using TexDataFloatRGBA = glm::vec4;
 
