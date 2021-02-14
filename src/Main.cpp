@@ -41,7 +41,8 @@ void Main::Init()
 
     noise->Create(
         noise_width,
-        noise_height, static_cast<std::vector<TexDataByteRGBA>>(noise_data));
+        noise_height,
+        noise_data);
 
     render.Init(
         1280,
