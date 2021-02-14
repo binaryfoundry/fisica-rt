@@ -27,7 +27,7 @@ private:
     GLuint raytracing_transform_uniform_location = 0;
 
     OpenGL::FrameBuffer framebuffer;
-
+    OpenGL::Texture2D<OpenGL::TexDataFloatRGBA> environment;
     std::shared_ptr<OpenGL::UniformBuffer<Transform>> transform;
 
     void Render::DrawQuad();

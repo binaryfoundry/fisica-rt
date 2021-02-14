@@ -1,5 +1,9 @@
 #pragma once
 
+#include "Math.hpp"
+
+#include <vector>
+
 #if !defined (EMSCRIPTEN)
 #include <GLES3/gl31.h>
 #include <GLES3/gl32.h>
@@ -36,6 +40,18 @@ namespace OpenGL
         RGBA32F
     };
 
+    struct bvec4
+    {
+    public:
+        bvec4(uint8_t r, uint8_t g, uint8_t b, uint8_t a) :
+            r(r), g(g), b(b), a(a)  { }
+        bvec4() {}
+        uint8_t r; uint8_t g; uint8_t b;  uint8_t a;
+    };
+
+    using TexDataByteRGBA = bvec4;
+    using TexDataFloatRGBA = glm::vec4;
+
     struct FrameBuffer
     {
     public:
@@ -69,17 +85,46 @@ namespace OpenGL
     GLuint GenBufferIndex(
         const std::vector<uint32_t>& data);
 
-    GLuint GenTextureRGBA8(
-        const uint32_t width,
-        const uint32_t height,
-        uint8_t* data);
-
     void GenFrameBuffer(
         const uint32_t width,
         const uint32_t height,
         const TextureFormat format,
         const bool mipmaps,
         FrameBuffer& fb);
+
+    GLuint GenTextureRGBA8(
+        const uint32_t width,
+        const uint32_t height,
+        uint8_t* data);
+
+    template <typename T>
+    class Texture2D
+    {
+    private:
+        GLuint gl_internal_format = GL_RGBA;
+        GLuint gl_format = GL_RGBA;
+        GLuint gl_type = GL_UNSIGNED_BYTE;
+
+        void SetFormat();
+
+    public:
+        GLuint gl_texture_handle;
+
+        uint32_t width;
+        uint32_t height;
+        std::vector<T> data;
+
+        void Create(
+            const uint32_t width,
+            const uint32_t height);
+
+        Texture2D();
+
+        void Delete()
+        {
+            glDeleteTextures(1, &gl_texture_handle);
+        }
+    };
 
     template <typename T>
     class UniformBuffer
