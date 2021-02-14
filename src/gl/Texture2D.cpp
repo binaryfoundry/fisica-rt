@@ -12,6 +12,11 @@ namespace GL
     {
     }
 
+    template<>
+    Texture2D<TexDataFloatRGB>::Texture2D()
+    {
+    }
+
     template<typename T>
     Texture2D<T>::~Texture2D()
     {
@@ -74,6 +79,14 @@ namespace GL
         gl_internal_format = GL_RGBA32F;
     };
 
+    template<>
+    void Texture2D<TexDataFloatRGB>::SetFormat()
+    {
+        gl_type = GL_FLOAT;
+        gl_format = GL_RGB;
+        gl_internal_format = GL_RGB32F;
+    };
+
     template<typename T>
     void Texture2D<T>::Delete()
     {
@@ -87,4 +100,5 @@ namespace GL
 
     template class Texture2D<TexDataByteRGBA>;
     template class Texture2D<TexDataFloatRGBA>;
+    template class Texture2D<TexDataFloatRGB>;
 }

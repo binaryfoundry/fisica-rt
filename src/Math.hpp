@@ -29,6 +29,7 @@ public:
 
 using TexDataByteRGBA = bvec4;
 using TexDataFloatRGBA = glm::vec4;
+using TexDataFloatRGB = glm::vec3;
 
 struct Angles
 {

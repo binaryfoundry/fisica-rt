@@ -5,6 +5,9 @@
 
 #include "imgui/imgui.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb/stb_image.h"
+
 //if (backend->IsScanCodeDown(Scancode::SCANCODE_W))
 //{
 //    position += camera->direction * speed;
@@ -26,7 +29,6 @@ void Main::Init()
 {
     camera = std::make_unique<Camera>();
 
-    environment = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>();
     noise = std::make_unique<GL::Texture2D<TexDataByteRGBA>>();
 
     uint32_t noise_width;
@@ -44,6 +46,31 @@ void Main::Init()
         noise_height,
         noise_data);
 
+    environment = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>();
+
+    int env_width, env_height, env_channels;
+    float* env_raw_data = stbi_loadf(
+        "files/loc00184-22-2k.hdr",
+        &env_width,
+        &env_height,
+        &env_channels,
+        STBI_rgb_alpha);
+    size_t env_raw_data_size =
+        env_width * env_height;
+
+    std::vector<TexDataFloatRGBA> env_data(
+        env_width * env_height);
+    memcpy(
+        &env_data[0],
+        env_raw_data,
+        env_width * env_height * 4 * sizeof(float));
+    delete env_raw_data;
+
+    environment->Create(
+        env_width,
+        env_height,
+        env_data);
+
     render.Init(
         1280,
         720);
@@ -57,6 +84,8 @@ void Main::Init()
     sdl_key_down_callback = [=](uint16_t key)
     {
     };
+
+    
 }
 
 void Main::Deinit()
