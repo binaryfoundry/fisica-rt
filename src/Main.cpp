@@ -124,7 +124,6 @@ void Main::Update()
 
     camera->SetPosition(position);
     camera->SetAngles(orientation);
-    camera->Validate();
 
     scene->Update(*scene_data);
 
