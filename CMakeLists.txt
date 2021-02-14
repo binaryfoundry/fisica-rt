@@ -86,6 +86,7 @@ SOURCE_GROUP("Source\\imgui" FILES ${HEADERS_IMGUI})
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/lib/glm
+    ${PROJECT_SOURCE_DIR}/lib/stb
     ${PROJECT_SOURCE_DIR}/lib/imgui)
 
 if (WIN32)
