@@ -18,6 +18,7 @@ private:
     float speed = 0.2f;
     glm::vec3 position = glm::vec3(0, 5, 35);
     Angles orientation;
+    float exposure = 1.0f;
     std::unique_ptr<Camera> camera;
 
     uint32_t raytracing_framebuffer_width = 1280;

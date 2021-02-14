@@ -113,6 +113,12 @@ void Main::Update()
         NULL,
         ImGuiWindowFlags_AlwaysAutoResize);
 
+    ImGui::LabelText(
+        "Controls",
+        "Cursor keys, Ctrl.");
+
+    ImGui::SliderFloat("Exposure", &exposure, 0, 2);
+
     ImGui::End();
 
     const float window_aspect_ratio =
@@ -134,6 +140,7 @@ void Main::Update()
     render.Draw(
         sdl_window_width,
         sdl_window_height,
+        exposure,
         camera,
         environment,
         noise,

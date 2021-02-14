@@ -109,6 +109,7 @@ void Render::Deinit()
 void Render::Draw(
     const uint32_t window_width,
     const uint32_t window_height,
+    const float exposure,
     const std::unique_ptr<Camera>& camera,
     const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& environment,
     const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise,
@@ -148,7 +149,7 @@ void Render::Draw(
     transform->object.camera_position =
         glm::vec4(camera->position, 1.0);
     transform->object.exposure =
-        glm::vec4(1.0f);
+        glm::vec4(exposure);
     transform->Update();
 
     glBindBufferBase(
