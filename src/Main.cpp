@@ -84,8 +84,6 @@ void Main::Init()
     sdl_key_down_callback = [=](uint16_t key)
     {
     };
-
-    
 }
 
 void Main::Deinit()
