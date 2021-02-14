@@ -26,6 +26,9 @@ void Main::Init()
 {
     camera = std::make_unique<Camera>();
 
+    environment = std::make_unique<GL::Texture2D<GL::TexDataFloatRGBA>>();
+    noise = std::make_unique<GL::Texture2D<GL::TexDataByteRGBA>>();
+
     render.Init(
         1280,
         720);
