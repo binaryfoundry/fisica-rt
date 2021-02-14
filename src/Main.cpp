@@ -117,7 +117,7 @@ void Main::Update()
         (150.0f * window_aspect_ratio);
 
     orientation.pitch +=
-        static_cast<float>(sdl_captured_mouse_delta_y) / 150.0f;
+        static_cast<float>(-sdl_captured_mouse_delta_y) / 150.0f;
 
     camera->SetPosition(position);
     camera->SetAngles(orientation);
