@@ -143,6 +143,21 @@ std::string raytracing_fragment_shader_string_test =
         return Ray(camera_position.xyz, direction.xyz);
     }
 
+    struct Sphere {
+        vec4 geom;       // xyz = position, w = radius
+        vec4 albedo;     // xyz = rgb
+        vec2 material;   // x = smoothness, y = metalness
+        vec2 refraction; // x = refractive, y = refract index
+    };
+
+    struct Plane {
+        vec4 position;   // xyz = position
+        vec4 normal;     // xyz = normal
+        vec4 albedo;     // xyz = rgb
+        vec2 material;   // x = smoothness, y = metalness
+        vec2 refraction; // x = refractive, y = refract index
+    };
+
     void main() {
         rand_init();
 
