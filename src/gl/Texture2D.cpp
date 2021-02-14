@@ -28,11 +28,14 @@ namespace GL
 
     template<typename T>
     void Texture2D<T>::Create(
-        const uint32_t width,
-        const uint32_t height,
+        const uint32_t width_,
+        const uint32_t height_,
         const std::vector<T>& data)
     {
         created = true;
+
+        width = width_;
+        height = height_;
 
         SetFormat();
 
@@ -41,6 +44,15 @@ namespace GL
 
         glGenTextures(
             1, &gl_texture_handle);
+
+        Update(data);
+    };
+
+    template<typename T>
+    void Texture2D<T>::Update(const std::vector<T>& data)
+    {
+        glActiveTexture(
+            GL_TEXTURE0);
 
         glBindTexture(
             GL_TEXTURE_2D,
@@ -63,7 +75,7 @@ namespace GL
         glBindTexture(
             GL_TEXTURE_2D,
             NULL);
-    };
+    }
 
     template<>
     void Texture2D<TexDataByteRGBA>::SetFormat()

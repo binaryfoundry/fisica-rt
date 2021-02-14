@@ -30,6 +30,7 @@ private:
     GLuint raytracing_transform_uniform_location = 0;
     GLuint raytracing_noise_texture_uniform_location = 0;
     GLuint raytracing_environment_texture_uniform_location = 0;
+    GLuint raytracing_scene_texture_uniform_location = 0;
 
     std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> framebuffer;
     std::unique_ptr<GL::UniformBuffer<Transform>> transform;
@@ -48,6 +49,7 @@ public:
         const uint32_t window_height,
         const std::unique_ptr<Camera>& camera,
         const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& environment,
-        const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise);
+        const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise,
+        const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& scene);
 };
 

@@ -79,6 +79,10 @@ void Render::Init(
         raytracing_shader_program,
         "environment_sampler");
 
+    raytracing_scene_texture_uniform_location = glGetUniformLocation(
+        raytracing_shader_program,
+        "scene_sampler");
+
     framebuffer = std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
     transform = std::make_unique<GL::UniformBuffer<Transform>>();
 
@@ -107,7 +111,8 @@ void Render::Draw(
     const uint32_t window_height,
     const std::unique_ptr<Camera>& camera,
     const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& environment,
-    const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise)
+    const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise,
+    const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& scene)
 {
     camera->Validate();
 
@@ -156,6 +161,8 @@ void Render::Draw(
         raytracing_transform_uniform_location,
         raytracing_transform_uniform_location);
 
+    // ...
+
     glActiveTexture(
         GL_TEXTURE0);
 
@@ -168,12 +175,14 @@ void Render::Draw(
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glActiveTexture(
-        GL_TEXTURE1);
-
     glUniform1i(
         raytracing_noise_texture_uniform_location,
         0);
+
+    // ...
+
+    glActiveTexture(
+        GL_TEXTURE1);
 
     glBindTexture(
         GL_TEXTURE_2D,
@@ -187,6 +196,26 @@ void Render::Draw(
     glUniform1i(
         raytracing_environment_texture_uniform_location,
         1);
+
+    // ...
+
+    glActiveTexture(
+        GL_TEXTURE2);
+
+    glBindTexture(
+        GL_TEXTURE_2D,
+        scene->gl_texture_handle);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glUniform1i(
+        raytracing_scene_texture_uniform_location,
+        2);
+
+    // ...
 
     DrawQuad();
 

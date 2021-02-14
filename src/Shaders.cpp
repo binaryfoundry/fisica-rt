@@ -85,6 +85,7 @@ std::string raytracing_fragment_shader_string_test =
     in vec2 v_texcoord;
     uniform sampler2D noise_sampler;
     uniform sampler2D environment_sampler;
+    uniform sampler2D scene_sampler;
     layout(location = 0) out vec4 out_color;
 
     layout(std140) uniform transform{

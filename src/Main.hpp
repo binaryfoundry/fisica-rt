@@ -22,6 +22,9 @@ private:
 
     std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> environment;
     std::unique_ptr<GL::Texture2D<TexDataByteRGBA>> noise;
+    std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> scene;
+
+    std::unique_ptr<std::vector<TexDataFloatRGBA>> scene_data;
 
 public:
     void Init();

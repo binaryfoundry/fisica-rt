@@ -71,6 +71,11 @@ void Main::Init()
         env_height,
         env_data);
 
+    scene_data = std::make_unique<std::vector<TexDataFloatRGBA>>(4 * 1024);
+
+    scene = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>();
+    scene->Create(4, 1024, *scene_data);
+
     render.Init(
         1280,
         720);
@@ -126,7 +131,8 @@ void Main::Update()
         sdl_window_height,
         camera,
         environment,
-        noise);
+        noise,
+        scene);
 
     gui.Draw(
         sdl_window_width,
