@@ -117,11 +117,8 @@ void FileLoadTexture2D_RGBA8(
     uint32_t& height,
     std::vector<TexDataByteRGBA>& data)
 {
-    std::string file_path = resource_id;
-    file_path = std::string("files/").append(file_path);
-
     SDL_Surface* surface_raw = IMG_Load(
-        file_path.c_str());
+        resource_id.c_str());
 
     if (surface_raw == nullptr)
     {
