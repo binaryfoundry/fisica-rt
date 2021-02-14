@@ -127,8 +127,8 @@ void Render::Draw(
 
     glViewport(
         0, 0,
-        framebuffer->width,
-        framebuffer->height);
+        framebuffer->Width(),
+        framebuffer->Height());
 
     glUseProgram(
         raytracing_shader_program);
@@ -144,7 +144,7 @@ void Render::Draw(
     transform->object.inverse_view_rotation =
         camera->inverse_view_rotation;
     transform->object.viewport =
-        glm::vec4(0.0f, 0.0f, framebuffer->width, framebuffer->height);
+        glm::vec4(0.0f, 0.0f, framebuffer->Width(), framebuffer->Height());
     transform->object.camera_position =
         glm::vec4(camera->position, 1.0);
     transform->object.exposure =
