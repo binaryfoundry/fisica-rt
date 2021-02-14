@@ -25,3 +25,10 @@ public:
 
     size_t Length();
 };
+
+void FileLoadTexture2D_RGBA8(
+    std::string resource_id,
+    uint8_t& bpp,
+    uint32_t& width,
+    uint32_t& height,
+    std::shared_ptr<std::vector<uint8_t>> data);

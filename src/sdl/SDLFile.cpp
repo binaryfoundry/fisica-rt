@@ -109,3 +109,60 @@ std::string File::ReadString()
 
     return str;
 }
+
+void FileLoadTexture2D_RGBA8(
+    std::string resource_id,
+    uint8_t& bpp,
+    uint32_t& width,
+    uint32_t& height,
+    std::unique_ptr<std::vector<uint8_t>>& data)
+{
+    std::string file_path = resource_id;
+    file_path = std::string("resources/").append(file_path);
+
+    SDL_Surface* surface_raw = IMG_Load(
+        file_path.c_str());
+
+    if (surface_raw == nullptr)
+    {
+        throw std::runtime_error(SDL_GetError());
+    }
+
+    SDL_PixelFormat pixel_format;
+    pixel_format.palette = 0;
+    pixel_format.BitsPerPixel = 32;
+    pixel_format.BytesPerPixel = 4;
+    pixel_format.Rshift = 0;
+    pixel_format.Rloss = 0;
+    pixel_format.Gloss = 0;
+    pixel_format.Bloss = 0;
+    pixel_format.Aloss = 0;
+    pixel_format.Rmask = 0x000000ff;
+    pixel_format.Gshift = 8;
+    pixel_format.Gmask = 0x0000ff00;
+    pixel_format.Bshift = 16;
+    pixel_format.Bmask = 0x00ff0000;
+    pixel_format.Ashift = 24;
+    pixel_format.Amask = 0xff000000;
+
+    SDL_Surface* surface_converted = SDL_ConvertSurface(
+        surface_raw,
+        &pixel_format,
+        SDL_SWSURFACE);
+
+    SDL_FreeSurface(
+        surface_raw);
+
+    bpp = surface_converted->format->BytesPerPixel;
+    width = surface_converted->w;
+    height = surface_converted->h;
+    uint8_t* pixels = static_cast<uint8_t*>(surface_converted->pixels);
+
+    size_t total_size = width * height * bpp;
+    data->resize(total_size);
+
+    memcpy(&(*data)[0], pixels, total_size);
+
+    SDL_FreeSurface(
+        surface_converted);
+}
