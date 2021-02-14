@@ -35,13 +35,6 @@ void Render::Init(
     quad_index_buffer = GL::GenBufferIndex(
         quad_indices_data);
 
-    GL::GenFrameBuffer(
-        framebuffer_width,
-        framebuffer_height,
-        GL::TextureFormat::RGBA32F,
-        true,
-        framebuffer);
-
     frontbuffer_shader_program = GL::LinkShader(
         frontbuffer_vertex_shader_string,
         frontbuffer_fragment_shader_string);
@@ -78,15 +71,18 @@ void Render::Init(
         raytracing_shader_program,
         "transform");
 
+    framebuffer = std::make_unique<GL::FrameBuffer<GL::TexDataFloatRGBA>>();
     transform = std::make_unique<GL::UniformBuffer<Transform>>();
     environment = std::make_unique<GL::Texture2D<GL::TexDataFloatRGBA>>();
+
+    framebuffer->Create(framebuffer_width, framebuffer_height, true);
 
     GL::CheckError();
 }
 
 void Render::Deinit()
 {
-    framebuffer.Delete();
+    framebuffer->Delete();
     transform->Delete();
     environment->Delete();
 
@@ -114,12 +110,12 @@ void Render::Draw(
 
     glBindFramebuffer(
         GL_FRAMEBUFFER,
-        framebuffer.gl_frame_handle);
+        framebuffer->gl_frame_handle);
 
     glViewport(
         0, 0,
-        framebuffer.width,
-        framebuffer.height);
+        framebuffer->width,
+        framebuffer->height);
 
     glUseProgram(
         raytracing_shader_program);
@@ -135,7 +131,7 @@ void Render::Draw(
     transform->object.inverse_view_rotation =
         camera->inverse_view_rotation;
     transform->object.viewport =
-        glm::vec4(0.0f, 0.0f, framebuffer.width, framebuffer.height);
+        glm::vec4(0.0f, 0.0f, framebuffer->width, framebuffer->height);
     transform->object.camera_position =
         glm::vec4(camera->position, 1.0);
     transform->object.exposure =
@@ -231,7 +227,7 @@ void Render::Draw(
 
     glBindTexture(
         GL_TEXTURE_2D,
-        framebuffer.gl_texture_handle);
+        framebuffer->gl_texture_handle);
 
     glGenerateMipmap(
         GL_TEXTURE_2D);

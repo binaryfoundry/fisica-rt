@@ -4,8 +4,16 @@
 
 namespace GL
 {
-    struct FrameBuffer
+    template <typename T>
+    class FrameBuffer
     {
+    private:
+        GLuint gl_internal_format = GL_RGBA;
+        GLuint gl_format = GL_RGBA;
+        GLuint gl_type = GL_UNSIGNED_BYTE;
+
+        void SetFormat();
+
     public:
         uint32_t width = 0;
         uint32_t height = 0;
@@ -14,23 +22,11 @@ namespace GL
         GLuint gl_texture_handle = 0;
         GLuint gl_depth_renderbuffer_handle = 0;
 
-        void Delete()
-        {
-            glDeleteBuffers(
-                1, &gl_frame_handle);
+        void Create(
+            const uint32_t width,
+            const uint32_t height,
+            const bool mipmaps);
 
-            glDeleteTextures(
-                1, &gl_texture_handle);
-
-            glDeleteRenderbuffers(
-                1, &gl_depth_renderbuffer_handle);
-        }
+        void Delete();
     };
-
-    void GenFrameBuffer(
-        const uint32_t width,
-        const uint32_t height,
-        const TextureFormat format,
-        const bool mipmaps,
-        FrameBuffer& fb);
 }

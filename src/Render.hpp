@@ -29,7 +29,7 @@ private:
     GLuint raytracing_shader_program = 0;
     GLuint raytracing_transform_uniform_location = 0;
 
-    GL::FrameBuffer framebuffer;
+    std::unique_ptr<GL::FrameBuffer<GL::TexDataFloatRGBA>> framebuffer;
     std::unique_ptr<GL::UniformBuffer<Transform>> transform;
     std::unique_ptr<GL::Texture2D<GL::TexDataFloatRGBA>> environment;
 

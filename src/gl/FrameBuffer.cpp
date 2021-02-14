@@ -2,70 +2,32 @@
 
 namespace GL
 {
-    static void GetTextureFormat(
-        TextureFormat format,
-        GLuint& gl_type,
-        GLuint& gl_format,
-        GLuint& gl_internal_format)
+    template <typename T>
+    void FrameBuffer<T>::Create(
+        const uint32_t width_,
+        const uint32_t height_,
+        const bool mipmaps)
     {
-        switch (format)
-        {
-        case TextureFormat::RGBA32F:
-            gl_type = GL_FLOAT;
-            gl_format = GL_RGBA;
-            gl_internal_format = GL_RGBA32F;
-            break;
-        case TextureFormat::SRGB8_ALPHA8:
-            gl_type = GL_UNSIGNED_BYTE;
-            gl_format = GL_RGBA;
-            gl_internal_format = GL_SRGB8_ALPHA8;
-            break;
-        case TextureFormat::RGBA8:
-            gl_type = GL_UNSIGNED_BYTE;
-            gl_format = GL_RGBA;
-            gl_internal_format = GL_RGBA8;
-            break;
-        default:
-            // not implemented
-            assert(false);
-        }
-    }
+        SetFormat();
 
-    void GenFrameBuffer(
-        const uint32_t width,
-        const uint32_t height,
-        const TextureFormat format,
-        const bool mipmaps,
-        FrameBuffer& fb)
-    {
-        GLuint gl_type = GL_UNSIGNED_BYTE;
-        GLuint gl_format = GL_RGBA;
-        GLuint gl_internal_format = GL_RGBA;
-
-        GL::GetTextureFormat(
-            format,
-            gl_type,
-            gl_format,
-            gl_internal_format);
-
-        fb.width = width;
-        fb.height = height;
+        width = width_;
+        height = height_;
 
         glGenFramebuffers(
             1,
-            &fb.gl_frame_handle);
+            &gl_frame_handle);
 
         glBindFramebuffer(
             GL_FRAMEBUFFER,
-            fb.gl_frame_handle);
+            gl_frame_handle);
 
         glGenTextures(
             1,
-            &fb.gl_texture_handle);
+            &gl_texture_handle);
 
         glBindTexture(
             GL_TEXTURE_2D,
-            fb.gl_texture_handle);
+            gl_texture_handle);
 
         glTexImage2D(
             GL_TEXTURE_2D,
@@ -80,11 +42,11 @@ namespace GL
 
         glGenRenderbuffers(
             1,
-            &fb.gl_depth_renderbuffer_handle);
+            &gl_depth_renderbuffer_handle);
 
         glBindRenderbuffer(
             GL_RENDERBUFFER,
-            fb.gl_depth_renderbuffer_handle);
+            gl_depth_renderbuffer_handle);
 
         glRenderbufferStorage(
             GL_RENDERBUFFER,
@@ -98,13 +60,13 @@ namespace GL
             GL_FRAMEBUFFER,
             GL_DEPTH_ATTACHMENT,
             GL_RENDERBUFFER,
-            fb.gl_depth_renderbuffer_handle);
+            gl_depth_renderbuffer_handle);
 
         glFramebufferTexture2D(
             GL_FRAMEBUFFER,
             GL_COLOR_ATTACHMENT0,
             GL_TEXTURE_2D,
-            fb.gl_texture_handle,
+            gl_texture_handle,
             0);
 
         GLenum draw_buffers[1] = {
@@ -124,4 +86,37 @@ namespace GL
             GL_FRAMEBUFFER,
             0);
     }
-}
+
+    template <typename T>
+    void FrameBuffer<T>::Delete()
+    {
+        glDeleteBuffers(
+            1, &gl_frame_handle);
+
+        glDeleteTextures(
+            1, &gl_texture_handle);
+
+        glDeleteRenderbuffers(
+            1, &gl_depth_renderbuffer_handle);
+    }
+
+    template<>
+    void FrameBuffer<TexDataByteRGBA>::SetFormat()
+    {
+        gl_internal_format = GL_RGBA;
+        gl_format = GL_RGBA;
+        gl_type = GL_UNSIGNED_BYTE;
+    };
+
+    template<>
+    void FrameBuffer<TexDataFloatRGBA>::SetFormat()
+    {
+        gl_type = GL_FLOAT;
+        gl_format = GL_RGBA;
+        gl_internal_format = GL_RGBA32F;
+    };
+
+    template class FrameBuffer<TexDataByteRGBA>;
+    template class FrameBuffer<TexDataFloatRGBA>;
+};
+
