@@ -79,6 +79,7 @@ void Render::Init(
         "transform");
 
     transform = std::make_unique<OpenGL::UniformBuffer<Transform>>();
+    environment = std::make_unique<OpenGL::Texture2D<OpenGL::TexDataFloatRGBA>>();
 
     OpenGL::GLCheckError();
 }
@@ -87,6 +88,7 @@ void Render::Deinit()
 {
     framebuffer.Delete();
     transform->Delete();
+    environment->Delete();
 
     glDeleteProgram(
         frontbuffer_shader_program);
