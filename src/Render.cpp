@@ -114,7 +114,7 @@ void Render::Draw(
 
     glBindFramebuffer(
         GL_FRAMEBUFFER,
-        framebuffer.frame);
+        framebuffer.gl_frame_handle);
 
     glViewport(
         0, 0,
@@ -145,7 +145,7 @@ void Render::Draw(
     glBindBufferBase(
         GL_UNIFORM_BUFFER,
         raytracing_transform_uniform_location,
-        transform->buffer);
+        transform->gl_buffer_handle);
 
     glUniformBlockBinding(
         raytracing_shader_program,
@@ -231,7 +231,7 @@ void Render::Draw(
 
     glBindTexture(
         GL_TEXTURE_2D,
-        framebuffer.texture);
+        framebuffer.gl_texture_handle);
 
     glGenerateMipmap(
         GL_TEXTURE_2D);

@@ -48,11 +48,15 @@ set(HEADERS_SDL
 
 set(SOURCES_GL
     src/gl/GL.cpp
-    src/gl/Math.cpp)
+    src/gl/FrameBuffer.cpp
+    src/gl/Texture2D.cpp
+    src/gl/UniformBuffer.cpp)
 
 set(HEADERS_GL
     src/gl/GL.hpp
-    src/gl/Math.hpp)
+    src/gl/FrameBuffer.hpp
+    src/gl/Texture2D.hpp
+    src/gl/UniformBuffer.hpp)
 
 set(SOURCES_IMGUI
     lib/imgui/imgui/imgui.cpp

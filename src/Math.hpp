@@ -18,6 +18,15 @@ const float PIf = 3.141592653589793f;
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/constants.hpp>
 
+struct bvec4
+{
+public:
+    bvec4(uint8_t r, uint8_t g, uint8_t b, uint8_t a) :
+        r(r), g(g), b(b), a(a) { }
+    bvec4() {}
+    uint8_t r; uint8_t g; uint8_t b;  uint8_t a;
+};
+
 struct Angles
 {
 public:

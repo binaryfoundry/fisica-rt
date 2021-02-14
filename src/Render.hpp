@@ -3,8 +3,11 @@
 #include "Camera.hpp"
 #include "Uniforms.hpp"
 
+#include "Math.hpp"
 #include "gl/GL.hpp"
-#include "gl/Math.hpp"
+#include "gl/Texture2D.hpp"
+#include "gl/UniformBuffer.hpp"
+#include "gl/FrameBuffer.hpp"
 
 #include <vector>
 #include <memory>
