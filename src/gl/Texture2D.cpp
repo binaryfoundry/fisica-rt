@@ -13,10 +13,21 @@ namespace GL
     }
 
     template<typename T>
+    Texture2D<T>::~Texture2D()
+    {
+        if (created)
+        {
+            assert("Resource not deleted.");
+        }
+    }
+
+    template<typename T>
     void Texture2D<T>::Create(
         const uint32_t width,
         const uint32_t height)
     {
+        created = true;
+
         glActiveTexture(
             GL_TEXTURE0);
 
@@ -61,6 +72,17 @@ namespace GL
         gl_format = GL_RGBA;
         gl_internal_format = GL_RGBA32F;
     };
+
+    template<typename T>
+    void Texture2D<T>::Delete()
+    {
+        if (created)
+        {
+            glDeleteTextures(1, &gl_texture_handle);
+        }
+
+        created = false;
+    }
 
     template class Texture2D<TexDataByteRGBA>;
     template class Texture2D<TexDataFloatRGBA>;

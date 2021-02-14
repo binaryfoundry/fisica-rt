@@ -10,6 +10,8 @@ namespace GL
     class Texture2D
     {
     private:
+        bool created = false;
+
         GLuint gl_internal_format = GL_RGBA;
         GLuint gl_format = GL_RGBA;
         GLuint gl_type = GL_UNSIGNED_BYTE;
@@ -23,15 +25,13 @@ namespace GL
         uint32_t height;
         std::vector<T> data;
 
+        Texture2D();
+        virtual ~Texture2D();
+
         void Create(
             const uint32_t width,
             const uint32_t height);
 
-        Texture2D();
-
-        void Delete()
-        {
-            glDeleteTextures(1, &gl_texture_handle);
-        }
+        void Delete();
     };
 }

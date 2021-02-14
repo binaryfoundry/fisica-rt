@@ -7,6 +7,9 @@ namespace GL
     template <typename T>
     class UniformBuffer
     {
+    private:
+        bool created = false;
+
     public:
         T object;
         GLuint gl_buffer_handle;
@@ -16,13 +19,28 @@ namespace GL
             glGenBuffers(1, &gl_buffer_handle);
         }
 
+        virtual ~UniformBuffer()
+        {
+            if (created)
+            {
+                assert("Resource not deleted.");
+            }
+        }
+
         void Delete()
         {
-            glDeleteBuffers(1, &gl_buffer_handle);
+            if (created)
+            {
+                glDeleteBuffers(1, &gl_buffer_handle);
+            }
+
+            created = false;
         }
 
         void Update()
         {
+            created = true;
+
             glBindBuffer(
                 GL_UNIFORM_BUFFER,
                 gl_buffer_handle);

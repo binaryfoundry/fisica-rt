@@ -8,6 +8,8 @@ namespace GL
         const uint32_t height_,
         const bool mipmaps)
     {
+        created = true;
+
         SetFormat();
 
         width = width_;
@@ -88,16 +90,30 @@ namespace GL
     }
 
     template <typename T>
+    FrameBuffer<T>::~FrameBuffer()
+    {
+        if (created)
+        {
+            assert("Resource not deleted.");
+        }
+    }
+
+    template <typename T>
     void FrameBuffer<T>::Delete()
     {
-        glDeleteBuffers(
-            1, &gl_frame_handle);
+        if (created)
+        {
+            glDeleteBuffers(
+                1, &gl_frame_handle);
 
-        glDeleteTextures(
-            1, &gl_texture_handle);
+            glDeleteTextures(
+                1, &gl_texture_handle);
 
-        glDeleteRenderbuffers(
-            1, &gl_depth_renderbuffer_handle);
+            glDeleteRenderbuffers(
+                1, &gl_depth_renderbuffer_handle);
+        }
+
+        created = false;
     }
 
     template<>
