@@ -81,8 +81,8 @@ void Main::Init()
         *scene_data);
 
     render.Init(
-        1280,
-        720);
+        raytracing_framebuffer_width,
+        raytracing_framebuffer_height);
 
     gui.Init();
 

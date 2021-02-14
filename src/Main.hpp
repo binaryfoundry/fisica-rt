@@ -20,6 +20,9 @@ private:
     Angles orientation;
     std::unique_ptr<Camera> camera;
 
+    uint32_t raytracing_framebuffer_width = 1280;
+    uint32_t raytracing_framebuffer_height = 720;
+
     std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> environment;
     std::unique_ptr<GL::Texture2D<TexDataByteRGBA>> noise;
     std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> scene;
