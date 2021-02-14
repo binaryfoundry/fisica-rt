@@ -126,6 +126,8 @@ void Main::Update()
     camera->SetAngles(orientation);
     camera->Validate();
 
+    scene->Update(*scene_data);
+
     render.Draw(
         sdl_window_width,
         sdl_window_height,
