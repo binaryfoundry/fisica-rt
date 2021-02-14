@@ -4,7 +4,7 @@
 
 #include "../Main.hpp"
 
-#include "../gl/GL.hpp"
+#include "../gl/OpenGL.hpp"
 
 #include "SDL.hpp"
 #include "SDLFile.hpp"

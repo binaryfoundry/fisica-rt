@@ -1,4 +1,4 @@
-#include "Texture2d.hpp"
+#include "Texture2D.hpp"
 
 namespace GL
 {

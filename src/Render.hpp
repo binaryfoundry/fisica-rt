@@ -34,7 +34,7 @@ private:
     std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> framebuffer;
     std::unique_ptr<GL::UniformBuffer<Transform>> transform;
 
-    void Render::DrawQuad();
+    void DrawQuad();
 
 public:
     Render();
