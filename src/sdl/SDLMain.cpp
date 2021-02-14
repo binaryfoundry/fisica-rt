@@ -335,7 +335,7 @@ static bool sdl_poll_events()
             }
 
         case SDL_TEXTINPUT:
-            io.AddInputCharactersUTF8(event.text.text);
+            //io.AddInputCharactersUTF8(event.text.text);
             break;
 
         case SDL_KEYDOWN:
