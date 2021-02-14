@@ -71,10 +71,14 @@ void Main::Init()
         env_height,
         env_data);
 
-    scene_data = std::make_unique<std::vector<TexDataFloatRGBA>>(4 * 1024);
+    scene_data = std::make_unique<std::vector<TexDataFloatRGBA>>(
+        scene_data_width * scene_data_height);
 
     scene = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>();
-    scene->Create(4, 1024, *scene_data);
+    scene->Create(
+        scene_data_width,
+        scene_data_height,
+        *scene_data);
 
     render.Init(
         1280,
