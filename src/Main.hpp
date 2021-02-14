@@ -6,7 +6,7 @@
 #include "Render.hpp"
 #include "Camera.hpp"
 
-#include "gl/GL.hpp"
+#include "gl/OpenGL.hpp"
 #include "gl/Texture2D.hpp"
 
 class Main

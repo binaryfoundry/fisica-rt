@@ -1,4 +1,4 @@
-#include "GL.hpp"
+#include "OpenGL.hpp"
 
 #include <assert.h>
 

@@ -47,13 +47,13 @@ set(HEADERS_SDL
     src/sdl/SDLImgui.hpp)
 
 set(SOURCES_GL
-    src/gl/GL.cpp
+    src/gl/OpenGL.cpp
     src/gl/FrameBuffer.cpp
     src/gl/Texture2D.cpp
     src/gl/UniformBuffer.cpp)
 
 set(HEADERS_GL
-    src/gl/GL.hpp
+    src/gl/OpenGL.hpp
     src/gl/FrameBuffer.hpp
     src/gl/Texture2D.hpp
     src/gl/UniformBuffer.hpp)
