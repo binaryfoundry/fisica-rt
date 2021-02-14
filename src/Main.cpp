@@ -43,6 +43,9 @@ void Main::Init()
 
 void Main::Deinit()
 {
+    environment->Delete();
+    noise->Delete();
+
     render.Deinit();
     gui.Deinit();
 }
@@ -76,7 +79,9 @@ void Main::Update()
     render.Draw(
         sdl_window_width,
         sdl_window_height,
-        camera);
+        camera,
+        environment,
+        noise);
 
     gui.Draw(
         sdl_window_width,

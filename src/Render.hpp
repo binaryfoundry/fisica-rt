@@ -31,7 +31,6 @@ private:
 
     std::unique_ptr<GL::FrameBuffer<GL::TexDataFloatRGBA>> framebuffer;
     std::unique_ptr<GL::UniformBuffer<Transform>> transform;
-    std::unique_ptr<GL::Texture2D<GL::TexDataFloatRGBA>> environment;
 
     void Render::DrawQuad();
 
@@ -45,6 +44,8 @@ public:
     void Draw(
         const uint32_t window_width,
         const uint32_t window_height,
-        const std::unique_ptr<Camera>& camera);
+        const std::unique_ptr<Camera>& camera,
+        const std::unique_ptr<GL::Texture2D<GL::TexDataFloatRGBA>>& environment,
+        const std::unique_ptr<GL::Texture2D<GL::TexDataByteRGBA>>& noise);
 };
 

@@ -73,7 +73,6 @@ void Render::Init(
 
     framebuffer = std::make_unique<GL::FrameBuffer<GL::TexDataFloatRGBA>>();
     transform = std::make_unique<GL::UniformBuffer<Transform>>();
-    environment = std::make_unique<GL::Texture2D<GL::TexDataFloatRGBA>>();
 
     framebuffer->Create(framebuffer_width, framebuffer_height, true);
 
@@ -84,7 +83,6 @@ void Render::Deinit()
 {
     framebuffer->Delete();
     transform->Delete();
-    environment->Delete();
 
     glDeleteProgram(
         frontbuffer_shader_program);
@@ -99,7 +97,9 @@ void Render::Deinit()
 void Render::Draw(
     const uint32_t window_width,
     const uint32_t window_height,
-    const std::unique_ptr<Camera>& camera)
+    const std::unique_ptr<Camera>& camera,
+    const std::unique_ptr<GL::Texture2D<GL::TexDataFloatRGBA>>& environment,
+    const std::unique_ptr<GL::Texture2D<GL::TexDataByteRGBA>>& noise)
 {
     camera->Validate();
 
