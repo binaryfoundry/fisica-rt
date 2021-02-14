@@ -80,6 +80,7 @@ std::string raytracing_fragment_shader_string_test =
     precision lowp int;
     #endif
     in vec2 v_texcoord;
+    uniform sampler2D noise_sampler;
     layout(location = 0) out vec4 out_color;
 
     layout(std140) uniform transform{
@@ -91,6 +92,19 @@ std::string raytracing_fragment_shader_string_test =
         vec4 camera_position;
         vec4 exposure;
     };
+
+    float rand_seed;
+
+    void rand_init() {
+        vec2 coords = gl_FragCoord.xy /
+            vec2(textureSize(noise_sampler, 0));
+        rand_seed = texture(noise_sampler, coords).x;
+    }
+
+    float rand() {
+        rand_seed = mod(rand_seed * 1.1234567893490423, 13.0);
+        return fract(sin(rand_seed += 0.1) * 43758.5453123);
+    }
 
     struct Ray {
         vec3 origin;
@@ -117,9 +131,11 @@ std::string raytracing_fragment_shader_string_test =
     }
 
     void main() {
+        rand_init();
+
         Ray r = Ray_screen(v_texcoord);
 
-        out_color = vec4(abs(r.direction), 1.0);
+        out_color = vec4(abs(r.direction) * rand(), 1.0);
     })";
 
 std::string raytracing_fragment_shader_string =

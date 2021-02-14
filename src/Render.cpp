@@ -71,6 +71,10 @@ void Render::Init(
         raytracing_shader_program,
         "transform");
 
+    raytracing_noise_texture_uniform_location = glGetUniformLocation(
+        raytracing_shader_program,
+        "noise_sampler");
+
     framebuffer = std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
     transform = std::make_unique<GL::UniformBuffer<Transform>>();
 
@@ -148,7 +152,23 @@ void Render::Draw(
         raytracing_transform_uniform_location,
         raytracing_transform_uniform_location);
 
+    glActiveTexture(
+        GL_TEXTURE0);
+
+    glBindTexture(
+        GL_TEXTURE_2D,
+        noise->gl_texture_handle);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
     DrawQuad();
+
+    glBindTexture(
+        GL_TEXTURE_2D,
+        NULL);
 
     glUseProgram(
         NULL);
@@ -232,25 +252,10 @@ void Render::Draw(
     glGenerateMipmap(
         GL_TEXTURE_2D);
 
-    glTexParameteri(
-        GL_TEXTURE_2D,
-        GL_TEXTURE_MIN_FILTER,
-        GL_NEAREST);
-
-    glTexParameteri(
-        GL_TEXTURE_2D,
-        GL_TEXTURE_MAG_FILTER,
-        GL_NEAREST);
-
-    glTexParameteri(
-        GL_TEXTURE_2D,
-        GL_TEXTURE_WRAP_S,
-        GL_CLAMP_TO_EDGE);
-
-    glTexParameteri(
-        GL_TEXTURE_2D,
-        GL_TEXTURE_WRAP_T,
-        GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glUniform1i(
         frontbuffer_texture_uniform_location,
