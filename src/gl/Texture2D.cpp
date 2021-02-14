@@ -24,7 +24,8 @@ namespace GL
     template<typename T>
     void Texture2D<T>::Create(
         const uint32_t width,
-        const uint32_t height)
+        const uint32_t height,
+        const std::vector<T>& data)
     {
         created = true;
 

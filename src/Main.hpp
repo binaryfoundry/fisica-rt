@@ -20,8 +20,8 @@ private:
     Angles orientation;
     std::unique_ptr<Camera> camera;
 
-    std::unique_ptr<GL::Texture2D<GL::TexDataFloatRGBA>> environment;
-    std::unique_ptr<GL::Texture2D<GL::TexDataByteRGBA>> noise;
+    std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> environment;
+    std::unique_ptr<GL::Texture2D<TexDataByteRGBA>> noise;
 
 public:
     void Init();

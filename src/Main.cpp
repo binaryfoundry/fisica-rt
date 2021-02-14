@@ -26,8 +26,22 @@ void Main::Init()
 {
     camera = std::make_unique<Camera>();
 
-    environment = std::make_unique<GL::Texture2D<GL::TexDataFloatRGBA>>();
-    noise = std::make_unique<GL::Texture2D<GL::TexDataByteRGBA>>();
+    environment = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>();
+    noise = std::make_unique<GL::Texture2D<TexDataByteRGBA>>();
+
+    uint32_t noise_width;
+    uint32_t noise_height;
+    std::vector<TexDataByteRGBA> noise_data;
+
+    FileLoadTexture2D_RGBA8(
+        "blue_noise_128.png",
+        noise_width,
+        noise_height,
+        noise_data);
+
+    noise->Create(
+        noise_width,
+        noise_height, static_cast<std::vector<TexDataByteRGBA>>(noise_data));
 
     render.Init(
         1280,

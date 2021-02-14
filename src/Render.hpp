@@ -29,7 +29,7 @@ private:
     GLuint raytracing_shader_program = 0;
     GLuint raytracing_transform_uniform_location = 0;
 
-    std::unique_ptr<GL::FrameBuffer<GL::TexDataFloatRGBA>> framebuffer;
+    std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> framebuffer;
     std::unique_ptr<GL::UniformBuffer<Transform>> transform;
 
     void Render::DrawQuad();
@@ -45,7 +45,7 @@ public:
         const uint32_t window_width,
         const uint32_t window_height,
         const std::unique_ptr<Camera>& camera,
-        const std::unique_ptr<GL::Texture2D<GL::TexDataFloatRGBA>>& environment,
-        const std::unique_ptr<GL::Texture2D<GL::TexDataByteRGBA>>& noise);
+        const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& environment,
+        const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise);
 };
 

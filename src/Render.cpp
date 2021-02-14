@@ -71,7 +71,7 @@ void Render::Init(
         raytracing_shader_program,
         "transform");
 
-    framebuffer = std::make_unique<GL::FrameBuffer<GL::TexDataFloatRGBA>>();
+    framebuffer = std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
     transform = std::make_unique<GL::UniformBuffer<Transform>>();
 
     framebuffer->Create(framebuffer_width, framebuffer_height, true);
@@ -98,8 +98,8 @@ void Render::Draw(
     const uint32_t window_width,
     const uint32_t window_height,
     const std::unique_ptr<Camera>& camera,
-    const std::unique_ptr<GL::Texture2D<GL::TexDataFloatRGBA>>& environment,
-    const std::unique_ptr<GL::Texture2D<GL::TexDataByteRGBA>>& noise)
+    const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& environment,
+    const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise)
 {
     camera->Validate();
 

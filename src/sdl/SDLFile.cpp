@@ -3,6 +3,7 @@
 #include "SDL.hpp"
 
 #include <iostream>
+#include <assert.h>
 
 #if defined(EMSCRIPTEN)
 
@@ -112,13 +113,12 @@ std::string File::ReadString()
 
 void FileLoadTexture2D_RGBA8(
     std::string resource_id,
-    uint8_t& bpp,
     uint32_t& width,
     uint32_t& height,
-    std::unique_ptr<std::vector<uint8_t>>& data)
+    std::vector<TexDataByteRGBA>& data)
 {
     std::string file_path = resource_id;
-    file_path = std::string("resources/").append(file_path);
+    file_path = std::string("files/").append(file_path);
 
     SDL_Surface* surface_raw = IMG_Load(
         file_path.c_str());
@@ -153,15 +153,18 @@ void FileLoadTexture2D_RGBA8(
     SDL_FreeSurface(
         surface_raw);
 
-    bpp = surface_converted->format->BytesPerPixel;
+    uint8_t bpp = surface_converted->format->BytesPerPixel;
+
+    assert(bpp == 4);
+
     width = surface_converted->w;
     height = surface_converted->h;
     uint8_t* pixels = static_cast<uint8_t*>(surface_converted->pixels);
 
     size_t total_size = width * height * bpp;
-    data->resize(total_size);
+    data.resize(total_size);
 
-    memcpy(&(*data)[0], pixels, total_size);
+    memcpy(&data[0], pixels, total_size);
 
     SDL_FreeSurface(
         surface_converted);

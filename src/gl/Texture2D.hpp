@@ -23,14 +23,14 @@ namespace GL
 
         uint32_t width;
         uint32_t height;
-        std::vector<T> data;
 
         Texture2D();
         virtual ~Texture2D();
 
         void Create(
             const uint32_t width,
-            const uint32_t height);
+            const uint32_t height,
+            const std::vector<T>& data);
 
         void Delete();
     };
