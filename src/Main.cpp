@@ -36,7 +36,7 @@ void Main::Init()
     std::vector<TexDataByteRGBA> noise_data;
 
     FileLoadTexture2D_RGBA8(
-        "files/blue_noise_128.png",
+        "files/output_128x128_tri.bmp",
         noise_width,
         noise_height,
         noise_data);

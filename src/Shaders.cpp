@@ -171,7 +171,7 @@ std::string raytracing_fragment_shader_string_test =
         Ray r = Ray_screen(v_texcoord);
         vec3 c = environment_emissive(r.direction);
 
-        out_color = vec4(c * exposure.x , 1.0);
+        out_color = vec4(c * rand() * exposure.x , 1.0);
     })";
 
 std::string raytracing_fragment_shader_string =
