@@ -80,9 +80,9 @@ namespace GL
     template<>
     void Texture2D<TexDataByteRGBA>::SetFormat()
     {
-        gl_internal_format = GL_RGBA;
-        gl_format = GL_RGBA;
         gl_type = GL_UNSIGNED_BYTE;
+        gl_format = GL_RGBA;
+        gl_internal_format = GL_RGBA8;
     };
 
     template<>
