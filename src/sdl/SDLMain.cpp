@@ -206,7 +206,7 @@ failed:
     egl_surface = surface;
     egl_context = context;
 
-    const auto swap_interval = eglSwapInterval(egl_display, 1);
+    const auto swap_interval = eglSwapInterval(egl_display, 0);
 
     //SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
