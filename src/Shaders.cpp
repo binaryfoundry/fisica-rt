@@ -86,7 +86,8 @@ std::string raytracing_fragment_shader_string_test =
     #define SAMPLES 4
 
     in vec2 v_texcoord;
-    uniform sampler2D noise_sampler;
+    uniform sampler2D noise_sampler_0;
+    uniform sampler2D noise_sampler_1;
     uniform sampler2D environment_sampler;
     uniform sampler2D scene_sampler;
     layout(location = 0) out vec4 out_color;
@@ -112,17 +113,26 @@ std::string raytracing_fragment_shader_string_test =
         cos(PHI), -sin(PHI),
         sin(PHI), cos(PHI)) * PHI;
 
-    vec2 rand_state;
+    vec2 rand_0_state;
+    vec2 rand_1_state;
 
     void rand_init() {
-        rand_state = vec2(1.0);
+        rand_0_state = vec2(1.0);
+        rand_1_state = vec2(PHI);
     }
 
     float rand() {
         vec2 coords = gl_FragCoord.xy /
-            vec2(textureSize(noise_sampler, 0)) + rand_state;
-        rand_state = rand_trans * rand_state;
-        return texture(noise_sampler, coords).x;
+            vec2(textureSize(noise_sampler_0, 0)) + rand_0_state;
+        rand_0_state = rand_trans * rand_0_state;
+        return texture(noise_sampler_0, coords).x;
+    }
+
+    vec2 rand2() {
+        vec2 coords = gl_FragCoord.xy /
+            vec2(textureSize(noise_sampler_1, 0)) + rand_1_state;
+        rand_1_state = rand_trans * rand_1_state;
+        return vec2(rand(), texture(noise_sampler_1, coords).x);
     }
 
     struct Ray {
@@ -139,7 +149,7 @@ std::string raytracing_fragment_shader_string_test =
         vec4 v = vec4(0.0, size * 2.0 * aspect, 0.0, 1.0);
         vec4 c = vec4(-size, -size * aspect, -1.5, 1.0);
 
-        //coords += rand2() * viewport.zw;
+        coords += rand2() / viewport.zw;
 
         h = h * view;
         v = v * view;

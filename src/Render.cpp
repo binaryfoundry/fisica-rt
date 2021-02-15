@@ -71,9 +71,13 @@ void Render::Init(
         raytracing_shader_program,
         "transform");
 
-    raytracing_noise_texture_uniform_location = glGetUniformLocation(
+    raytracing_noise_0_texture_uniform_location = glGetUniformLocation(
         raytracing_shader_program,
-        "noise_sampler");
+        "noise_sampler_0");
+
+    raytracing_noise_1_texture_uniform_location = glGetUniformLocation(
+        raytracing_shader_program,
+        "noise_sampler_1");
 
     raytracing_environment_texture_uniform_location = glGetUniformLocation(
         raytracing_shader_program,
@@ -112,7 +116,8 @@ void Render::Draw(
     const float exposure,
     const std::unique_ptr<Camera>& camera,
     const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& environment,
-    const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise,
+    const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise_0,
+    const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise_1,
     const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& scene)
 {
     camera->Validate();
@@ -169,7 +174,7 @@ void Render::Draw(
 
     glBindTexture(
         GL_TEXTURE_2D,
-        noise->gl_texture_handle);
+        noise_0->gl_texture_handle);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -177,7 +182,25 @@ void Render::Draw(
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     glUniform1i(
-        raytracing_noise_texture_uniform_location,
+        raytracing_noise_0_texture_uniform_location,
+        0);
+
+    // ...
+
+    glActiveTexture(
+        GL_TEXTURE0);
+
+    glBindTexture(
+        GL_TEXTURE_2D,
+        noise_1->gl_texture_handle);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glUniform1i(
+        raytracing_noise_1_texture_uniform_location,
         0);
 
     // ...

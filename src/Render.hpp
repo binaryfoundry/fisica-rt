@@ -28,7 +28,8 @@ private:
 
     GLuint raytracing_shader_program = 0;
     GLuint raytracing_transform_uniform_location = 0;
-    GLuint raytracing_noise_texture_uniform_location = 0;
+    GLuint raytracing_noise_0_texture_uniform_location = 0;
+    GLuint raytracing_noise_1_texture_uniform_location = 0;
     GLuint raytracing_environment_texture_uniform_location = 0;
     GLuint raytracing_scene_texture_uniform_location = 0;
 
@@ -50,7 +51,8 @@ public:
         const float exposure,
         const std::unique_ptr<Camera>& camera,
         const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& environment,
-        const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise,
+        const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise_0,
+        const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise_1,
         const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& scene);
 };
 

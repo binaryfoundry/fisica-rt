@@ -29,22 +29,36 @@ void Main::Init()
 {
     camera = std::make_unique<Camera>();
 
-    noise = std::make_unique<GL::Texture2D<TexDataByteRGBA>>();
-
     uint32_t noise_width;
     uint32_t noise_height;
-    std::vector<TexDataByteRGBA> noise_data;
+
+    noise_0 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>();
+    noise_1 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>();
+
+    std::vector<TexDataByteRGBA> noise_data_0;
+    std::vector<TexDataByteRGBA> noise_data_1;
 
     FileLoadTexture2D_RGBA8(
         "files/output_128x128_tri.bmp",
         noise_width,
         noise_height,
-        noise_data);
+        noise_data_0);
 
-    noise->Create(
+    noise_0->Create(
         noise_width,
         noise_height,
-        noise_data);
+        noise_data_0);
+
+    FileLoadTexture2D_RGBA8(
+        "files/output_256x256_tri.bmp",
+        noise_width,
+        noise_height,
+        noise_data_1);
+
+    noise_1->Create(
+        noise_width,
+        noise_height,
+        noise_data_1);
 
     environment = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>();
 
@@ -98,7 +112,8 @@ void Main::Init()
 void Main::Deinit()
 {
     environment->Delete();
-    noise->Delete();
+    noise_0->Delete();
+    noise_1->Delete();
 
     render.Deinit();
     gui.Deinit();
@@ -143,7 +158,8 @@ void Main::Update()
         exposure,
         camera,
         environment,
-        noise,
+        noise_0,
+        noise_1,
         scene);
 
     gui.Draw(
