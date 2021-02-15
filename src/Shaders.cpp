@@ -113,13 +113,8 @@ std::string raytracing_fragment_shader_string_test =
         cos(PHI), -sin(PHI),
         sin(PHI), cos(PHI)) * PHI;
 
-    vec2 rand_0_state;
-    vec2 rand_1_state;
-
-    void rand_init() {
-        rand_0_state = vec2(1.0);
-        rand_1_state = vec2(PHI);
-    }
+    vec2 rand_0_state = vec2(1.0, PHI);
+    vec2 rand_1_state = vec2(PHI, 1.0);
 
     float rand() {
         vec2 coords = gl_FragCoord.xy /
@@ -181,8 +176,6 @@ std::string raytracing_fragment_shader_string_test =
     }
 
     void main() {
-        rand_init();
-
         Ray r = Ray_screen(v_texcoord);
         vec3 e = environment_emissive(r.direction);
 
