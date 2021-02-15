@@ -63,7 +63,7 @@ void Render::Init(
 
     raytracing_shader_program = GL::LinkShader(
         raytracing_vertex_shader_string,
-        raytracing_fragment_shader_string_test);
+        raytracing_fragment_shader_string);
 
     GL::CheckError();
 
