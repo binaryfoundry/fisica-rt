@@ -81,6 +81,9 @@ std::string raytracing_fragment_shader_string_test =
     #endif
 
     #define PI 3.1415926535897932384626433832795
+    #define PHI 1.61803398875
+
+    #define SAMPLES 4
 
     in vec2 v_texcoord;
     uniform sampler2D noise_sampler;
@@ -98,26 +101,28 @@ std::string raytracing_fragment_shader_string_test =
         vec4 exposure;
     };
 
-    vec2 spherical_to_equirect(vec3 n)
-    {
-        n = normalize(n);
+    vec2 spherical_to_equirect(vec3 n) {
         vec2 uv = vec2(atan(n.z, n.x), asin(n.y));
         uv *= vec2(0.1591, 0.3183);
         uv += 0.5;
         return uv;
     }
 
-    float rand_seed;
+    const mat2 rand_trans = mat2(
+        cos(PHI), -sin(PHI),
+        sin(PHI), cos(PHI)) * PHI;
+
+    vec2 rand_state;
 
     void rand_init() {
-        vec2 coords = gl_FragCoord.xy /
-            vec2(textureSize(noise_sampler, 0));
-        rand_seed = texture(noise_sampler, coords).x;
+        rand_state = vec2(1.0);
     }
 
     float rand() {
-        rand_seed = mod(rand_seed * 1.1234567893490423, 13.0);
-        return fract(sin(rand_seed += 0.1) * 43758.5453123);
+        vec2 coords = gl_FragCoord.xy /
+            vec2(textureSize(noise_sampler, 0)) + rand_state;
+        rand_state = rand_trans * rand_state;
+        return texture(noise_sampler, coords).x;
     }
 
     struct Ray {
@@ -169,9 +174,17 @@ std::string raytracing_fragment_shader_string_test =
         rand_init();
 
         Ray r = Ray_screen(v_texcoord);
-        vec3 c = environment_emissive(r.direction);
+        vec3 e = environment_emissive(r.direction);
 
-        out_color = vec4(c * rand() * exposure.x , 1.0);
+        vec3 acc = vec3(0.0, 0.0, 0.0);
+
+        for (int s = 0; s < SAMPLES; s++) {
+            acc += e * rand();
+        }
+
+        acc /= float(SAMPLES);
+
+        out_color = vec4(acc * exposure.x , 1.0);
     })";
 
 std::string raytracing_fragment_shader_string =
