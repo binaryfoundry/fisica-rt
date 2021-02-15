@@ -29,8 +29,8 @@ static bool sdl_poll_events();
 
 static std::map<int32_t, SDL_GameController*> sdl_controllers;
 
-static int window_width = 320 * 4;
-static int window_height = 240 * 4;
+static int window_width = 1280;
+static int window_height = 720;
 
 static Main m;
 
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 static int sdl_init_graphics()
 {
     sdl_window = SDL_CreateWindow(
-        "ZXS",
+        "RTOW-GLSL",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
         window_width,
