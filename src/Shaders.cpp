@@ -83,10 +83,6 @@ std::string raytracing_fragment_shader_string =
     #define SAMPLES 4
 
     in vec2 v_texcoord;
-    uniform sampler2D noise_sampler_0;
-    uniform sampler2D noise_sampler_1;
-    uniform sampler2D environment_sampler;
-    uniform sampler2D scene_sampler;
     layout(location = 0) out vec4 out_color;
 
     layout(std140) uniform transform{
@@ -99,12 +95,8 @@ std::string raytracing_fragment_shader_string =
         vec4 exposure;
     };
 
-    vec2 spherical_to_equirect(vec3 n) {
-        vec2 uv = vec2(atan(n.z, n.x), asin(n.y));
-        uv *= vec2(0.1591, 0.3183);
-        uv += 0.5;
-        return uv;
-    }
+    uniform sampler2D rand_sampler_0;
+    uniform sampler2D rand_sampler_1;
 
     const mat2 rand_trans = mat2(
         cos(PHI), -sin(PHI),
@@ -115,16 +107,16 @@ std::string raytracing_fragment_shader_string =
 
     float rand() {
         vec2 coords = gl_FragCoord.xy /
-            vec2(textureSize(noise_sampler_0, 0)) + rand_0_state;
+            vec2(textureSize(rand_sampler_0, 0)) + rand_0_state;
         rand_0_state = rand_trans * rand_0_state;
-        return texture(noise_sampler_0, coords).x;
+        return texture(rand_sampler_0, coords).x;
     }
 
     vec2 rand2() {
         vec2 coords = gl_FragCoord.xy /
-            vec2(textureSize(noise_sampler_1, 0)) + rand_1_state;
+            vec2(textureSize(rand_sampler_1, 0)) + rand_1_state;
         rand_1_state = rand_trans * rand_1_state;
-        return vec2(rand(), texture(noise_sampler_1, coords).x);
+        return vec2(rand(), texture(rand_sampler_1, coords).x);
     }
 
     struct Ray {
@@ -151,6 +143,8 @@ std::string raytracing_fragment_shader_string =
         return Ray(camera_position.xyz, normalize(direction.xyz));
     }
 
+    uniform sampler2D scene_sampler;
+
     struct Sphere {
         vec4 geom;       // xyz = position, w = radius
         vec4 albedo;     // xyz = rgb
@@ -166,10 +160,19 @@ std::string raytracing_fragment_shader_string =
         vec2 refraction; // x = refractive, y = refract index
     };
 
+    uniform sampler2D environment_sampler;
+
+    vec2 env_spherical_to_equirect(vec3 n) {
+        vec2 uv = vec2(atan(n.z, n.x), asin(n.y));
+        uv *= vec2(0.1591, 0.3183);
+        uv += 0.5;
+        return uv;
+    }
+
     vec3 environment_emissive(vec3 n) {
         return texture(
             environment_sampler,
-            spherical_to_equirect(n)).xyz;
+            env_spherical_to_equirect(n)).xyz;
     }
 
     void main() {

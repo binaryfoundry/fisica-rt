@@ -73,11 +73,11 @@ void Render::Init(
 
     raytracing_noise_0_texture_uniform_location = glGetUniformLocation(
         raytracing_shader_program,
-        "noise_sampler_0");
+        "rand_sampler_0");
 
     raytracing_noise_1_texture_uniform_location = glGetUniformLocation(
         raytracing_shader_program,
-        "noise_sampler_1");
+        "rand_sampler_1");
 
     raytracing_environment_texture_uniform_location = glGetUniformLocation(
         raytracing_shader_program,
