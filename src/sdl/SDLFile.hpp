@@ -27,9 +27,3 @@ public:
 
     size_t Length();
 };
-
-void FileLoadTexture2D_RGBA8(
-    std::string resource_id,
-    uint32_t& width,
-    uint32_t& height,
-    std::vector<TexDataByteRGBA>& data);
