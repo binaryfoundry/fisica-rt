@@ -85,10 +85,14 @@ void Render::Init(
         raytracing_shader_program,
         "scene_sampler");
 
-    framebuffer = std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
     transform = std::make_unique<GL::UniformBuffer<Transform>>();
 
-    framebuffer->Create(framebuffer_width, framebuffer_height, true);
+    framebuffer = std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
+
+    framebuffer->Create(
+        framebuffer_width,
+        framebuffer_height,
+        true);
 
     GL::CheckError();
 }
