@@ -63,21 +63,19 @@ void Main::Init()
     environment = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>();
 
     int env_width, env_height, env_channels;
-    float* env_raw_data = stbi_loadf(
+    auto* env_raw_data = reinterpret_cast<TexDataFloatRGBA*>(stbi_loadf(
         "files/loc00184-22-2k.hdr",
         &env_width,
         &env_height,
         &env_channels,
-        STBI_rgb_alpha);
+        STBI_rgb_alpha));
     size_t env_raw_data_size =
         env_width * env_height;
-
     std::vector<TexDataFloatRGBA> env_data(
-        env_width * env_height);
-    memcpy(
-        &env_data[0],
+        env_raw_data_size);
+    env_data.assign(
         env_raw_data,
-        env_width * env_height * 4 * sizeof(float));
+        env_raw_data + env_raw_data_size);
     stbi_image_free(env_raw_data);
 
     environment->Create(
