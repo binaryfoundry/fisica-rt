@@ -65,9 +65,9 @@ void Render::Init(
 
     GL::CheckError();
 
-    raytracing_transform_uniform_location = glGetUniformBlockIndex(
+    raytracing_camera_uniform_location = glGetUniformBlockIndex(
         raytracing_shader_program,
-        "transform");
+        "camera");
 
     raytracing_noise_0_texture_uniform_location = glGetUniformLocation(
         raytracing_shader_program,
@@ -85,7 +85,7 @@ void Render::Init(
         raytracing_shader_program,
         "scene_sampler");
 
-    transform = std::make_unique<GL::UniformBuffer<Transform>>();
+    camera_uniforms = std::make_unique<GL::UniformBuffer<CameraUniforms>>();
 
     framebuffer = std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
 
@@ -100,7 +100,7 @@ void Render::Init(
 void Render::Deinit()
 {
     framebuffer->Delete();
-    transform->Delete();
+    camera_uniforms->Delete();
 
     glDeleteProgram(
         frontbuffer_shader_program);
@@ -125,8 +125,6 @@ void Render::Draw(
     const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise_1,
     const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& scene)
 {
-    camera->Validate();
-
     glDisable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
@@ -145,32 +143,27 @@ void Render::Draw(
         raytracing_shader_program);
 
     camera->Validate();
-
-    transform->object.view =
+    camera_uniforms->object.view =
         camera->View();
-    transform->object.projection =
+    camera_uniforms->object.projection =
         camera->Projection();
-    transform->object.inverse_projection =
-        camera->InverseProjection();
-    transform->object.inverse_view_rotation =
-        camera->InverseViewRotation();
-    transform->object.camera_position =
-        glm::vec4(camera->Position(), 1.0);
-    transform->object.viewport =
-        glm::vec4(0.0f, 0.0f, framebuffer->Width(), framebuffer->Height());
-    transform->object.exposure =
-        glm::vec4(exposure);
-    transform->Update();
+    camera_uniforms->object.viewport =
+        camera->viewport;
+    camera_uniforms->object.position = glm::vec4(
+        camera->position, 1.0f);
+    camera_uniforms->object.exposure = glm::vec4(
+        camera->exposure, 0.0, 0.0, 0.0);
+    camera_uniforms->Update();
 
     glBindBufferBase(
         GL_UNIFORM_BUFFER,
-        raytracing_transform_uniform_location,
-        transform->gl_buffer_handle);
+        raytracing_camera_uniform_location,
+        camera_uniforms->gl_buffer_handle);
 
     glUniformBlockBinding(
         raytracing_shader_program,
-        raytracing_transform_uniform_location,
-        raytracing_transform_uniform_location);
+        raytracing_camera_uniform_location,
+        raytracing_camera_uniform_location);
 
     // ...
 
@@ -355,6 +348,9 @@ void Render::Draw(
     glBindTexture(
         GL_TEXTURE_2D,
         NULL);
+
+
+    GL::CheckError();
 }
 
 void Render::DrawQuad()

@@ -61,7 +61,7 @@ void Main::Update()
 
     ImGui::SliderFloat(
         "Exposure",
-        &exposure,
+        &camera->exposure,
         0,
         2);
 
@@ -71,19 +71,18 @@ void Main::Update()
         static_cast<float>(sdl_window_width) /
         static_cast<float>(sdl_window_height);
 
-    orientation.yaw +=
+    camera->orientation.yaw +=
         static_cast<float>(sdl_captured_mouse_delta_x) /
         (mouse_sensitivity * window_aspect_ratio);
 
-    orientation.pitch +=
+    camera->orientation.pitch +=
         static_cast<float>(-sdl_captured_mouse_delta_y) /
         (mouse_sensitivity);
 
-    camera->SetPosition(
-        position);
-
-    camera->SetAngles(
-        orientation);
+    camera->viewport = glm::vec4(
+        0, 0,
+        raytracing_framebuffer_width,
+        raytracing_framebuffer_height);
 
     // TODO write scene data to texture
     scene->Update();

@@ -85,13 +85,11 @@ std::string raytracing_fragment_shader_string =
     in vec2 v_texcoord;
     layout(location = 0) out vec4 out_color;
 
-    layout(std140) uniform transform{
+    layout(std140) uniform camera{
         mat4 view;
         mat4 projection;
-        mat4 inverse_projection;
-        mat4 inverse_view_rotation;
         vec4 viewport;
-        vec4 camera_position;
+        vec4 position;
         vec4 exposure;
     };
 
@@ -140,7 +138,7 @@ std::string raytracing_fragment_shader_string =
         c = c * view;
 
         vec4 direction = c + coords.x * h + coords.y * v;
-        return Ray(camera_position.xyz, normalize(direction.xyz));
+        return Ray(position.xyz, normalize(direction.xyz));
     }
 
     uniform sampler2D scene_sampler;

@@ -12,14 +12,12 @@
 #include <vector>
 #include <memory>
 
-struct Transform
+struct CameraUniforms
 {
     glm::mat4 view;
     glm::mat4 projection;
-    glm::mat4 inverse_projection;
-    glm::mat4 inverse_view_rotation;
     glm::vec4 viewport;
-    glm::vec4 camera_position;
+    glm::vec4 position;
     glm::vec4 exposure;
 };
 
@@ -38,14 +36,14 @@ private:
     GLuint frontbuffer_texture_uniform_location = 0;
 
     GLuint raytracing_shader_program = 0;
-    GLuint raytracing_transform_uniform_location = 0;
+    GLuint raytracing_camera_uniform_location = 0;
     GLuint raytracing_noise_0_texture_uniform_location = 0;
     GLuint raytracing_noise_1_texture_uniform_location = 0;
     GLuint raytracing_environment_texture_uniform_location = 0;
     GLuint raytracing_scene_texture_uniform_location = 0;
 
     std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> framebuffer;
-    std::unique_ptr<GL::UniformBuffer<Transform>> transform;
+    std::unique_ptr<GL::UniformBuffer<CameraUniforms>> camera_uniforms;
 
     void DrawQuad();
 
