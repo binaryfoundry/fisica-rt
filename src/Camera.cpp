@@ -70,7 +70,7 @@ void Camera::Perspective(
         f / viewport_ratio, 0, 0, 0,
         0, f, 0, 0,
         0, 0, (far_plane + near_plane) / (near_plane - far_plane), -1,
-        0, 0, 2*far_plane*near_plane / (near_plane - far_plane), 0
+        0, 0, 2 * far_plane*near_plane / (near_plane - far_plane), 0
     };
 
     projection = glm::make_mat4(matrix_values);
@@ -88,7 +88,8 @@ void Camera::Strafe(float speed)
     position += strafe_direction * speed;
 }
 
-void Camera::LookAt(glm::vec3 target) {
+void Camera::LookAt(glm::vec3 target)
+{
     view = glm::lookAt(
         position,
         target,

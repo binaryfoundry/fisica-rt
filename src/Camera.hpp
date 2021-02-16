@@ -20,7 +20,6 @@ private:
     float near_plane = 0.1f;
     float far_plane = 2200.0f;
 
-public:
     glm::mat4x4 view;
     glm::mat4x4 projection;
     glm::mat4x4 view_projection;
@@ -32,7 +31,10 @@ public:
     glm::vec3 translation;
     glm::vec3 direction;
 
+public:
+
     Camera();
+    Camera(const Camera&) = delete;
 
     const glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
 
@@ -52,4 +54,15 @@ public:
     void Strafe(float speed);
 
     void Validate();
+
+    glm::mat4x4 View() { return view; };
+    glm::mat4x4 Projection() { return projection; };
+    glm::mat4x4 ViewProjection() { return view_projection; };
+    glm::mat4x4 InverseProjection() { return inverse_projection; };
+    glm::mat4x4 InverseViewProjection() { return inverse_view_projection; };
+    glm::mat4x4 ViewRotation() { return view_rotation; };
+    glm::mat4x4 InverseViewRotation() { return inverse_view_rotation; };
+    glm::vec3 Position() { return position; };
+    glm::vec3 Translation() { return translation; };
+    glm::vec3 Direction() { return direction; };
 };
