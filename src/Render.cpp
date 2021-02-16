@@ -101,6 +101,9 @@ void Render::Deinit()
     glDeleteProgram(
         frontbuffer_shader_program);
 
+    glDeleteProgram(
+        raytracing_shader_program);
+
     glDeleteBuffers(
         1, &quad_vertex_buffer);
 

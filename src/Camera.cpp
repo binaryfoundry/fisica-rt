@@ -38,9 +38,9 @@ void Camera::Perspective(
     float viewport_ratio,
     float fov)
 {
-    float f = 1.0f / std::tanf(fov * (PIf / 360.0f));
+    const float f = 1.0f / std::tanf(fov * (PIf / 360.0f));
 
-    float matrix_values[16] =
+    const float matrix_values[16] =
     {
         f / viewport_ratio, 0, 0, 0,
         0, f, 0, 0,
@@ -48,16 +48,20 @@ void Camera::Perspective(
         0, 0, 2 * far_plane*near_plane / (near_plane - far_plane), 0
     };
 
-    projection = glm::make_mat4(matrix_values);
+    projection = glm::make_mat4(
+        matrix_values);
 }
 
 void Camera::Strafe(float speed)
 {
-    glm::vec3 strafe_direction = glm::cross(up, direction);
+    glm::vec3 strafe_direction = glm::cross(
+        up,
+        direction);
 
     if (glm::length(strafe_direction) > 0.001f)
     {
-        strafe_direction = glm::normalize(strafe_direction);
+        strafe_direction = glm::normalize(
+            strafe_direction);
     }
 
     position += strafe_direction * speed;
@@ -70,18 +74,29 @@ void Camera::LookAt(glm::vec3 target)
         target,
         up);
 
-    direction = normalize(position - target);
+    direction = normalize(
+        position - target);
 }
 
 void Camera::Reorient()
 {
     const glm::quat temp_1 = pitch * yaw;
     const glm::quat temp_2 = temp_1 * roll;
-    view = mat4_cast(temp_2);
-    view = translate(view, translation);
-    const glm::mat4x4 pitch_matrix = mat4_cast(pitch);
+
+    view = mat4_cast(
+        temp_2);
+
+    view = translate(
+        view,
+        translation);
+
+    const glm::mat4x4 pitch_matrix = mat4_cast(
+        pitch);
+
     const glm::quat temp_3 = yaw * pitch;
-    const glm::mat4x4 temp_matrix = mat4_cast(temp_3);
+
+    const glm::mat4x4 temp_matrix = mat4_cast(
+        temp_3);
 
     direction = glm::vec3(
         temp_matrix[2][0],
@@ -95,10 +110,13 @@ void Camera::Validate()
     view_rotation[3][0] = 0.0;
     view_rotation[3][1] = 0.0;
     view_rotation[3][2] = 0.0;
-    inverse_view_rotation = glm::inverse(view_rotation);
+    inverse_view_rotation = glm::inverse(
+        view_rotation);
 
     view_projection = projection * view;
-    inverse_view_projection = glm::inverse(view_projection);
-    inverse_projection = glm::inverse(projection);
+    inverse_view_projection = glm::inverse(
+        view_projection);
+    inverse_projection = glm::inverse(
+        projection);
 }
 
