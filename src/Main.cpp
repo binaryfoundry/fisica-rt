@@ -5,9 +5,6 @@
 
 #include "imgui/imgui.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb/stb_image.h"
-
 //if (backend->IsScanCodeDown(Scancode::SCANCODE_W))
 //{
 //    position += camera->direction * speed;
@@ -29,68 +26,19 @@ void Main::Init()
 {
     camera = std::make_unique<Camera>();
 
-    uint32_t noise_width;
-    uint32_t noise_height;
-
     noise_0 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>();
+    noise_0->Load("files/output_256x256_tri.bmp");
+
     noise_1 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>();
-
-    std::vector<TexDataByteRGBA> noise_data_0;
-    std::vector<TexDataByteRGBA> noise_data_1;
-
-    FileLoadTexture2D_RGBA8(
-        "files/output_128x128_tri.bmp",
-        noise_width,
-        noise_height,
-        noise_data_0);
-
-    noise_0->Create(
-        noise_width,
-        noise_height,
-        noise_data_0);
-
-    FileLoadTexture2D_RGBA8(
-        "files/output_256x256_tri.bmp",
-        noise_width,
-        noise_height,
-        noise_data_1);
-
-    noise_1->Create(
-        noise_width,
-        noise_height,
-        noise_data_1);
+    noise_1->Load("files/output_256x256_tri.bmp");
 
     environment = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>();
-
-    int env_width, env_height, env_channels;
-    auto* env_raw_data = reinterpret_cast<TexDataFloatRGBA*>(stbi_loadf(
-        "files/loc00184-22-2k.hdr",
-        &env_width,
-        &env_height,
-        &env_channels,
-        STBI_rgb_alpha));
-    size_t env_raw_data_size =
-        env_width * env_height;
-    std::vector<TexDataFloatRGBA> env_data(
-        env_raw_data_size);
-    env_data.assign(
-        env_raw_data,
-        env_raw_data + env_raw_data_size);
-    stbi_image_free(env_raw_data);
-
-    environment->Create(
-        env_width,
-        env_height,
-        env_data);
-
-    scene_data = std::make_unique<std::vector<TexDataFloatRGBA>>(
-        scene_data_width * scene_data_height);
+    environment->Load("files/loc00184-22-2k.hdr");
 
     scene = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>();
     scene->Create(
         scene_data_width,
-        scene_data_height,
-        *scene_data);
+        scene_data_height);
 
     render.Init(
         raytracing_framebuffer_width,
@@ -149,7 +97,7 @@ void Main::Update()
     camera->SetPosition(position);
     camera->SetAngles(orientation);
 
-    scene->Update(*scene_data);
+    //scene->Update(*scene_data);
 
     render.Draw(
         sdl_window_width,

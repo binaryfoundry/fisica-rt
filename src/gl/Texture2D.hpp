@@ -21,21 +21,26 @@ namespace GL
 
         void SetFormat();
 
+        std::shared_ptr<std::vector<T>> data;
+
     public:
         GLuint gl_texture_handle;
 
         Texture2D();
+        Texture2D(const Texture2D&) = delete;
+
         virtual ~Texture2D();
 
         void Create(
             const uint32_t width,
-            const uint32_t height,
-            const std::vector<T>& data);
+            const uint32_t height);
 
-        void Update(const std::vector<T>& data);
+        void Update();
 
         uint32_t Width() { return width; }
         uint32_t Height() { return height; }
+
+        void Load(const std::string file);
 
         void Delete();
     };
