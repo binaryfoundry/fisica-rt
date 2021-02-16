@@ -78,7 +78,11 @@ void Main::Update()
         "Controls",
         "Cursor keys, Ctrl.");
 
-    ImGui::SliderFloat("Exposure", &exposure, 0, 2);
+    ImGui::SliderFloat(
+        "Exposure",
+        &exposure,
+        0,
+        2);
 
     ImGui::End();
 
@@ -94,8 +98,11 @@ void Main::Update()
         static_cast<float>(-sdl_captured_mouse_delta_y) /
         (mouse_sensitivity);
 
-    camera->SetPosition(position);
-    camera->SetAngles(orientation);
+    camera->SetPosition(
+        position);
+
+    camera->SetAngles(
+        orientation);
 
     // TODO write scene data to texture
     scene->Update();
