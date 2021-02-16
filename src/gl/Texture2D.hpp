@@ -40,6 +40,11 @@ namespace GL
         uint32_t Width() { return width; }
         uint32_t Height() { return height; }
 
+        std::shared_ptr<std::vector<T>> Data()
+        {
+            return data;
+        };
+
         void Load(const std::string file);
 
         void Delete();
