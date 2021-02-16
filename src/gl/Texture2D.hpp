@@ -26,7 +26,13 @@ namespace GL
     public:
         GLuint gl_texture_handle;
 
-        Texture2D();
+        Texture2D(
+            const std::string& file_path);
+
+        Texture2D(
+            const uint32_t width,
+            const uint32_t height);
+
         Texture2D(const Texture2D&) = delete;
 
         virtual ~Texture2D();

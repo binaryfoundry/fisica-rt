@@ -26,17 +26,16 @@ void Main::Init()
 {
     camera = std::make_unique<Camera>();
 
-    noise_0 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>();
-    noise_0->Load("files/output_256x256_tri.bmp");
+    noise_0 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>(
+        "files/output_256x256_tri.bmp");
 
-    noise_1 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>();
-    noise_1->Load("files/output_256x256_tri.bmp");
+    noise_1 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>(
+        "files/output_256x256_tri.bmp");
 
-    environment = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>();
-    environment->Load("files/loc00184-22-2k.hdr");
+    environment = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(
+        "files/loc00184-22-2k.hdr");
 
-    scene = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>();
-    scene->Create(
+    scene = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(
         scene_data_width,
         scene_data_height);
 
@@ -97,7 +96,8 @@ void Main::Update()
     camera->SetPosition(position);
     camera->SetAngles(orientation);
 
-    //scene->Update(*scene_data);
+    // TODO write scene data to texture
+    scene->Update();
 
     render.Draw(
         sdl_window_width,

@@ -6,13 +6,33 @@
 namespace GL
 {
     template<>
-    Texture2D<TexDataByteRGBA>::Texture2D()
+    Texture2D<TexDataByteRGBA>::Texture2D(
+        const std::string& file_path)
     {
+        Load(file_path);
     }
 
     template<>
-    Texture2D<TexDataFloatRGBA>::Texture2D()
+    Texture2D<TexDataFloatRGBA>::Texture2D(
+        const std::string& file_path)
     {
+        Load(file_path);
+    }
+
+    template<>
+    Texture2D<TexDataByteRGBA>::Texture2D(
+        const uint32_t width,
+        const uint32_t height)
+    {
+        Create(width, height);
+    }
+
+    template<>
+    Texture2D<TexDataFloatRGBA>::Texture2D(
+        const uint32_t width,
+        const uint32_t height)
+    {
+        Create(width, height);
     }
 
     template<typename T>

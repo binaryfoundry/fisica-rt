@@ -31,7 +31,6 @@ private:
 
     const uint32_t scene_data_width = 4;
     const uint32_t scene_data_height = 1024;
-    std::unique_ptr<std::vector<TexDataFloatRGBA>> scene_data;
 
 public:
     void Init();
