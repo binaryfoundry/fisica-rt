@@ -25,13 +25,13 @@ private:
     uint32_t raytracing_framebuffer_width = 1280;
     uint32_t raytracing_framebuffer_height = 720;
 
+    const uint32_t scene_data_width = 4;
+    const uint32_t scene_data_height = 1024;
+
     std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> environment;
     std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> scene;
     std::unique_ptr<GL::Texture2D<TexDataByteRGBA>> noise_0;
     std::unique_ptr<GL::Texture2D<TexDataByteRGBA>> noise_1;
-
-    const uint32_t scene_data_width = 4;
-    const uint32_t scene_data_height = 1024;
 
 public:
     void Init();
