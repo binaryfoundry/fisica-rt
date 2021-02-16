@@ -75,13 +75,13 @@ void Camera::LookAt(glm::vec3 target)
 
 void Camera::Reorient()
 {
-    glm::quat temp_1 = pitch * yaw;
-    glm::quat temp_2 = temp_1 * roll;
+    const glm::quat temp_1 = pitch * yaw;
+    const glm::quat temp_2 = temp_1 * roll;
     view = mat4_cast(temp_2);
     view = translate(view, translation);
-    glm::mat4x4 pitch_matrix = mat4_cast(pitch);
-    glm::quat temp_3 = yaw * pitch;
-    glm::mat4x4 temp_matrix = mat4_cast(temp_3);
+    const glm::mat4x4 pitch_matrix = mat4_cast(pitch);
+    const glm::quat temp_3 = yaw * pitch;
+    const glm::mat4x4 temp_matrix = mat4_cast(temp_3);
 
     direction = glm::vec3(
         temp_matrix[2][0],
