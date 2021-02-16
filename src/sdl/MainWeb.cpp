@@ -1,4 +1,4 @@
-#include "SDLMainWeb.hpp"
+#include "MainWeb.hpp"
 
 #if defined(EMSCRIPTEN)
 
@@ -7,8 +7,8 @@
 #include "../gl/OpenGL.hpp"
 
 #include "SDL.hpp"
-#include "SDLFile.hpp"
-#include "SDLImgui.hpp"
+#include "File.hpp"
+#include "Imgui.hpp"
 
 #include <iostream>
 #include <functional>

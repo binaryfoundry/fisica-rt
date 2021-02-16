@@ -40,17 +40,17 @@ set(HEADERS_MATH
 
 set(SOURCES_SDL
     src/sdl/SDL.cpp
-    src/sdl/SDLMain.cpp
-    src/sdl/SDLMainWeb.cpp
-    src/sdl/SDLFile.cpp
-    src/sdl/SDLImgui.cpp)
+    src/sdl/Main.cpp
+    src/sdl/MainWeb.cpp
+    src/sdl/File.cpp
+    src/sdl/Imgui.cpp)
 
 set(HEADERS_SDL
     src/sdl/SDL.hpp
-    src/sdl/SDLMain.hpp
-    src/sdl/SDLMainWeb.hpp
-    src/sdl/SDLFile.hpp
-    src/sdl/SDLImgui.hpp)
+    src/sdl/Main.hpp
+    src/sdl/MainWeb.hpp
+    src/sdl/File.hpp
+    src/sdl/Imgui.hpp)
 
 set(SOURCES_GL
     src/gl/OpenGL.cpp
