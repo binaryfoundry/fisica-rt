@@ -66,7 +66,7 @@ namespace GL
 
         if (data == nullptr)
         {
-            data = std::make_shared<std::vector<T>>(
+            data = std::make_unique<std::vector<T>>(
                 width_ * height_);
         }
 
@@ -129,7 +129,7 @@ namespace GL
         size_t raw_data_size =
             t_width * t_height;
 
-        data = std::make_shared<std::vector<TexDataByteRGBA>>(
+        data = std::make_unique<std::vector<TexDataByteRGBA>>(
             raw_data_size);
 
         data->assign(
@@ -160,7 +160,7 @@ namespace GL
         size_t raw_data_size =
             t_width * t_height;
 
-        data = std::make_shared<std::vector<TexDataFloatRGBA>>(
+        data = std::make_unique<std::vector<TexDataFloatRGBA>>(
             raw_data_size);
 
         data->assign(

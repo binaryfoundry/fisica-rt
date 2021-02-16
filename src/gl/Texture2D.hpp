@@ -21,7 +21,7 @@ namespace GL
 
         void SetFormat();
 
-        std::shared_ptr<std::vector<T>> data;
+        std::unique_ptr<std::vector<T>> data;
 
     public:
         GLuint gl_texture_handle;
@@ -46,7 +46,7 @@ namespace GL
         uint32_t Width() { return width; }
         uint32_t Height() { return height; }
 
-        std::shared_ptr<std::vector<T>> Data()
+        std::unique_ptr<std::vector<T>>& Data()
         {
             return data;
         };
