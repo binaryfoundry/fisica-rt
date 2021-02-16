@@ -19,8 +19,6 @@ static const std::vector<uint32_t> quad_indices_data
      0, 1, 2, 2, 3, 0
 };
 
-const float fixed_aspect = 16.0f / 9.0f;
-
 Render::Render()
 {
 }
@@ -273,8 +271,12 @@ void Render::Draw(
         static_cast<float>(window_width) /
         window_height;
 
-    const float aspect = window_aspect / fixed_aspect;
-    const bool wide = window_width / fixed_aspect > window_height;
+    const float framebuffer_ratio =
+        static_cast<float>(framebuffer->Width()) /
+        static_cast<float>(framebuffer->Height());
+
+    const float aspect = window_aspect / framebuffer_ratio;
+    const bool wide = window_width / framebuffer_ratio > window_height;
 
     const glm::vec3 scale = wide ?
         glm::vec3(std::floor(window_width / aspect), window_height, 1) :
