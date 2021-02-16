@@ -20,7 +20,7 @@ set(SOURCES
     "src/Render.cpp"
     "src/Camera.cpp"
     "src/Shaders.cpp"
-    "src/Uniforms.cpp")
+    "src/Sphere.cpp")
 
 set(HEADERS
     "src/Main.hpp"
@@ -28,7 +28,7 @@ set(HEADERS
     "src/Render.hpp"
     "src/Camera.hpp"
     "src/Shaders.hpp"
-    "src/Uniforms.hpp")
+    "src/Sphere.hpp")
 
 set(SOURCES_MATH
     src/math/Math.cpp

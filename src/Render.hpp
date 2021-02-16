@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Camera.hpp"
-#include "Uniforms.hpp"
 
 #include "math/Math.hpp"
 
@@ -12,6 +11,17 @@
 
 #include <vector>
 #include <memory>
+
+struct Transform
+{
+    glm::mat4 view;
+    glm::mat4 projection;
+    glm::mat4 inverse_projection;
+    glm::mat4 inverse_view_rotation;
+    glm::vec4 viewport;
+    glm::vec4 camera_position;
+    glm::vec4 exposure;
+};
 
 class Render
 {
