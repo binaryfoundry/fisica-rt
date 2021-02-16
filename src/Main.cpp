@@ -76,7 +76,7 @@ void Main::Update()
 
     ImGui::LabelText(
         "Controls",
-        "Cursor keys, Ctrl.");
+        "Mouse, WSAD.");
 
     ImGui::SliderFloat(
         "Exposure",
