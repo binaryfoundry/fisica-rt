@@ -112,6 +112,7 @@ void Main::Init()
 void Main::Deinit()
 {
     environment->Delete();
+    scene->Delete();
     noise_0->Delete();
     noise_1->Delete();
 

@@ -20,10 +20,7 @@ namespace GL
     template<typename T>
     Texture2D<T>::~Texture2D()
     {
-        if (created)
-        {
-            assert("Resource not deleted.");
-        }
+        assert(!created);
     }
 
     template<typename T>

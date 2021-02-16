@@ -21,10 +21,7 @@ namespace GL
 
         virtual ~UniformBuffer()
         {
-            if (created)
-            {
-                assert("Resource not deleted.");
-            }
+            assert(!created);
         }
 
         void Delete()

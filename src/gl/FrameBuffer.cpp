@@ -92,10 +92,7 @@ namespace GL
     template <typename T>
     FrameBuffer<T>::~FrameBuffer()
     {
-        if (created)
-        {
-            assert("Resource not deleted.");
-        }
+        assert(!created);
     }
 
     template <typename T>
