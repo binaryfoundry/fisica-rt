@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Math.hpp"
+#include "../math/Math.hpp"
 
 #if !defined (EMSCRIPTEN)
 #include <GLES3/gl31.h>

@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "../Math.hpp"
+#include "../math/Math.hpp"
 
 class File
 {

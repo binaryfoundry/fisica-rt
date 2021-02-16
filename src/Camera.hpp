@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Math.hpp"
+#include "math/Math.hpp"
+#include "math/Angles.hpp"
 
 class Camera
 {

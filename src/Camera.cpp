@@ -14,31 +14,6 @@ void Camera::SetPosition(glm::vec3 position_)
     Reorient();
 }
 
-glm::quat quat_from_axis_angle(
-    glm::vec3 axis,
-    float angle)
-{
-    glm::quat dest;
-    dest.x = axis.x;
-    dest.y = axis.y;
-    dest.z = axis.z;
-
-    float n = std::sqrt(
-        axis.x * axis.x +
-        axis.y * axis.y +
-        axis.z * axis.z);
-
-    // zero-div may occur.
-    float s = (std::sinf(0.5f * angle) / n);
-
-    dest.x *= s;
-    dest.y *= s;
-    dest.z *= s;
-    dest.w = std::cosf(0.5f * angle);
-
-    return dest;
-}
-
 void Camera::SetAngles(
     Angles value) {
 

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Math.hpp"
 #include "Camera.hpp"
 #include "Uniforms.hpp"
+
+#include "math/Math.hpp"
 
 #include "gl/OpenGL.hpp"
 #include "gl/Texture2D.hpp"

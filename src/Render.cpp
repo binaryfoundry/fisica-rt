@@ -140,17 +140,17 @@ void Render::Draw(
     camera->Validate();
 
     transform->object.view =
-        camera->view;
+        camera->View();
     transform->object.projection =
-        camera->projection;
+        camera->Projection();
     transform->object.inverse_projection =
-        camera->inverse_projection;
+        camera->InverseProjection();
     transform->object.inverse_view_rotation =
-        camera->inverse_view_rotation;
+        camera->InverseViewRotation();
+    transform->object.camera_position =
+        glm::vec4(camera->Position(), 1.0);
     transform->object.viewport =
         glm::vec4(0.0f, 0.0f, framebuffer->Width(), framebuffer->Height());
-    transform->object.camera_position =
-        glm::vec4(camera->position, 1.0);
     transform->object.exposure =
         glm::vec4(exposure);
     transform->Update();

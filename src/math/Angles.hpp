@@ -1,35 +1,31 @@
 #pragma once
 
-const double PI = 3.141592653589793;
-const float PIf = 3.141592653589793f;
+#include "Math.hpp"
 
-#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
-#define GLM_ENABLE_EXPERIMENTAL
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <glm/mat2x2.hpp>
-#include <glm/mat3x3.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/constants.hpp>
-
-struct bvec4
+static glm::quat quat_from_axis_angle(
+    glm::vec3 axis,
+    float angle)
 {
-public:
-    bvec4(uint8_t r, uint8_t g, uint8_t b, uint8_t a) :
-        r(r), g(g), b(b), a(a) { }
-    bvec4() {}
-    uint8_t r; uint8_t g; uint8_t b;  uint8_t a;
-};
+    glm::quat dest;
+    dest.x = axis.x;
+    dest.y = axis.y;
+    dest.z = axis.z;
 
-using TexDataByteRGBA = bvec4;
-using TexDataFloatRGBA = glm::vec4;
-using TexDataFloatRGB = glm::vec3;
+    float n = std::sqrt(
+        axis.x * axis.x +
+        axis.y * axis.y +
+        axis.z * axis.z);
+
+    // zero-div may occur.
+    float s = (std::sinf(0.5f * angle) / n);
+
+    dest.x *= s;
+    dest.y *= s;
+    dest.z *= s;
+    dest.w = std::cosf(0.5f * angle);
+
+    return dest;
+}
 
 struct Angles
 {

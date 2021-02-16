@@ -19,7 +19,6 @@ set(SOURCES
     "src/GUI.cpp"
     "src/Render.cpp"
     "src/Camera.cpp"
-    "src/Math.cpp"
     "src/Shaders.cpp"
     "src/Uniforms.cpp")
 
@@ -28,9 +27,16 @@ set(HEADERS
     "src/GUI.hpp"
     "src/Render.hpp"
     "src/Camera.hpp"
-    "src/Math.hpp"
     "src/Shaders.hpp"
     "src/Uniforms.hpp")
+
+set(SOURCES_MATH
+    src/math/Math.cpp
+    src/math/Angles.cpp)
+
+set(HEADERS_MATH
+    src/math/Math.hpp
+    src/math/Angles.hpp)
 
 set(SOURCES_SDL
     src/sdl/SDL.cpp
@@ -74,6 +80,9 @@ set(HEADERS_IMGUI
 
 SOURCE_GROUP("Source" FILES ${SOURCES})
 SOURCE_GROUP("Source" FILES ${HEADERS})
+
+SOURCE_GROUP("Source\\math" FILES ${SOURCES_MATH})
+SOURCE_GROUP("Source\\math" FILES ${HEADERS_MATH})
 
 SOURCE_GROUP("Source\\sdl" FILES ${SOURCES_SDL})
 SOURCE_GROUP("Source\\sdl" FILES ${HEADERS_SDL})
@@ -123,6 +132,8 @@ add_executable(
     ${PROJECT_NAME}
     ${SOURCES}
     ${HEADERS}
+    ${SOURCES_MATH}
+    ${HEADERS_MATH}
     ${SOURCES_SDL}
     ${HEADERS_SDL}
     ${SOURCES_GL}
