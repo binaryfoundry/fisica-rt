@@ -1,26 +1,7 @@
 #include "Main.hpp"
 
 #include "sdl/SDL.hpp"
-#include "sdl/SDLFile.hpp"
-
 #include "imgui/imgui.h"
-
-//if (backend->IsScanCodeDown(Scancode::SCANCODE_W))
-//{
-//    position += camera->direction * speed;
-//}
-//if (backend->IsScanCodeDown(Scancode::SCANCODE_S))
-//{
-//    position += camera->direction * -speed;
-//}
-//if (backend->IsScanCodeDown(Scancode::SCANCODE_A))
-//{
-//    strafe(speed);
-//}
-//if (backend->IsScanCodeDown(Scancode::SCANCODE_D))
-//{
-//    strafe(-speed);
-//}
 
 void Main::Init()
 {
