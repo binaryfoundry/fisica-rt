@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include "GUI.hpp"
 #include "Render.hpp"
 #include "Camera.hpp"

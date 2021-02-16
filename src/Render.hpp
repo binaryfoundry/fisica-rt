@@ -9,7 +9,6 @@
 #include "gl/UniformBuffer.hpp"
 #include "gl/FrameBuffer.hpp"
 
-#include <vector>
 #include <memory>
 
 struct CameraUniforms
