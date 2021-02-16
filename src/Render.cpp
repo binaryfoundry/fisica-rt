@@ -118,7 +118,6 @@ void Render::Deinit()
 void Render::Draw(
     const uint32_t window_width,
     const uint32_t window_height,
-    const float exposure,
     const std::unique_ptr<Camera>& camera,
     const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& environment,
     const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise_0,

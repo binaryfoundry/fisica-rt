@@ -6,6 +6,7 @@
 void Main::Init()
 {
     camera = std::make_unique<Camera>();
+    camera->position = glm::vec3(0, 5, 35);
 
     noise_0 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>(
         "files/output_256x256_tri.bmp");
@@ -90,7 +91,6 @@ void Main::Update()
     render.Draw(
         sdl_window_width,
         sdl_window_height,
-        exposure,
         camera,
         environment,
         noise_0,

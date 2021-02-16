@@ -14,9 +14,7 @@ private:
     Render render;
 
     float speed = 0.2f;
-    glm::vec3 position = glm::vec3(0, 5, 35);
     float mouse_sensitivity = 75.0f;
-    float exposure = 1.0f;
     std::unique_ptr<Camera> camera;
 
     uint32_t raytracing_framebuffer_width = 1280;
