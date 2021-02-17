@@ -23,15 +23,28 @@ Render::Render()
 {
 }
 
-void Render::Init(
-    const uint32_t framebuffer_width,
-    const uint32_t framebuffer_height)
+void Render::Init()
 {
     quad_vertex_buffer = GL::GenBuffer(
         quad_vertices_data);
 
     quad_index_buffer = GL::GenBufferIndex(
         quad_indices_data);
+
+    camera_uniforms = std::make_unique<GL::UniformBuffer<CameraUniforms>>();
+
+    noise_0 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>(
+        "files/output_256x256_tri.bmp");
+
+    noise_1 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>(
+        "files/output_256x256_tri.bmp");
+
+    environment = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(
+        "files/loc00184-22-2k.hdr");
+
+    scene = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(
+        scene_data_width,
+        scene_data_height);
 
     frontbuffer_shader_program = GL::LinkShader(
         frontbuffer_vertex_shader_string,
@@ -58,7 +71,34 @@ void Render::Init(
     frontbuffer_texture_uniform_location = glGetUniformLocation(
         frontbuffer_shader_program,
         "tex");
+}
 
+void Render::Deinit()
+{
+    camera_uniforms->Delete();
+
+    environment->Delete();
+    scene->Delete();
+    noise_0->Delete();
+    noise_1->Delete();
+
+    glDeleteProgram(
+        frontbuffer_shader_program);
+
+    glDeleteProgram(
+        raytracing_shader_program);
+
+    glDeleteBuffers(
+        1, &quad_vertex_buffer);
+
+    glDeleteBuffers(
+        1, &quad_index_buffer);
+}
+
+void Render::InitRaytracing(
+    const uint32_t framebuffer_width,
+    const uint32_t framebuffer_height)
+{
     raytracing_shader_program = GL::LinkShader(
         raytracing_vertex_shader_string,
         raytracing_fragment_shader_string);
@@ -97,32 +137,18 @@ void Render::Init(
     GL::CheckError();
 }
 
-void Render::Deinit()
+void Render::DeinitRaytracing()
 {
     framebuffer->Delete();
-    camera_uniforms->Delete();
-
-    glDeleteProgram(
-        frontbuffer_shader_program);
 
     glDeleteProgram(
         raytracing_shader_program);
-
-    glDeleteBuffers(
-        1, &quad_vertex_buffer);
-
-    glDeleteBuffers(
-        1, &quad_index_buffer);
 }
 
 void Render::Draw(
     const uint32_t window_width,
     const uint32_t window_height,
-    const std::unique_ptr<Camera>& camera,
-    const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& environment,
-    const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise_0,
-    const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise_1,
-    const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& scene)
+    const std::unique_ptr<Camera>& camera)
 {
     glDisable(GL_CULL_FACE);
     glCullFace(GL_BACK);

@@ -41,25 +41,35 @@ private:
     GLuint raytracing_environment_texture_uniform_location = 0;
     GLuint raytracing_scene_texture_uniform_location = 0;
 
+    const uint32_t scene_data_width = 4;
+    const uint32_t scene_data_height = 1024;
+
     std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> framebuffer;
     std::unique_ptr<GL::UniformBuffer<CameraUniforms>> camera_uniforms;
+
+    std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> environment;
+    std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> scene;
+    std::unique_ptr<GL::Texture2D<TexDataByteRGBA>> noise_0;
+    std::unique_ptr<GL::Texture2D<TexDataByteRGBA>> noise_1;
 
     void DrawQuad();
 
 public:
     Render();
 
-    void Init(
+    void Init();
+
+    void InitRaytracing(
         const uint32_t framebuffer_width,
         const uint32_t framebuffer_height);
+
     void Deinit();
+
+    void DeinitRaytracing();
+
     void Draw(
         const uint32_t window_width,
         const uint32_t window_height,
-        const std::unique_ptr<Camera>& camera,
-        const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& environment,
-        const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise_0,
-        const std::unique_ptr<GL::Texture2D<TexDataByteRGBA>>& noise_1,
-        const std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>>& scene);
+        const std::unique_ptr<Camera>& camera);
 };
 

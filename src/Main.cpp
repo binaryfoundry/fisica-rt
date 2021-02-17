@@ -8,20 +8,9 @@ void Main::Init()
     camera = std::make_unique<Camera>();
     camera->position = glm::vec3(0, 5, 35);
 
-    noise_0 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>(
-        "files/output_256x256_tri.bmp");
+    render.Init();
 
-    noise_1 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>(
-        "files/output_256x256_tri.bmp");
-
-    environment = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(
-        "files/loc00184-22-2k.hdr");
-
-    scene = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(
-        scene_data_width,
-        scene_data_height);
-
-    render.Init(
+    render.InitRaytracing(
         raytracing_framebuffer_width,
         raytracing_framebuffer_height);
 
@@ -38,11 +27,7 @@ void Main::Init()
 
 void Main::Deinit()
 {
-    environment->Delete();
-    scene->Delete();
-    noise_0->Delete();
-    noise_1->Delete();
-
+    render.DeinitRaytracing();
     render.Deinit();
     gui.Deinit();
 }
@@ -86,16 +71,12 @@ void Main::Update()
         raytracing_framebuffer_height);
 
     // TODO write scene data to texture
-    scene->Update();
+    //scene->Update();
 
     render.Draw(
         sdl_window_width,
         sdl_window_height,
-        camera,
-        environment,
-        noise_0,
-        noise_1,
-        scene);
+        camera);
 
     gui.Draw(
         sdl_window_width,
