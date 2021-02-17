@@ -59,11 +59,11 @@ void Main::Update()
 
     camera->orientation.yaw +=
         static_cast<float>(sdl_captured_mouse_delta_x) /
-        (mouse_sensitivity * window_aspect_ratio);
+        (mouse_speed * window_aspect_ratio);
 
     camera->orientation.pitch +=
         static_cast<float>(-sdl_captured_mouse_delta_y) /
-        (mouse_sensitivity);
+        (mouse_speed);
 
     camera->viewport = glm::vec4(
         0, 0,

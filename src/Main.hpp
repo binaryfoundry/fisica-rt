@@ -13,8 +13,8 @@ private:
     GUI gui;
     Render render;
 
-    float speed = 0.2f;
-    float mouse_sensitivity = 75.0f;
+    float move_speed = 0.2f;
+    float mouse_speed = 75.0f;
     std::unique_ptr<Camera> camera;
 
     uint32_t raytracing_framebuffer_width = 1280;
