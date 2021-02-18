@@ -6,7 +6,7 @@ namespace GL
 {
     GLuint LoadShader(
         const GLenum type,
-        const char *shader_src);
+        const char* shader_src);
 
     GLuint LinkShader(
         const std::string vertex_shader_string,
@@ -75,7 +75,9 @@ namespace GL
         return program_object;
     }
 
-    GLuint LoadShader(const GLenum type, const char *shader_src)
+    GLuint LoadShader(
+        const GLenum type,
+        const char* shader_src)
     {
         GLuint shader;
         GLint compiled;
@@ -126,7 +128,8 @@ namespace GL
         return shader;
     }
 
-    GLuint GenBuffer(const std::vector<float>& data)
+    GLuint GenBuffer(
+        const std::vector<float>& data)
     {
         GLuint gl_buffer_handle;
         const GLuint gl_target = GL_ARRAY_BUFFER;
