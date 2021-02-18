@@ -32,11 +32,13 @@ set(HEADERS
 
 set(SOURCES_MATH
     src/math/Math.cpp
-    src/math/Angles.cpp)
+    src/math/Angles.cpp
+    src/math/Random.cpp)
 
 set(HEADERS_MATH
     src/math/Math.hpp
-    src/math/Angles.hpp)
+    src/math/Angles.hpp
+    src/math/Random.hpp)
 
 set(SOURCES_SDL
     src/sdl/SDL.cpp
