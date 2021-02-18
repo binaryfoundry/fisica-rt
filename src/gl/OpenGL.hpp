@@ -17,26 +17,14 @@
 
 namespace GL
 {
-    static void CheckError()
-    {
-        GLenum err = GL_NO_ERROR;
-        while ((err = glGetError()) != GL_NO_ERROR)
-        {
-            std::cout << "gl error: " << err << std::endl;
-        }
-
-        if (err != GL_NO_ERROR)
-        {
-            throw std::runtime_error("gl error");
-        }
-    }
-
     enum class TextureFormat
     {
         RGBA8,
         SRGB8_ALPHA8,
         RGBA32F
     };
+
+    void CheckError();
 
     GLuint LinkShader(
         const std::string vertex_shader_string,
