@@ -43,9 +43,6 @@ namespace GL
 
         void Update();
 
-        uint32_t Width() const { return width; }
-        uint32_t Height() const { return height; }
-
         std::unique_ptr<std::vector<T>>& Data()
         {
             return data;
@@ -54,5 +51,15 @@ namespace GL
         void Load(const std::string file);
 
         void Delete();
+
+        uint32_t Width() const
+        {
+            return width;
+        }
+
+        uint32_t Height() const
+        {
+            return height;
+        }
     };
 }
