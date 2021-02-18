@@ -5,12 +5,12 @@
 namespace GL
 {
     GLuint LoadShader(
-        GLenum type,
+        const GLenum type,
         const char *shader_src);
 
     GLuint LinkShader(
-        std::string vertex_shader_string,
-        std::string fragment_shader_string)
+        const std::string vertex_shader_string,
+        const std::string fragment_shader_string)
     {
         GLuint vertex_shader = LoadShader(
             GL_VERTEX_SHADER,
@@ -75,7 +75,7 @@ namespace GL
         return program_object;
     }
 
-    GLuint LoadShader(GLenum type, const char *shader_src)
+    GLuint LoadShader(const GLenum type, const char *shader_src)
     {
         GLuint shader;
         GLint compiled;

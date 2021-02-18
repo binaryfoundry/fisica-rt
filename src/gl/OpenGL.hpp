@@ -39,8 +39,8 @@ namespace GL
     };
 
     GLuint LinkShader(
-        std::string vertex_shader_string,
-        std::string fragment_shader_string);
+        const std::string vertex_shader_string,
+        const std::string fragment_shader_string);
 
     GLuint GenBuffer(
         const std::vector<float>& data);
