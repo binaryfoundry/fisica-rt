@@ -76,6 +76,7 @@ void Render::Init()
 void Render::Deinit()
 {
     camera_uniforms->Delete();
+    scene_uniforms->Delete();
 
     environment->Delete();
     scene->Delete();
@@ -109,6 +110,10 @@ void Render::InitRaytracing(
         raytracing_shader_program,
         "camera");
 
+    raytracing_scene_uniform_location = glGetUniformBlockIndex(
+        raytracing_shader_program,
+        "scene");
+
     raytracing_noise_0_texture_uniform_location = glGetUniformLocation(
         raytracing_shader_program,
         "rand_sampler_0");
@@ -126,6 +131,7 @@ void Render::InitRaytracing(
         "scene_sampler");
 
     camera_uniforms = std::make_unique<GL::UniformBuffer<CameraUniforms>>();
+    scene_uniforms = std::make_unique<GL::UniformBuffer<SceneUniforms>>();
 
     framebuffer = std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
 
@@ -166,6 +172,9 @@ void Render::Update(
             s.material,
             s.refraction);
     }
+
+    scene_uniforms->object.num_shapes = static_cast<uint32_t>(
+        num_shapes);
 }
 
 void Render::Draw(
@@ -205,6 +214,8 @@ void Render::Draw(
         camera->exposure, 0.0, 0.0, 0.0);
     camera_uniforms->Update();
 
+    scene_uniforms->Update();
+
     glBindBufferBase(
         GL_UNIFORM_BUFFER,
         raytracing_camera_uniform_location,
@@ -214,6 +225,18 @@ void Render::Draw(
         raytracing_shader_program,
         raytracing_camera_uniform_location,
         raytracing_camera_uniform_location);
+
+    // ...
+
+    glBindBufferBase(
+        GL_UNIFORM_BUFFER,
+        raytracing_scene_uniform_location,
+        scene_uniforms->gl_buffer_handle);
+
+    glUniformBlockBinding(
+        raytracing_shader_program,
+        raytracing_scene_uniform_location,
+        raytracing_scene_uniform_location);
 
     // ...
 

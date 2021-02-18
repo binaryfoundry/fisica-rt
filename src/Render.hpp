@@ -21,6 +21,11 @@ struct CameraUniforms
     glm::vec4 exposure;
 };
 
+struct SceneUniforms
+{
+    uint32_t num_shapes;
+};
+
 class Render
 {
 private:
@@ -37,6 +42,7 @@ private:
 
     GLuint raytracing_shader_program = 0;
     GLuint raytracing_camera_uniform_location = 0;
+    GLuint raytracing_scene_uniform_location = 0;
     GLuint raytracing_noise_0_texture_uniform_location = 0;
     GLuint raytracing_noise_1_texture_uniform_location = 0;
     GLuint raytracing_environment_texture_uniform_location = 0;
@@ -47,6 +53,7 @@ private:
 
     std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> framebuffer;
     std::unique_ptr<GL::UniformBuffer<CameraUniforms>> camera_uniforms;
+    std::unique_ptr<GL::UniformBuffer<SceneUniforms>> scene_uniforms;
 
     std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> environment;
     std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> scene;

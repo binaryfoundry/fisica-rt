@@ -93,6 +93,10 @@ std::string raytracing_fragment_shader_string =
         vec4 exposure;
     };
 
+    layout(std140) uniform scene{
+        int num_shapes;
+    };
+
     uniform sampler2D rand_sampler_0;
     uniform sampler2D rand_sampler_1;
 
