@@ -12,15 +12,15 @@ namespace GL
         const std::string vertex_shader_string,
         const std::string fragment_shader_string)
     {
-        GLuint vertex_shader = LoadShader(
+        const GLuint vertex_shader = LoadShader(
             GL_VERTEX_SHADER,
             vertex_shader_string.c_str());
 
-        GLuint fragment_shader = LoadShader(
+        const GLuint fragment_shader = LoadShader(
             GL_FRAGMENT_SHADER,
             fragment_shader_string.c_str());
 
-        GLuint program_object = glCreateProgram();
+        const GLuint program_object = glCreateProgram();
 
         if (program_object == 0)
         {
@@ -79,10 +79,8 @@ namespace GL
         const GLenum type,
         const char* shader_src)
     {
-        GLuint shader;
-        GLint compiled;
+        const GLuint shader = glCreateShader(type);
 
-        shader = glCreateShader(type);
         if (shader == 0)
             return 0;
 
@@ -91,6 +89,8 @@ namespace GL
             1,
             &shader_src,
             NULL);
+
+        GLint compiled;
 
         glCompileShader(
             shader);
