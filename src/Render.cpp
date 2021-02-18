@@ -145,6 +145,29 @@ void Render::DeinitRaytracing()
         raytracing_shader_program);
 }
 
+inline size_t sampler_index(uint16_t x, uint16_t y)
+{
+    return x + (y * 4);
+}
+
+void Render::Update(
+    const std::vector<Sphere>& shapes)
+{
+    const auto num_shapes = shapes.size();
+    auto& data = *scene->Data();
+
+    for (uint16_t i = 0; i < num_shapes; i++)
+    {
+        Sphere s = shapes[i];
+        size_t idx = sampler_index(0, i);
+        data[idx + 0] = s.geom;
+        data[idx + 1] = s.albedo;
+        data[idx + 2] = glm::vec4(
+            s.material,
+            s.refraction);
+    }
+}
+
 void Render::Draw(
     const uint32_t window_width,
     const uint32_t window_height,
@@ -152,6 +175,8 @@ void Render::Draw(
 {
     glDisable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+
+    scene->Update();
 
     // Draw to FBO
 

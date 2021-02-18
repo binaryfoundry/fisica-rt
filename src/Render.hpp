@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Camera.hpp"
+#include "Sphere.hpp"
 
 #include "math/Math.hpp"
 
@@ -66,6 +67,9 @@ public:
     void Deinit();
 
     void DeinitRaytracing();
+
+    void Update(
+        const std::vector<Sphere>& shapes);
 
     void Draw(
         const uint32_t window_width,

@@ -75,8 +75,7 @@ void Main::Update()
         raytracing_framebuffer_width,
         raytracing_framebuffer_height);
 
-    // TODO write scene data to texture
-    //scene->Update();
+    render.Update(shapes);
 
     render.Draw(
         sdl_window_width,
@@ -101,7 +100,7 @@ void Main::SetupScene()
         glm::vec4(0.7, 0.3, 0.0, 0.0)
     };
 
-    std::vector<Sphere> shapes
+    shapes =
     {
         {
             glm::vec4(0.0, 5.0, 0.0, 5.0),

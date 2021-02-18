@@ -21,6 +21,8 @@ private:
     uint32_t raytracing_framebuffer_width = 1280;
     uint32_t raytracing_framebuffer_height = 720;
 
+    std::vector<Sphere> shapes;
+
     void SetupScene();
 
 public:
