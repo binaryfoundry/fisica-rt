@@ -60,7 +60,7 @@ void Main::Update()
 
     const float window_aspect_ratio =
         static_cast<float>(sdl_window_width) /
-        static_cast<float>(sdl_window_height);
+        sdl_window_height;
 
     camera->orientation.yaw +=
         static_cast<float>(sdl_captured_mouse_delta_x) /

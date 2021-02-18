@@ -65,17 +65,17 @@ void GUI::Init()
         gl_shader_program,
         "ProjMtx");
 
-    g_AttribLocationVtxPos = static_cast<GLuint>(glGetAttribLocation(
+    g_AttribLocationVtxPos =glGetAttribLocation(
         gl_shader_program,
-        "Position"));
+        "Position");
 
-    g_AttribLocationVtxUV = static_cast<GLuint>(glGetAttribLocation(
+    g_AttribLocationVtxUV = glGetAttribLocation(
         gl_shader_program,
-        "UV"));
+        "UV");
 
-    g_AttribLocationVtxColor = static_cast<GLuint>(glGetAttribLocation(
+    g_AttribLocationVtxColor = glGetAttribLocation(
         gl_shader_program,
-        "Color"));
+        "Color");
 
     glGenBuffers(
         1,
