@@ -43,8 +43,8 @@ namespace GL
 
         void Update();
 
-        uint32_t Width() { return width; }
-        uint32_t Height() { return height; }
+        uint32_t Width() const { return width; }
+        uint32_t Height() const { return height; }
 
         std::unique_ptr<std::vector<T>>& Data()
         {

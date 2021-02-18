@@ -26,8 +26,8 @@ namespace GL
         GLuint gl_texture_handle = 0;
         GLuint gl_depth_renderbuffer_handle = 0;
 
-        uint32_t Width() { return width; }
-        uint32_t Height() { return height; }
+        uint32_t Width() const { return width; }
+        uint32_t Height() const { return height; }
 
         void Create(
             const uint32_t width,

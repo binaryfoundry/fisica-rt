@@ -34,6 +34,6 @@ public:
     void Strafe(float speed);
     void Validate();
 
-    glm::mat4 View() { return view; };
-    glm::mat4 Projection() { return projection; };
+    glm::mat4 View() const { return view; };
+    glm::mat4 Projection() const { return projection; };
 };
