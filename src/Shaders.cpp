@@ -79,8 +79,13 @@ std::string raytracing_fragment_shader_string =
 
     #define PI 3.1415926535897932384626433832795
     #define PHI 1.61803398875
+    #define FLT_MAX 3.402823466e+38
 
     #define SAMPLES 4
+    #define BOUNCES 4
+
+    const float t_min = 0.003;
+    const float t_max = 100000.0;
 
     in vec2 v_texcoord;
     layout(location = 0) out vec4 out_color;
@@ -122,6 +127,10 @@ std::string raytracing_fragment_shader_string =
         vec3 direction;
     };
 
+    vec3 Ray_at(Ray r, float t) {
+        return r.origin + t * r.direction;
+    }
+
     Ray Ray_screen(vec2 coords) {
         float zoom = 0.5;
         float aspect = viewport.w / viewport.z;
@@ -156,10 +165,10 @@ std::string raytracing_fragment_shader_string =
         float padding_0;
     };
 
-    struct Sphere {
+    struct Hit {
+        float t;
         vec3 position;
-        float radius;
-        Material material;
+        vec3 normal;
     };
 
     struct Plane {
@@ -167,8 +176,30 @@ std::string raytracing_fragment_shader_string =
         float padding_0;
         vec3 normal;
         float padding_1;
-        Material material;
     };
+
+    struct Sphere {
+        vec3 position;
+        float radius;
+    };
+
+    bool Sphere_hit(Sphere s, Ray r, inout Hit h) {
+        vec3 oc = r.origin - s.position;
+        float a = dot(r.direction, r.direction);
+        float b = dot(oc, r.direction);
+        float c = dot(oc, oc) - s.radius * s.radius;
+        float d = b * b - a * c;
+        if (d > 0.0) {
+            float t = (-b - sqrt(b*b-a*c))/a;
+            if (t < t_max && t > t_min) {
+                h.t = t;
+                h.position = Ray_at(r, t);
+                h.normal = (h.position - s.position) / s.radius;
+                return true;
+            }
+        }
+        return false;
+    }
 
     uniform sampler2D environment_sampler;
 
@@ -185,16 +216,52 @@ std::string raytracing_fragment_shader_string =
             env_spherical_to_equirect(n)).xyz;
     }
 
-    void main() {
-        Ray r = Ray_screen(v_texcoord);
-        vec3 e = environment_emissive(r.direction);
+    void Ray_world(inout Ray r, inout vec3 acc) {
+        Hit h;
+        h.t = FLT_MAX;
+        h.position = r.origin;
+        h.normal = r.direction;
+        int found = 0;
+        for (int i = 0; i < num_geometry; i++) {
+            vec4 dat0 = texelFetch(scene_sampler, ivec2(0, i), 0);
+            vec4 dat1 = texelFetch(scene_sampler, ivec2(1, i), 0);
+            vec4 dat2 = texelFetch(scene_sampler, ivec2(2, i), 0);
 
-        vec3 acc = vec3(0.0, 0.0, 0.0);
+            Material m = Material(dat1.xyz, dat2.x, dat2.y, dat2.z, dat2.w, 1.0);
+            Sphere s = Sphere(dat0.xyz, dat0.w);
 
-        for (int s = 0; s < SAMPLES; s++) {
-            acc += e * rand();
+            Hit h_temp;
+            if (Sphere_hit(s, r, h_temp)) {
+                if (h_temp.t < h.t) {
+                    h = h_temp;
+                    found = 1;
+                }
+            }
         }
 
+        if (found == 1) {
+            r.origin = h.position;
+            r.direction = reflect(r.direction, h.normal);
+            acc *= vec3(1.0, 0.7, 0.7);
+        }
+    }
+
+    vec3 trace(Ray r) {
+        vec3 acc = vec3(1.0);
+        for (int i = 0; i < BOUNCES; i++) {
+            Ray_world(r, acc);
+        }
+        acc *= environment_emissive(r.direction);
+        return acc;
+    }
+
+    void main() {
+        Ray r = Ray_screen(v_texcoord);
+
+        vec3 acc;
+        for (int s = 0; s < SAMPLES; s++) {
+            acc += trace(r);
+        }
         acc /= float(SAMPLES);
 
         out_color = vec4(acc * exposure.x , 1.0);
