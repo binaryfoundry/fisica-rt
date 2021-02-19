@@ -90,16 +90,10 @@ std::string raytracing_fragment_shader_string =
     in vec2 v_texcoord;
     layout(location = 0) out vec4 out_color;
 
-    layout(std140) uniform camera{
-        mat4 view;
-        mat4 projection;
-        vec4 viewport;
-        vec4 position;
-        vec4 exposure;
-    };
-
     uniform sampler2D rand_sampler_0;
     uniform sampler2D rand_sampler_1;
+    uniform sampler2D scene_sampler;
+    uniform sampler2D environment_sampler;
 
     const mat2 rand_trans = mat2(
         cos(PHI), -sin(PHI),
@@ -121,6 +115,18 @@ std::string raytracing_fragment_shader_string =
         rand_1_state = rand_trans * rand_1_state;
         return vec2(rand(), texture(rand_sampler_1, coords).x);
     }
+
+    layout(std140) uniform camera{
+        mat4 view;
+        mat4 projection;
+        vec4 viewport;
+        vec4 position;
+        vec4 exposure;
+    };
+
+    layout(std140) uniform scene{
+        int num_geometry;
+    };
 
     struct Ray {
         vec3 origin;
@@ -150,12 +156,6 @@ std::string raytracing_fragment_shader_string =
         direction.y = -direction.y;
         return Ray(position.xyz, normalize(direction.xyz));
     }
-
-    uniform sampler2D scene_sampler;
-
-    layout(std140) uniform scene{
-        int num_geometry;
-    };
 
     struct Material {
         vec3 albedo;
@@ -202,23 +202,7 @@ std::string raytracing_fragment_shader_string =
         return false;
     }
 
-    uniform sampler2D environment_sampler;
-
-    vec2 env_spherical_to_equirect(vec3 n) {
-        vec2 uv = vec2(atan(n.z, n.x), asin(n.y));
-        uv *= vec2(0.1591, 0.3183);
-        uv += 0.5;
-        return uv;
-    }
-
-    vec3 environment_emissive(vec3 n) {
-        n.y = -n.y;
-        return texture(
-            environment_sampler,
-            env_spherical_to_equirect(n)).xyz;
-    }
-
-    void Ray_world(inout Ray r, inout vec3 acc) {
+    void trace_world(inout Ray r, inout vec3 acc) {
         Hit h;
         h.t = FLT_MAX;
         h.position = r.origin;
@@ -248,10 +232,24 @@ std::string raytracing_fragment_shader_string =
         }
     }
 
+    vec2 env_spherical_to_equirect(vec3 n) {
+        vec2 uv = vec2(atan(n.z, n.x), asin(n.y));
+        uv *= vec2(0.1591, 0.3183);
+        uv += 0.5;
+        return uv;
+    }
+
+    vec3 environment_emissive(vec3 n) {
+        n.y = -n.y;
+        return texture(
+            environment_sampler,
+            env_spherical_to_equirect(n)).xyz;
+    }
+
     vec3 trace(Ray r) {
         vec3 acc = vec3(1.0);
         for (int i = 0; i < BOUNCES; i++) {
-            Ray_world(r, acc);
+            trace_world(r, acc);
         }
         acc *= environment_emissive(r.direction);
         return acc;
