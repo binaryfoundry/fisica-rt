@@ -19,11 +19,11 @@ void Main::Init()
 
     gui.Init();
 
-    sdl_key_up_callback = [=](uint16_t key)
+    sdl_key_up_callback = [=](SDL_Scancode key)
     {
     };
 
-    sdl_key_down_callback = [=](uint16_t key)
+    sdl_key_down_callback = [=](SDL_Scancode key)
     {
     };
 

@@ -339,11 +339,11 @@ static bool sdl_poll_events()
             break;
 
         case SDL_KEYDOWN:
-            sdl_key_down_callback(static_cast<uint16_t>(event.key.keysym.sym));
+            sdl_key_down_callback(event.key.keysym.scancode);
             break;
 
         case SDL_KEYUP:
-            sdl_key_up_callback(static_cast<uint16_t>(event.key.keysym.sym));
+            sdl_key_up_callback(event.key.keysym.scancode);
             key = event.key.keysym.scancode;
             IM_ASSERT(key >= 0 && key < IM_ARRAYSIZE(io.KeysDown));
             io.KeysDown[key] = (event.type == SDL_KEYDOWN);
@@ -352,7 +352,7 @@ static bool sdl_poll_events()
             io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
             io.KeySuper = false;
 
-            if (key == 41)
+            if (key == SDL_Scancode::SDL_SCANCODE_ESCAPE)
             {
                 sdl_mouse_captured = false;
                 SDL_SetRelativeMouseMode(static_cast<SDL_bool>(sdl_mouse_captured));
