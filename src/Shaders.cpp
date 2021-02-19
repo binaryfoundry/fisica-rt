@@ -153,6 +153,7 @@ std::string raytracing_fragment_shader_string =
         c = c * view;
 
         vec4 direction = c + coords.x * h + coords.y * v;
+        // TODO Fix OpenGL Y axis.
         direction.y = -direction.y;
         return Ray(position.xyz, normalize(direction.xyz));
     }
