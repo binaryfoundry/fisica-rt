@@ -235,10 +235,7 @@ std::string raytracing_fragment_shader_string =
     }
 
     void trace_world(inout Ray r, inout vec3 acc) {
-        Hit h;
-        h.t = FLT_MAX;
-        h.position = r.origin;
-        h.normal = r.direction;
+        Hit h = Hit(FLT_MAX, r.origin, r.direction);
         Hit h_temp;
         Material m;
         Material m_temp;
