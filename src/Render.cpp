@@ -151,30 +151,43 @@ void Render::DeinitRaytracing()
         raytracing_shader_program);
 }
 
-inline size_t sampler_index(uint16_t x, uint16_t y)
+inline size_t sampler_index(
+    uint16_t x, uint16_t y, uint32_t w)
 {
-    return x + (y * 4);
+    return x + (y * w);
 }
 
 void Render::Update(
-    const std::vector<Sphere>& shapes)
+    const std::vector<Sphere>& geometry)
 {
-    const auto num_shapes = shapes.size();
+    const auto num_geometry = geometry.size();
     auto& data = *scene->Data();
 
-    for (uint16_t i = 0; i < num_shapes; i++)
+    for (uint16_t i = 0; i < num_geometry; i++)
     {
-        Sphere s = shapes[i];
-        size_t idx = sampler_index(0, i);
-        data[idx + 0] = s.geom;
-        data[idx + 1] = s.albedo;
+        Sphere s = geometry[i];
+        Material& m = s.material;
+
+        size_t idx = sampler_index(
+            0, i, scene_data_width);
+
+        data[idx + 0] = glm::vec4(
+            s.position,
+            s.radius);
+
+        data[idx + 1] = glm::vec4(
+            m.albedo,
+            0.0f);
+
         data[idx + 2] = glm::vec4(
-            s.material,
-            s.refraction);
+            m.smoothness,
+            m.metalness,
+            m.refraction,
+            m.refractive_index);
     }
 
-    scene_uniforms->object.num_shapes = static_cast<uint32_t>(
-        num_shapes);
+    scene_uniforms->object.num_geometry = static_cast<uint32_t>(
+        num_geometry);
 }
 
 void Render::Draw(

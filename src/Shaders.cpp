@@ -93,10 +93,6 @@ std::string raytracing_fragment_shader_string =
         vec4 exposure;
     };
 
-    layout(std140) uniform scene{
-        int num_shapes;
-    };
-
     uniform sampler2D rand_sampler_0;
     uniform sampler2D rand_sampler_1;
 
@@ -147,19 +143,31 @@ std::string raytracing_fragment_shader_string =
 
     uniform sampler2D scene_sampler;
 
+    layout(std140) uniform scene{
+        int num_geometry;
+    };
+
+    struct Material {
+        vec3 albedo;
+        float smoothness;
+        float metalness;
+        float refraction;
+        float refractive_index;
+        float padding_0;
+    };
+
     struct Sphere {
-        vec4 geom;       // xyz = position, w = radius
-        vec4 albedo;     // xyz = rgb
-        vec2 material;   // x = smoothness, y = metalness
-        vec2 refraction; // x = refractive, y = refract index
+        vec3 position;
+        float radius;
+        Material material;
     };
 
     struct Plane {
-        vec4 position;   // xyz = position
-        vec4 normal;     // xyz = normal
-        vec4 albedo;     // xyz = rgb
-        vec2 material;   // x = smoothness, y = metalness
-        vec2 refraction; // x = refractive, y = refract index
+        vec3 position;
+        float padding_0;
+        vec3 normal;
+        float padding_1;
+        Material material;
     };
 
     uniform sampler2D environment_sampler;

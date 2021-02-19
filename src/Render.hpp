@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Camera.hpp"
-#include "Sphere.hpp"
+#include "Geometry.hpp"
 
 #include "math/Math.hpp"
 
@@ -23,7 +23,7 @@ struct CameraUniforms
 
 struct SceneUniforms
 {
-    uint32_t num_shapes;
+    uint32_t num_geometry;
 };
 
 class Render
@@ -48,7 +48,7 @@ private:
     GLuint raytracing_environment_texture_uniform_location = 0;
     GLuint raytracing_scene_texture_uniform_location = 0;
 
-    const uint32_t scene_data_width = 4;
+    const uint32_t scene_data_width = 8;
     const uint32_t scene_data_height = 1024;
 
     std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> framebuffer;
@@ -76,7 +76,7 @@ public:
     void DeinitRaytracing();
 
     void Update(
-        const std::vector<Sphere>& shapes);
+        const std::vector<Sphere>& geometry);
 
     void Draw(
         const uint32_t window_width,

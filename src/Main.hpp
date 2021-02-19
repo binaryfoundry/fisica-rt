@@ -3,7 +3,7 @@
 #include "GUI.hpp"
 #include "Render.hpp"
 #include "Camera.hpp"
-#include "Sphere.hpp"
+#include "Geometry.hpp"
 
 #include "gl/OpenGL.hpp"
 #include "gl/Texture2D.hpp"
@@ -21,7 +21,7 @@ private:
     uint32_t raytracing_framebuffer_width = 1280;
     uint32_t raytracing_framebuffer_height = 720;
 
-    std::vector<Sphere> shapes;
+    std::vector<Sphere> geometry;
 
     void SetupScene();
 

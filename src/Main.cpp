@@ -75,7 +75,7 @@ void Main::Update()
         raytracing_framebuffer_width,
         raytracing_framebuffer_height);
 
-    render.Update(shapes);
+    render.Update(geometry);
 
     render.Draw(
         sdl_window_width,
@@ -92,54 +92,41 @@ void Main::SetupScene()
     const int32_t placement_radius = 3;
     const size_t num_materials = 4;
 
-    const std::array<glm::vec4, num_materials> materials =
+    const std::array<Material, num_materials> materials =
     {
-        glm::vec4(0.8, 1.0, 0.0, 0.0),
-        glm::vec4(0.0, 0.0, 0.0, 0.0),
-        glm::vec4(1.0, 1.0, 1.0, 0.5),
-        glm::vec4(0.7, 0.3, 0.0, 0.0)
+        Material(glm::vec3(1.0f), 0.8f, 1.0f, 0.0f, 0.0f),
+        Material(glm::vec3(1.0f), 0.0f, 0.0f, 0.0f, 0.0f),
+        Material(glm::vec3(1.0f), 1.0f, 1.0f, 1.0f, 0.5f),
+        Material(glm::vec3(1.0f), 0.7f, 0.3f, 0.0f, 0.0f)
     };
 
-    shapes =
+    geometry =
     {
-        {
-            glm::vec4(0.0, 5.0, 0.0, 5.0),
-            glm::vec4(1.0, 1.0, 1.0, 0.0),
-            glm::vec2(0.8, 1.0),
-            glm::vec2(0.0, 0.0)
-        },
-        {
-            glm::vec4(-20.0, 5.0, 0.0, 5.0),
-            glm::vec4(1.0, 1.0, 1.0, 0.0),
-            glm::vec2(0.0, 0.0),
-            glm::vec2(0.0, 0.0)
-        },
-        {
-            glm::vec4(20.0, 5.0, 0.0, 5.0),
-            glm::vec4(1.0, 1.0, 1.0, 0.0),
-            glm::vec2(1.0, 1.0),
-            glm::vec2(1.0, 0.5)
-        }
+        Sphere(
+            glm::vec3(0.0f, 5.0f, 0.0f), 5.0f,
+            Material(glm::vec3(1.0f), 0.8f, 1.0f, 0.0f, 0.0f)),
+        Sphere(
+            glm::vec3(-20.0f, 5.0f, 0.0f), 5.0f,
+            Material(glm::vec3(1.0f), 0.0f, 0.0f, 0.0f, 0.0f)),
+        Sphere(
+            glm::vec3(20.0f, 5.0f, 0.0f), 5.0f,
+            Material(glm::vec3(1.0f), 1.0f, 1.0f, 1.0f, 0.5f))
     };
 
     for (int32_t z = -placement_radius; z < placement_radius; z++)
     {
         for (int32_t x = -placement_radius; x < placement_radius; x++)
         {
-            glm::vec4 material = materials[Math::element_rand(
+            Material material = materials[Math::element_rand(
                 num_materials)];
 
-            shapes.push_back(
-            {
-                glm::vec4(
-                    z + 0.9 * Math::unit_randf(),
-                    0.2,
-                    x + 0.9 * Math::unit_randf(),
-                    0.2f) * 5.0f,
-                glm::vec4(1.0, 1.0, 1.0, 0.0),
-                glm::vec2(material.x, material.y),
-                glm::vec2(material.z, material.w)
-            });
+            geometry.push_back(
+                    Sphere(glm::vec3(
+                        z + 0.9f * Math::unit_randf(),
+                        0.2f,
+                        x + 0.9f * Math::unit_randf()) * 5.0f,
+                    0.2f * 5.0f,
+                    material));
         }
     }
 }

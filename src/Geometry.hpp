@@ -2,23 +2,43 @@
 
 #include "math/Math.hpp"
 
-struct Sphere
+struct Material
 {
-    Sphere() {};
-    Sphere(
-        glm::vec4 geom,
-        glm::vec4 albedo,
-        glm::vec2 material,
-        glm::vec2 refraction) :
-        geom(geom),
+    Material(
+        glm::vec3 albedo,
+        float smoothness,
+        float metalness,
+        float refraction,
+        float refractive_index) :
         albedo(albedo),
-        material(material),
-        refraction(refraction)
+        smoothness(smoothness),
+        metalness(metalness),
+        refraction(refraction),
+        refractive_index(refractive_index)
     {
     }
 
-    glm::vec4 geom;       // xyz = position, w = radius
-    glm::vec4 albedo;     // xyz = rgb
-    glm::vec2 material;   // x = smoothness, y = metalness
-    glm::vec2 refraction; // x = refractive, y = refract index
+    glm::vec3 albedo;
+    float smoothness;
+    float metalness;
+    float refraction;
+    float refractive_index;
+    float padding_0;
+};
+
+struct Sphere
+{
+    Sphere(
+        glm::vec3 position,
+        float radius,
+        Material material) :
+        position(position),
+        radius(radius),
+        material(material)
+    {
+    }
+
+    glm::vec3 position;
+    float radius;
+    Material material;
 };
