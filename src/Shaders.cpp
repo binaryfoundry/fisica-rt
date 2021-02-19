@@ -191,7 +191,7 @@ std::string raytracing_fragment_shader_string =
         float c = dot(oc, oc) - s.radius * s.radius;
         float d = b * b - a * c;
         if (d > 0.0) {
-            float t = (-b - sqrt(b*b-a*c))/a;
+            float t = (-b - sqrt(b * b - a * c)) / a;
             if (t < t_max && t > t_min) {
                 h.t = t;
                 h.position = Ray_at(r, t);
@@ -213,8 +213,10 @@ std::string raytracing_fragment_shader_string =
             vec4 dat1 = texelFetch(scene_sampler, ivec2(1, i), 0);
             vec4 dat2 = texelFetch(scene_sampler, ivec2(2, i), 0);
 
-            Material m = Material(dat1.xyz, dat2.x, dat2.y, dat2.z, dat2.w, 1.0);
-            Sphere s = Sphere(dat0.xyz, dat0.w);
+            Material m = Material(
+                dat1.xyz, dat2.x, dat2.y, dat2.z, dat2.w, 1.0);
+            Sphere s = Sphere(
+                dat0.xyz, dat0.w);
 
             Hit h_temp;
             if (Sphere_hit(s, r, h_temp)) {
