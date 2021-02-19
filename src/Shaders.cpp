@@ -147,6 +147,7 @@ std::string raytracing_fragment_shader_string =
         c = c * view;
 
         vec4 direction = c + coords.x * h + coords.y * v;
+        direction.y = -direction.y;
         return Ray(position.xyz, normalize(direction.xyz));
     }
 
@@ -211,6 +212,7 @@ std::string raytracing_fragment_shader_string =
     }
 
     vec3 environment_emissive(vec3 n) {
+        n.y = -n.y;
         return texture(
             environment_sampler,
             env_spherical_to_equirect(n)).xyz;
