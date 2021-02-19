@@ -217,30 +217,57 @@ std::string raytracing_fragment_shader_string =
         return false;
     }
 
+    bool Plane_hit(Ray r, inout Hit h) {
+        vec3 position;
+        vec3 normal = vec3(0.0, 1.0, 0.0);
+        float d = dot(-normal, r.direction);
+        if (d > t_min) {
+            vec3 v = position - r.origin;
+            float t = dot(v, -normal) / d;
+            if (t >= t_min) {
+                h.t = t;
+                h.position = Ray_at(r, t);
+                h.normal = normal;
+                return true;
+            }
+        }
+        return false;
+    }
+
     void trace_world(inout Ray r, inout vec3 acc) {
         Hit h;
         h.t = FLT_MAX;
         h.position = r.origin;
         h.normal = r.direction;
+        Hit h_temp;
         Material m;
+        Material m_temp;
         int found = 0;
         for (int i = 0; i < num_geometry; i++) {
             vec4 dat0 = texelFetch(scene_sampler, ivec2(0, i), 0);
             vec4 dat1 = texelFetch(scene_sampler, ivec2(1, i), 0);
             vec4 dat2 = texelFetch(scene_sampler, ivec2(2, i), 0);
 
-            Material m_temp = Material(
+            m_temp = Material(
                 dat1.xyz, dat2.x, dat2.y, dat2.z, dat2.w, 1.0);
             Sphere s = Sphere(
                 dat0.xyz, dat0.w);
 
-            Hit h_temp;
+
             if (Sphere_hit(s, r, h_temp)) {
                 if (h_temp.t < h.t) {
                     h = h_temp;
                     m = m_temp;
                     found = 1;
                 }
+            }
+        }
+
+        if (Plane_hit(r, h_temp)) {
+            if (h_temp.t < h.t) {
+                h = h_temp;
+                m = m_temp;
+                found = 1;
             }
         }
 
