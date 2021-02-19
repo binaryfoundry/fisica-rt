@@ -95,6 +95,20 @@ std::string raytracing_fragment_shader_string =
     uniform sampler2D scene_sampler;
     uniform sampler2D environment_sampler;
 
+    vec2 env_spherical_to_equirect(vec3 n) {
+        vec2 uv = vec2(atan(n.z, n.x), asin(n.y));
+        uv *= vec2(0.1591, 0.3183);
+        uv += 0.5;
+        return uv;
+    }
+
+    vec3 environment_emissive(vec3 n) {
+        n.y = -n.y;
+        return texture(
+            environment_sampler,
+            env_spherical_to_equirect(n)).xyz;
+    }
+
     const mat2 rand_trans = mat2(
         cos(PHI), -sin(PHI),
         sin(PHI), cos(PHI)) * PHI;
@@ -208,13 +222,14 @@ std::string raytracing_fragment_shader_string =
         h.t = FLT_MAX;
         h.position = r.origin;
         h.normal = r.direction;
+        Material m;
         int found = 0;
         for (int i = 0; i < num_geometry; i++) {
             vec4 dat0 = texelFetch(scene_sampler, ivec2(0, i), 0);
             vec4 dat1 = texelFetch(scene_sampler, ivec2(1, i), 0);
             vec4 dat2 = texelFetch(scene_sampler, ivec2(2, i), 0);
 
-            Material m = Material(
+            Material m_temp = Material(
                 dat1.xyz, dat2.x, dat2.y, dat2.z, dat2.w, 1.0);
             Sphere s = Sphere(
                 dat0.xyz, dat0.w);
@@ -223,6 +238,7 @@ std::string raytracing_fragment_shader_string =
             if (Sphere_hit(s, r, h_temp)) {
                 if (h_temp.t < h.t) {
                     h = h_temp;
+                    m = m_temp;
                     found = 1;
                 }
             }
@@ -231,22 +247,8 @@ std::string raytracing_fragment_shader_string =
         if (found == 1) {
             r.origin = h.position;
             r.direction = reflect(r.direction, h.normal);
-            acc *= vec3(1.0, 0.7, 0.7);
+            acc *= m.albedo;
         }
-    }
-
-    vec2 env_spherical_to_equirect(vec3 n) {
-        vec2 uv = vec2(atan(n.z, n.x), asin(n.y));
-        uv *= vec2(0.1591, 0.3183);
-        uv += 0.5;
-        return uv;
-    }
-
-    vec3 environment_emissive(vec3 n) {
-        n.y = -n.y;
-        return texture(
-            environment_sampler,
-            env_spherical_to_equirect(n)).xyz;
     }
 
     vec3 trace(Ray r) {

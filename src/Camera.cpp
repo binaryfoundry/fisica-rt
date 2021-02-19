@@ -21,6 +21,7 @@ void Camera::Strafe(float speed)
 
 void Camera::Forward(float speed)
 {
+    // TODO Fix OpenGL Y axis.
     const glm::vec3 d = glm::vec3(
         direction.x,
         -direction.y,
