@@ -32,6 +32,7 @@ public:
     float far_plane = 2200.0f;
 
     void Strafe(float speed);
+    void Forward(float speed);
     void Validate();
 
     glm::mat4 View() const

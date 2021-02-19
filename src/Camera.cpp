@@ -19,6 +19,15 @@ void Camera::Strafe(float speed)
     position += strafe_direction * speed;
 }
 
+void Camera::Forward(float speed)
+{
+    const glm::vec3 d = glm::vec3(
+        direction.x,
+        -direction.y,
+        direction.z);
+    position += d * speed;
+}
+
 void Camera::Validate()
 {
     const glm::quat roll = quat_from_axis_angle(

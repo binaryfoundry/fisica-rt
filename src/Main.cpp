@@ -19,12 +19,42 @@ void Main::Init()
 
     gui.Init();
 
-    sdl_key_up_callback = [=](SDL_Scancode key)
-    {
-    };
-
     sdl_key_down_callback = [=](SDL_Scancode key)
     {
+        switch (key)
+        {
+        case SDL_SCANCODE_W:
+            forward_speed = move_speed;
+            break;
+        case SDL_SCANCODE_S:
+            forward_speed = -move_speed;
+            break;
+        case SDL_SCANCODE_A:
+            strafe_speed = move_speed;
+            break;
+        case SDL_SCANCODE_D:
+            strafe_speed = -move_speed;
+            break;
+        }
+    };
+
+    sdl_key_up_callback = [=](SDL_Scancode key)
+    {
+        switch (key)
+        {
+        case SDL_SCANCODE_W:
+            forward_speed = 0.0f;
+            break;
+        case SDL_SCANCODE_S:
+            forward_speed = 0.0f;
+            break;
+        case SDL_SCANCODE_A:
+            strafe_speed = 0.0f;
+            break;
+        case SDL_SCANCODE_D:
+            strafe_speed = 0.0f;
+            break;
+        }
     };
 
     SetupScene();
@@ -74,6 +104,9 @@ void Main::Update()
         0, 0,
         raytracing_framebuffer_width,
         raytracing_framebuffer_height);
+
+    camera->Strafe(strafe_speed);
+    camera->Forward(forward_speed);
 
     render.Update(geometry);
 

@@ -14,7 +14,10 @@ private:
     GUI gui;
     Render render;
 
-    float move_speed = 0.2f;
+    float move_speed = 0.1f;
+
+    float forward_speed = 0.0f;
+    float strafe_speed = 0.0f;
     float mouse_speed = 75.0f;
     std::unique_ptr<Camera> camera;
 
