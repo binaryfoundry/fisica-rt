@@ -113,21 +113,23 @@ std::string raytracing_fragment_shader_string =
         cos(PHI), -sin(PHI),
         sin(PHI), cos(PHI)) * PHI;
 
-    vec2 rand_0_state = vec2(1.0, PHI);
-    vec2 rand_1_state = vec2(PHI, 1.0);
+    float rand_seed;
+
+    void rand_init() {
+        vec2 coords = gl_FragCoord.xy /
+            vec2(textureSize(rand_sampler_1, 0));
+        rand_seed = texture(rand_sampler_1, coords).x;
+    }
 
     float rand() {
-        vec2 coords = gl_FragCoord.xy /
-            vec2(textureSize(rand_sampler_0, 0)) + rand_0_state;
-        rand_0_state = rand_trans * rand_0_state;
-        return texture(rand_sampler_0, coords).x;
+        rand_seed = mod(rand_seed * 1.1234567893490423, 13.0);
+        return fract(sin(rand_seed += 0.1) * 43758.5453123);
     }
 
     vec2 rand2() {
-        vec2 coords = gl_FragCoord.xy /
-            vec2(textureSize(rand_sampler_1, 0)) + rand_1_state;
-        rand_1_state = rand_trans * rand_1_state;
-        return vec2(rand(), texture(rand_sampler_1, coords).x);
+        rand_seed = mod(rand_seed * 1.1234567893490423, 13.0);
+        return fract(sin(vec2(rand_seed += 0.1,rand_seed += 0.1)) *
+            vec2(43758.5453123,22578.1459123));
     }
 
     vec3 rand_cos_hemisphere(const vec3 n) {
@@ -292,7 +294,8 @@ std::string raytracing_fragment_shader_string =
 
         if (found == 1) {
             r.origin = h.position;
-            r.direction = reflect(r.direction, h.normal);
+            //r.direction = reflect(r.direction, h.normal);
+            r.direction = rand_cos_hemisphere(h.normal);
             acc *= m.albedo;
         }
     }
@@ -307,6 +310,7 @@ std::string raytracing_fragment_shader_string =
     }
 
     void main() {
+        rand_init();
         Ray r = Ray_screen(v_texcoord);
 
         vec3 acc;
