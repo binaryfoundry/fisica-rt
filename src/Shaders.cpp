@@ -130,6 +130,28 @@ std::string raytracing_fragment_shader_string =
         return vec2(rand(), texture(rand_sampler_1, coords).x);
     }
 
+    vec3 rand_cos_hemisphere(const vec3 n) {
+        vec2 r = rand2();
+        vec3  uu = normalize(cross(n, vec3(0.0, 1.0, 1.0)));
+        vec3  vv = cross(uu, n);
+        float ra = sqrt(r.y);
+        float rx = ra * cos(6.2831 * r.x);
+        float ry = ra * sin(6.2831 * r.x);
+        float rz = sqrt(1.0 - r.y);
+        vec3  rr = vec3(rx * uu + ry * vv + rz * n);
+        return normalize(rr);
+    }
+
+    vec3 rand_sphere_direction() {
+        vec2 r = rand2() * 6.2831;
+        return vec3(sin(r.x) * vec2(sin(r.y), cos(r.y)), cos(r.x));
+    }
+
+    vec3 rand_hemisphere_direction(const vec3 n) {
+        vec3 dr = rand_sphere_direction();
+        return dot(dr, n) * dr;
+    }
+
     layout(std140) uniform camera{
         mat4 view;
         mat4 projection;
