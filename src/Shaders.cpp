@@ -109,10 +109,6 @@ std::string raytracing_fragment_shader_string =
             env_spherical_to_equirect(n)).xyz;
     }
 
-    const mat2 rand_trans = mat2(
-        cos(PHI), -sin(PHI),
-        sin(PHI), cos(PHI)) * PHI;
-
     float rand_seed;
 
     void rand_init() {
