@@ -263,7 +263,7 @@ std::string raytracing_fragment_shader_string =
         Hit h_temp;
         Material m;
         Material m_temp;
-        int found = 0;
+        float found = 0.0;
         for (int i = 0; i < num_geometry; i++) {
             vec4 dat0 = texelFetch(scene_sampler, ivec2(0, i), 0);
             vec4 dat1 = texelFetch(scene_sampler, ivec2(1, i), 0);
@@ -279,7 +279,7 @@ std::string raytracing_fragment_shader_string =
                 if (h_temp.t < h.t) {
                     h = h_temp;
                     m = m_temp;
-                    found = 1;
+                    found = 1.0;
                 }
             }
         }
@@ -288,17 +288,20 @@ std::string raytracing_fragment_shader_string =
             if (h_temp.t < h.t) {
                 h = h_temp;
                 m = m_temp;
-                found = 1;
+                found = 1.0;
             }
         }
 
-        if (found == 1) {
-            is_hit = 1;
-            r.origin = h.position;
-            //r.direction = reflect(r.direction, h.normal);
-            r.direction = rand_cos_hemisphere(h.normal);
-            acc *= m.albedo;
-        }
+        vec3 rv = reflect(r.direction, h.normal);
+        vec3 dv = rand_cos_hemisphere(h.normal);
+
+        //if (found) {
+            is_hit = int(found);
+            r.origin = mix(r.origin, h.position, found);
+            //r.direction = mix(r.direction, rv, found);
+            r.direction = mix(r.direction, dv, found);
+            acc *= mix(vec3(1.0), m.albedo, found);
+        //}
     }
 
     vec3 trace(Ray r) {
