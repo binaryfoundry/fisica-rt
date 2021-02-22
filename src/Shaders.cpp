@@ -258,7 +258,7 @@ std::string raytracing_fragment_shader_string =
         return false;
     }
 
-    void trace_world(inout Ray r, inout vec3 acc) {
+    void trace_world(inout Ray r, inout vec3 acc, inout int is_hit) {
         Hit h = Hit(FLT_MAX, r.origin, r.direction);
         Hit h_temp;
         Material m;
@@ -293,6 +293,7 @@ std::string raytracing_fragment_shader_string =
         }
 
         if (found == 1) {
+            is_hit = 1;
             r.origin = h.position;
             //r.direction = reflect(r.direction, h.normal);
             r.direction = rand_cos_hemisphere(h.normal);
@@ -301,11 +302,14 @@ std::string raytracing_fragment_shader_string =
     }
 
     vec3 trace(Ray r) {
+        int is_hit = 0;
         vec3 acc = vec3(1.0);
         for (int i = 0; i < BOUNCES; i++) {
-            trace_world(r, acc);
+            is_hit = 0;
+            trace_world(r, acc, is_hit);
         }
         acc *= environment_emissive(r.direction);
+        acc *= float(1 - is_hit);
         return acc;
     }
 
