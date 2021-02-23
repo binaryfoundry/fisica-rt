@@ -282,7 +282,7 @@ std::string raytracing_fragment_shader_string =
         return false;
     }
 
-    void trace_world(inout Ray r, inout vec3 acc, inout int is_hit) {
+    void trace_world(inout Ray r, inout vec4 acc, inout int is_hit) {
         Hit h = Hit(FLT_MAX, r.origin, r.direction);
         Hit h_temp;
         Material m;
@@ -324,19 +324,20 @@ std::string raytracing_fragment_shader_string =
             r.origin = mix(r.origin, h.position, found);
             //r.direction = mix(r.direction, rv, found);
             r.direction = mix(r.direction, dv, found);
-            acc *= mix(vec3(1.0), m.albedo, found);
+            acc.xyz *= mix(vec3(1.0), m.albedo, found);
+            acc.w += mix(0.0, h.t, found);
         //}
     }
 
-    vec3 trace(Ray r) {
+    vec4 trace(Ray r) {
         int is_hit = 0;
-        vec3 acc = vec3(1.0);
+        vec4 acc = vec4(1.0, 1.0, 1.0, 0.0);
         for (int i = 0; i < BOUNCES; i++) {
             is_hit = 0;
             trace_world(r, acc, is_hit);
         }
-        acc *= env_cie(r.direction);
-        acc *= float(1 - is_hit);
+        acc.xyz *= env_cie(r.direction);
+        acc.xyz *= float(1 - is_hit);
         return acc;
     }
 
@@ -344,11 +345,14 @@ std::string raytracing_fragment_shader_string =
         rand_init();
         Ray r = Ray_screen(v_texcoord);
 
-        vec3 acc;
+        vec4 acc;
         for (int s = 0; s < SAMPLES; s++) {
             acc += trace(r);
         }
         acc /= float(SAMPLES);
 
-        out_color = vec4(acc * exposure.x , 1.0);
+        vec3 env = env_cie(r.direction);
+        acc.xyz = mix(acc.xyz, env, min(acc.w / 150.0, 1.0));
+
+        out_color = vec4(acc.xyz * exposure.x , 1.0);
     })";
