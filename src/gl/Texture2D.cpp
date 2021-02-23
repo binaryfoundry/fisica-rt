@@ -128,14 +128,16 @@ namespace GL
                     0,
                     0,
                     0,
-                    0,
+                    i,
                     width,
                     height,
-                    i,
+                    1,
                     gl_format,
                     gl_type,
-                    (GLvoid*)&((*data[0])[0]));
+                    (GLvoid*)&((*data[i])[0]));
             }
+
+            GL::CheckError();
 
             glTexParameteri(
                 GL_TEXTURE_2D_ARRAY,
