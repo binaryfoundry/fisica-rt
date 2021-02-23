@@ -10,6 +10,7 @@ namespace GL
         const std::string& file_path)
     {
         Load(file_path);
+        Update();
     }
 
     template<typename T, size_t E>
@@ -73,8 +74,6 @@ namespace GL
 
         glGenTextures(
             1, &gl_texture_handle);
-
-        Update();
     };
 
     template<typename T, size_t E>
