@@ -33,9 +33,11 @@ void Render::Init()
 
     camera_uniforms = std::make_unique<GL::UniformBuffer<CameraUniforms>>();
 
-    noise = std::make_unique<GL::Texture2D<TexDataByteRGBA, 2>>(128, 128);
+    noise = std::make_unique<GL::Texture2D<TexDataByteRGBA, 4>>(128, 128);
     noise->Load("files/output_128x128_tri.bmp", 0);
     noise->Load("files/output_128x128_tri.bmp", 1);
+    noise->Load("files/output_128x128_tri.bmp", 2);
+    noise->Load("files/output_128x128_tri.bmp", 3);
     noise->Update();
 
     environment = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(

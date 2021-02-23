@@ -56,7 +56,7 @@ private:
 
     std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> environment;
     std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> scene;
-    std::unique_ptr<GL::Texture2D<TexDataByteRGBA, 2>> noise;
+    std::unique_ptr<GL::Texture2D<TexDataByteRGBA, 4>> noise;
 
     void DrawQuad();
 
