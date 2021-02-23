@@ -5,30 +5,15 @@
 
 namespace GL
 {
-    template<>
-    Texture2D<TexDataByteRGBA>::Texture2D(
+    template<typename T, size_t E>
+    Texture2D<T, E>::Texture2D(
         const std::string& file_path)
     {
         Load(file_path);
     }
 
-    template<>
-    Texture2D<TexDataFloatRGBA>::Texture2D(
-        const std::string& file_path)
-    {
-        Load(file_path);
-    }
-
-    template<>
-    Texture2D<TexDataByteRGBA>::Texture2D(
-        const uint32_t width,
-        const uint32_t height)
-    {
-        Create(width, height);
-    }
-
-    template<>
-    Texture2D<TexDataFloatRGBA>::Texture2D(
+    template<typename T, size_t E>
+    Texture2D<T, E>::Texture2D(
         const uint32_t width,
         const uint32_t height)
     {
@@ -41,20 +26,25 @@ namespace GL
         assert(!created);
     }
 
-    template<>
-    void Texture2D<TexDataByteRGBA>::SetFormat()
+    template<typename T, size_t E>
+    void Texture2D<T, E>::SetFormat()
     {
-        gl_type = GL_UNSIGNED_BYTE;
-        gl_format = GL_RGBA;
-        gl_internal_format = GL_RGBA8;
-    };
-
-    template<>
-    void Texture2D<TexDataFloatRGBA>::SetFormat()
-    {
-        gl_type = GL_FLOAT;
-        gl_format = GL_RGBA;
-        gl_internal_format = GL_RGBA32F;
+        if      constexpr (std::is_same_v<T, TexDataByteRGBA>)
+        {
+            gl_type = GL_UNSIGNED_BYTE;
+            gl_format = GL_RGBA;
+            gl_internal_format = GL_RGBA8;
+        }
+        else if constexpr (std::is_same_v<T, TexDataFloatRGBA>)
+        {
+            gl_type = GL_FLOAT;
+            gl_format = GL_RGBA;
+            gl_internal_format = GL_RGBA32F;
+        }
+        else
+        {
+            static_assert(false);
+        }
     };
 
     template<typename T, size_t E>
@@ -66,9 +56,9 @@ namespace GL
 
         for (size_t i = 0; i < E; i++)
         {
-            if (data[0] == nullptr)
+            if (data[i] == nullptr)
             {
-                data[0] = std::make_unique<std::vector<T>>(
+                data[i] = std::make_unique<std::vector<T>>(
                     width_ * height_);
             }
         }
@@ -147,6 +137,26 @@ namespace GL
                     (GLvoid*)&((*data[i])[0]));
             }
 
+            glTexParameteri(
+                GL_TEXTURE_2D_ARRAY,
+                GL_TEXTURE_MIN_FILTER,
+                GL_NEAREST);
+
+            glTexParameteri(
+                GL_TEXTURE_2D_ARRAY,
+                GL_TEXTURE_MAG_FILTER,
+                GL_NEAREST);
+
+            glTexParameteri(
+                GL_TEXTURE_2D_ARRAY,
+                GL_TEXTURE_WRAP_S,
+                GL_REPEAT);
+
+            glTexParameteri(
+                GL_TEXTURE_2D_ARRAY,
+                GL_TEXTURE_WRAP_T,
+                GL_REPEAT);
+
             glGenerateMipmap(
                 GL_TEXTURE_2D_ARRAY);
 
@@ -156,68 +166,71 @@ namespace GL
         }
     }
 
-    template<>
-    void Texture2D<TexDataByteRGBA>::Load(
+    template<typename T, size_t E>
+    void Texture2D<T, E>::Load(
         const std::string file,
         const size_t index)
     {
-        int t_width, t_height, t_channels;
+        if      constexpr (std::is_same_v<T, TexDataByteRGBA>)
+        {
+            int t_width, t_height, t_channels;
 
-        auto* raw_data = reinterpret_cast<TexDataByteRGBA*>(stbi_load(
-            file.c_str(),
-            &t_width,
-            &t_height,
-            &t_channels,
-            STBI_rgb_alpha));
+            auto* raw_data = reinterpret_cast<TexDataByteRGBA*>(stbi_load(
+                file.c_str(),
+                &t_width,
+                &t_height,
+                &t_channels,
+                STBI_rgb_alpha));
 
-        size_t raw_data_size =
-            t_width * t_height;
+            size_t raw_data_size =
+                t_width * t_height;
 
-        data[index] = std::make_unique<std::vector<TexDataByteRGBA>>(
-            raw_data_size);
+            data[index] = std::make_unique<std::vector<TexDataByteRGBA>>(
+                raw_data_size);
 
-        data[index]->assign(
-            raw_data,
-            raw_data + raw_data_size);
+            data[index]->assign(
+                raw_data,
+                raw_data + raw_data_size);
 
-        stbi_image_free(
-            raw_data);
+            stbi_image_free(
+                raw_data);
 
-        Create(
-            t_width,
-            t_height);
-    }
+            Create(
+                t_width,
+                t_height);
+        }
+        else if constexpr (std::is_same_v<T, TexDataFloatRGBA>)
+        {
+            int t_width, t_height, t_channels;
 
-    template<>
-    void Texture2D<TexDataFloatRGBA>::Load(
-        const std::string file,
-        const size_t index)
-    {
-        int t_width, t_height, t_channels;
+            auto* raw_data = reinterpret_cast<TexDataFloatRGBA*>(stbi_loadf(
+                file.c_str(),
+                &t_width,
+                &t_height,
+                &t_channels,
+                STBI_rgb_alpha));
 
-        auto* raw_data = reinterpret_cast<TexDataFloatRGBA*>(stbi_loadf(
-            file.c_str(),
-            &t_width,
-            &t_height,
-            &t_channels,
-            STBI_rgb_alpha));
+            size_t raw_data_size =
+                t_width * t_height;
 
-        size_t raw_data_size =
-            t_width * t_height;
+            data[index] = std::make_unique<std::vector<TexDataFloatRGBA>>(
+                raw_data_size);
 
-        data[index] = std::make_unique<std::vector<TexDataFloatRGBA>>(
-            raw_data_size);
+            data[index]->assign(
+                raw_data,
+                raw_data + raw_data_size);
 
-        data[index]->assign(
-            raw_data,
-            raw_data + raw_data_size);
+            stbi_image_free(
+                raw_data);
 
-        stbi_image_free(
-            raw_data);
-
-        Create(
-            t_width,
-            t_height);
+            Create(
+                t_width,
+                t_height);
+        }
+        else
+        {
+            static_assert(false);
+        }
     }
 
     template<typename T, size_t E>
@@ -231,6 +244,9 @@ namespace GL
         created = false;
     }
 
-    template class Texture2D<TexDataByteRGBA>;
-    template class Texture2D<TexDataFloatRGBA>;
+    template class Texture2D<TexDataByteRGBA, 1>;
+    template class Texture2D<TexDataFloatRGBA, 1>;
+
+    template class Texture2D<TexDataByteRGBA, 2>;
+    template class Texture2D<TexDataFloatRGBA, 2>;
 }
