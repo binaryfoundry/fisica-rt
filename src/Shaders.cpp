@@ -109,6 +109,20 @@ std::string raytracing_fragment_shader_string =
             env_spherical_to_equirect(n)).xyz;
     }
 
+    vec3 env_color = vec3(0.18867, 0.49784, 0.66160);
+    vec3 env_direction = vec3(0.0, 0.7071, 0.7071);
+
+    vec3 env_cie(vec3 v) {
+        v = normalize(v);
+        float g = dot(v, env_direction);
+        float s = env_direction.y;
+        float a = (0.91 + 10.0 * exp(-3.0 * acos(g)) + 0.45 * g * g) *
+            (1.0 - exp(-0.32 / max(v.y, 0.0)));
+        float b = (0.91 + 10.0 * exp(-3.0 * acos(s)) + 0.45 * s * s) *
+            (1.0 - exp(-0.32));
+        return env_color * a / b;
+    }
+
     float rand_seed;
 
     void rand_init() {
@@ -307,7 +321,7 @@ std::string raytracing_fragment_shader_string =
             is_hit = 0;
             trace_world(r, acc, is_hit);
         }
-        acc *= environment_emissive(r.direction);
+        acc *= env_cie(r.direction);
         acc *= float(1 - is_hit);
         return acc;
     }
