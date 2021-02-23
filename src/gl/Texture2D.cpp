@@ -134,7 +134,7 @@ namespace GL
                     i,
                     gl_format,
                     gl_type,
-                    (GLvoid*)&((*data[i])[0]));
+                    (GLvoid*)&((*data[0])[0]));
             }
 
             glTexParameteri(

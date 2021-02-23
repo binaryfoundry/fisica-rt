@@ -33,11 +33,10 @@ void Render::Init()
 
     camera_uniforms = std::make_unique<GL::UniformBuffer<CameraUniforms>>();
 
-    noise_0 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>(
-        "files/output_256x256_tri.bmp");
+    noise = std::make_unique<GL::Texture2D<TexDataByteRGBA, 2>>(128, 128);
 
-    noise_1 = std::make_unique<GL::Texture2D<TexDataByteRGBA>>(
-        "files/output_256x256_tri.bmp");
+    noise->Load("files/output_128x128_tri.bmp", 0);
+    noise->Load("files/output_128x128_tri.bmp", 1);
 
     environment = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(
         "files/loc00184-22-2k.hdr");
@@ -80,8 +79,7 @@ void Render::Deinit()
 
     environment->Delete();
     scene->Delete();
-    noise_0->Delete();
-    noise_1->Delete();
+    noise->Delete();
 
     glDeleteProgram(
         frontbuffer_shader_program);
@@ -114,13 +112,9 @@ void Render::InitRaytracing(
         raytracing_shader_program,
         "scene");
 
-    raytracing_noise_0_texture_uniform_location = glGetUniformLocation(
+    raytracing_noise_texture_uniform_location = glGetUniformLocation(
         raytracing_shader_program,
-        "rand_sampler_0");
-
-    raytracing_noise_1_texture_uniform_location = glGetUniformLocation(
-        raytracing_shader_program,
-        "rand_sampler_1");
+        "rand_sampler");
 
     raytracing_environment_texture_uniform_location = glGetUniformLocation(
         raytracing_shader_program,
@@ -257,34 +251,16 @@ void Render::Draw(
         GL_TEXTURE0);
 
     glBindTexture(
-        GL_TEXTURE_2D,
-        noise_0->gl_texture_handle);
+        GL_TEXTURE_2D_ARRAY,
+        noise->gl_texture_handle);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    glUniform1i(
-        raytracing_noise_0_texture_uniform_location,
-        0);
-
-    // ...
-
-    glActiveTexture(
-        GL_TEXTURE0);
-
-    glBindTexture(
-        GL_TEXTURE_2D,
-        noise_1->gl_texture_handle);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     glUniform1i(
-        raytracing_noise_1_texture_uniform_location,
+        raytracing_noise_texture_uniform_location,
         0);
 
     // ...

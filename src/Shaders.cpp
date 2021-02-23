@@ -75,6 +75,7 @@ std::string raytracing_fragment_shader_string =
     #ifdef GL_ES
     precision lowp float;
     precision lowp int;
+    precision lowp sampler2DArray;
     #endif
 
     #define PI 3.1415926535897932384626433832795
@@ -90,8 +91,7 @@ std::string raytracing_fragment_shader_string =
     in vec2 v_texcoord;
     layout(location = 0) out vec4 out_color;
 
-    uniform sampler2D rand_sampler_0;
-    uniform sampler2D rand_sampler_1;
+    uniform sampler2DArray rand_sampler;
     uniform sampler2D scene_sampler;
     uniform sampler2D environment_sampler;
 
@@ -141,8 +141,8 @@ std::string raytracing_fragment_shader_string =
 
     void rand_init() {
         vec2 coords = gl_FragCoord.xy /
-            vec2(textureSize(rand_sampler_1, 0));
-        rand_seed = texture(rand_sampler_1, coords).x;
+            vec2(textureSize(rand_sampler, 0));
+        rand_seed = texture(rand_sampler, vec3(coords, 0)).x;
     }
 
     float rand() {

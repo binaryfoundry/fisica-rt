@@ -132,8 +132,8 @@ static int sdl_init_graphics()
 
     const EGLint context_attribs[] =
     {
-        EGL_CONTEXT_MAJOR_VERSION_KHR, 2,
-        EGL_CONTEXT_MINOR_VERSION_KHR, 0,
+        EGL_CONTEXT_MAJOR_VERSION_KHR, 3,
+        EGL_CONTEXT_MINOR_VERSION_KHR, 1,
         EGL_NONE
     };
 

@@ -43,8 +43,7 @@ private:
     GLuint raytracing_shader_program = 0;
     GLuint raytracing_camera_uniform_location = 0;
     GLuint raytracing_scene_uniform_location = 0;
-    GLuint raytracing_noise_0_texture_uniform_location = 0;
-    GLuint raytracing_noise_1_texture_uniform_location = 0;
+    GLuint raytracing_noise_texture_uniform_location = 0;
     GLuint raytracing_environment_texture_uniform_location = 0;
     GLuint raytracing_scene_texture_uniform_location = 0;
 
@@ -57,8 +56,7 @@ private:
 
     std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> environment;
     std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> scene;
-    std::unique_ptr<GL::Texture2D<TexDataByteRGBA>> noise_0;
-    std::unique_ptr<GL::Texture2D<TexDataByteRGBA>> noise_1;
+    std::unique_ptr<GL::Texture2D<TexDataByteRGBA, 2>> noise;
 
     void DrawQuad();
 
