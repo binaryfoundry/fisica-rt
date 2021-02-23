@@ -3,10 +3,11 @@
 #include "OpenGL.hpp"
 
 #include <vector>
+#include <array>
 
 namespace GL
 {
-    template <typename T>
+    template <typename T, size_t E = 1>
     class Texture2D
     {
     private:
@@ -21,7 +22,7 @@ namespace GL
 
         void SetFormat();
 
-        std::unique_ptr<std::vector<T>> data;
+        std::array<std::unique_ptr<std::vector<T>>, E> data;
 
     public:
         GLuint gl_texture_handle;
@@ -43,12 +44,14 @@ namespace GL
 
         void Update();
 
-        std::unique_ptr<std::vector<T>>& Data()
+        std::unique_ptr<std::vector<T>>& Data(size_t index = 0)
         {
-            return data;
+            return data[index];
         };
 
-        void Load(const std::string file);
+        void Load(
+            const std::string file,
+            const size_t index = 0);
 
         void Delete();
 

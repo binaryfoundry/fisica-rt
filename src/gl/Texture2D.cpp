@@ -35,8 +35,8 @@ namespace GL
         Create(width, height);
     }
 
-    template<typename T>
-    Texture2D<T>::~Texture2D()
+    template<typename T, size_t E>
+    Texture2D<T, E>::~Texture2D()
     {
         assert(!created);
     }
@@ -57,17 +57,20 @@ namespace GL
         gl_internal_format = GL_RGBA32F;
     };
 
-    template<typename T>
-    void Texture2D<T>::Create(
+    template<typename T, size_t E>
+    void Texture2D<T, E>::Create(
         const uint32_t width_,
         const uint32_t height_)
     {
         created = true;
 
-        if (data == nullptr)
+        for (size_t i = 0; i < E; i++)
         {
-            data = std::make_unique<std::vector<T>>(
-                width_ * height_);
+            if (data[0] == nullptr)
+            {
+                data[0] = std::make_unique<std::vector<T>>(
+                    width_ * height_);
+            }
         }
 
         width = width_;
@@ -84,38 +87,79 @@ namespace GL
         Update();
     };
 
-    template<typename T>
-    void Texture2D<T>::Update()
+    template<typename T, size_t E>
+    void Texture2D<T, E>::Update()
     {
         glActiveTexture(
             GL_TEXTURE0);
 
-        glBindTexture(
-            GL_TEXTURE_2D,
-            gl_texture_handle);
+        if (E == 1)
+        {
+            glBindTexture(
+                GL_TEXTURE_2D,
+                gl_texture_handle);
 
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            gl_internal_format,
-            width,
-            height,
-            0,
-            gl_format,
-            gl_type,
-            (GLvoid*)&((*data)[0]));
+            glTexImage2D(
+                GL_TEXTURE_2D,
+                0, // TODO mipmaps parameter
+                gl_internal_format,
+                width,
+                height,
+                0,
+                gl_format,
+                gl_type,
+                (GLvoid*)&((*data[0])[0]));
 
-        glGenerateMipmap(
-            GL_TEXTURE_2D);
+            glGenerateMipmap(
+                GL_TEXTURE_2D);
 
-        glBindTexture(
-            GL_TEXTURE_2D,
-            NULL);
+            glBindTexture(
+                GL_TEXTURE_2D,
+                NULL);
+        }
+        else
+        {
+            glBindTexture(
+                GL_TEXTURE_2D_ARRAY,
+                gl_texture_handle);
+
+            glTexStorage3D(
+                GL_TEXTURE_2D_ARRAY,
+                1, // TODO mipmaps parameter
+                gl_internal_format,
+                width,
+                height,
+                E);
+
+            for (uint32_t i = 0; i < E; i++)
+            {
+                glTexSubImage3D(
+                    GL_TEXTURE_2D_ARRAY,
+                    0,
+                    0,
+                    0,
+                    0,
+                    width,
+                    height,
+                    i,
+                    gl_format,
+                    gl_type,
+                    (GLvoid*)&((*data[i])[0]));
+            }
+
+            glGenerateMipmap(
+                GL_TEXTURE_2D_ARRAY);
+
+            glBindTexture(
+                GL_TEXTURE_2D_ARRAY,
+                NULL);
+        }
     }
 
     template<>
     void Texture2D<TexDataByteRGBA>::Load(
-        const std::string file)
+        const std::string file,
+        const size_t index)
     {
         int t_width, t_height, t_channels;
 
@@ -129,10 +173,10 @@ namespace GL
         size_t raw_data_size =
             t_width * t_height;
 
-        data = std::make_unique<std::vector<TexDataByteRGBA>>(
+        data[index] = std::make_unique<std::vector<TexDataByteRGBA>>(
             raw_data_size);
 
-        data->assign(
+        data[index]->assign(
             raw_data,
             raw_data + raw_data_size);
 
@@ -146,7 +190,8 @@ namespace GL
 
     template<>
     void Texture2D<TexDataFloatRGBA>::Load(
-        const std::string file)
+        const std::string file,
+        const size_t index)
     {
         int t_width, t_height, t_channels;
 
@@ -160,10 +205,10 @@ namespace GL
         size_t raw_data_size =
             t_width * t_height;
 
-        data = std::make_unique<std::vector<TexDataFloatRGBA>>(
+        data[index] = std::make_unique<std::vector<TexDataFloatRGBA>>(
             raw_data_size);
 
-        data->assign(
+        data[index]->assign(
             raw_data,
             raw_data + raw_data_size);
 
@@ -175,8 +220,8 @@ namespace GL
             t_height);
     }
 
-    template<typename T>
-    void Texture2D<T>::Delete()
+    template<typename T, size_t E>
+    void Texture2D<T, E>::Delete()
     {
         if (created)
         {
