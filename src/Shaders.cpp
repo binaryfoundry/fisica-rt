@@ -137,23 +137,20 @@ std::string raytracing_fragment_shader_string =
         return mix(c, env_spot_intensity, spot);
     }
 
-    float rand_seed;
+    int rand_sample = 0;
 
-    void rand_init() {
+    vec3 rand_fetch(vec2 c) {
         vec2 coords = gl_FragCoord.xy /
             vec2(textureSize(rand_sampler, 0));
-        rand_seed = texture(rand_sampler, vec3(coords, 0)).x;
+        return texture(rand_sampler, vec3(coords + c, rand_sample)).xyz;
     }
 
-    float rand() {
-        rand_seed = mod(rand_seed * 1.1234567893490423, 13.0);
-        return fract(sin(rand_seed += 0.1) * 43758.5453123);
-    }
+    //float rand() {
+    //    return rand_fetch(vec2(0.0, 0.0)).x;
+    //}
 
     vec2 rand2() {
-        rand_seed = mod(rand_seed * 1.1234567893490423, 13.0);
-        return fract(sin(vec2(rand_seed += 0.1,rand_seed += 0.1)) *
-            vec2(43758.5453123,22578.1459123));
+        return vec2(rand_fetch(vec2(0.0, 0.0)).x, rand_fetch(vec2(0.5, 0.5)).x);
     }
 
     vec3 rand_cos_hemisphere(const vec3 n) {
@@ -333,6 +330,7 @@ std::string raytracing_fragment_shader_string =
         int is_hit = 0;
         vec4 acc = vec4(1.0, 1.0, 1.0, 0.0);
         for (int i = 0; i < BOUNCES; i++) {
+            rand_sample = i;
             is_hit = 0;
             trace_world(r, acc, is_hit);
         }
@@ -342,7 +340,6 @@ std::string raytracing_fragment_shader_string =
     }
 
     void main() {
-        rand_init();
         Ray r = Ray_screen(v_texcoord);
 
         vec4 acc;
