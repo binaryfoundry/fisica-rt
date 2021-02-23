@@ -40,6 +40,14 @@ set(HEADERS_MATH
     src/math/Angles.hpp
     src/math/Random.hpp)
 
+set(SOURCES_NOISE
+    src/noise/Noise.cpp
+    src/noise/Sampler4SPP.cpp)
+
+set(HEADERS_NOISE
+    src/noise/Noise.hpp
+    src/noise/Sampler4SPP.hpp)
+
 set(SOURCES_SDL
     src/sdl/SDL.cpp
     src/sdl/Main.cpp
@@ -85,6 +93,9 @@ SOURCE_GROUP("Source" FILES ${HEADERS})
 
 SOURCE_GROUP("Source\\math" FILES ${SOURCES_MATH})
 SOURCE_GROUP("Source\\math" FILES ${HEADERS_MATH})
+
+SOURCE_GROUP("Source\\noise" FILES ${SOURCES_NOISE})
+SOURCE_GROUP("Source\\noise" FILES ${HEADERS_NOISE})
 
 SOURCE_GROUP("Source\\sdl" FILES ${SOURCES_SDL})
 SOURCE_GROUP("Source\\sdl" FILES ${HEADERS_SDL})
@@ -136,6 +147,8 @@ add_executable(
     ${HEADERS}
     ${SOURCES_MATH}
     ${HEADERS_MATH}
+    ${SOURCES_NOISE}
+    ${HEADERS_NOISE}
     ${SOURCES_SDL}
     ${HEADERS_SDL}
     ${SOURCES_GL}
