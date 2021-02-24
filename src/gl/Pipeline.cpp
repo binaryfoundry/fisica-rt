@@ -1,4 +1,4 @@
-#include "Render.hpp"
+#include "Pipeline.hpp"
 
 #include "Shaders.hpp"
 
@@ -21,11 +21,11 @@ namespace GL
          0, 1, 2, 2, 3, 0
     };
 
-    Render::Render()
+    Pipeline::Pipeline()
     {
     }
 
-    void Render::Init()
+    void Pipeline::Init()
     {
         quad_vertex_buffer = GL::GenBuffer(
             quad_vertices_data);
@@ -76,7 +76,7 @@ namespace GL
             "tex");
     }
 
-    void Render::Deinit()
+    void Pipeline::Deinit()
     {
         camera_uniforms->Delete();
         scene_uniforms->Delete();
@@ -98,7 +98,7 @@ namespace GL
             1, &quad_index_buffer);
     }
 
-    void Render::InitRaytracing(
+    void Pipeline::InitRaytracing(
         const uint32_t framebuffer_width,
         const uint32_t framebuffer_height)
     {
@@ -141,7 +141,7 @@ namespace GL
         GL::CheckError();
     }
 
-    void Render::DeinitRaytracing()
+    void Pipeline::DeinitRaytracing()
     {
         framebuffer->Delete();
 
@@ -155,7 +155,7 @@ namespace GL
         return x + (y * w);
     }
 
-    void Render::Update(
+    void Pipeline::Update(
         const std::vector<Sphere>& geometry)
     {
         const auto num_geometry = geometry.size();
@@ -188,7 +188,7 @@ namespace GL
             num_geometry);
     }
 
-    void Render::Draw(
+    void Pipeline::Draw(
         const uint32_t window_width,
         const uint32_t window_height,
         const std::unique_ptr<Camera>& camera)
@@ -419,7 +419,7 @@ namespace GL
         GL::CheckError();
     }
 
-    void Render::DrawQuad()
+    void Pipeline::DrawQuad()
     {
         glBindBuffer(
             GL_ARRAY_BUFFER,

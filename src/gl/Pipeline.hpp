@@ -28,7 +28,7 @@ namespace GL
         uint32_t num_geometry;
     };
 
-    class Render
+    class Pipeline
     {
     private:
         GLuint quad_vertex_buffer = 0;
@@ -63,7 +63,7 @@ namespace GL
         void DrawQuad();
 
     public:
-        Render();
+        Pipeline();
 
         void Init();
 

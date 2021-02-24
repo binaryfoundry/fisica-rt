@@ -11,9 +11,9 @@ void Main::Init()
     camera = std::make_unique<Camera>();
     camera->position = glm::vec3(0, 5, 35);
 
-    render.Init();
+    pipeline.Init();
 
-    render.InitRaytracing(
+    pipeline.InitRaytracing(
         raytracing_framebuffer_width,
         raytracing_framebuffer_height);
 
@@ -62,8 +62,8 @@ void Main::Init()
 
 void Main::Deinit()
 {
-    render.DeinitRaytracing();
-    render.Deinit();
+    pipeline.DeinitRaytracing();
+    pipeline.Deinit();
     gui.Deinit();
 }
 
@@ -108,9 +108,9 @@ void Main::Update()
     camera->Strafe(strafe_speed);
     camera->Forward(forward_speed);
 
-    render.Update(geometry);
+    pipeline.Update(geometry);
 
-    render.Draw(
+    pipeline.Draw(
         sdl_window_width,
         sdl_window_height,
         camera);
