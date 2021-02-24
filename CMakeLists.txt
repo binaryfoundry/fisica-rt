@@ -14,7 +14,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(EMSCRIPTEN "Web Compilation" OFF)
 
-set(SOURCE
+set(SOURCES
     src/Main.cpp
     src/GUI.cpp
     src/Camera.cpp
@@ -63,7 +63,7 @@ set(SOURCES_GL
     src/gl/FrameBuffer.cpp
     src/gl/Texture2D.cpp
     src/gl/UniformBuffer.cpp
-    src/gl/Render.cpp
+    src/gl/Pipeline.cpp
     src/gl/Shaders.cpp)
 
 set(HEADERS_GL
@@ -71,7 +71,7 @@ set(HEADERS_GL
     src/gl/FrameBuffer.hpp
     src/gl/Texture2D.hpp
     src/gl/UniformBuffer.hpp
-    src/gl/Render.hpp
+    src/gl/Pipeline.hpp
     src/gl/Shaders.hpp)
 
 set(SOURCES_IMGUI

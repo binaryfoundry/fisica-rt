@@ -4,15 +4,14 @@
 #include "Camera.hpp"
 #include "Geometry.hpp"
 
-#include "gl/Render.hpp"
 #include "gl/OpenGL.hpp"
-#include "gl/Texture2D.hpp"
+#include "gl/Pipeline.hpp"
 
 class Main
 {
 private:
     GUI gui;
-    GL::Render render;
+    GL::Pipeline pipeline;
 
     float move_speed = 0.1f;
 
