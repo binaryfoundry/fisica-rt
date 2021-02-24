@@ -14,17 +14,17 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(EMSCRIPTEN "Web Compilation" OFF)
 
-set(SOURCES
-    "src/Main.cpp"
-    "src/GUI.cpp"
-    "src/Camera.cpp"
-    "src/Geometry.cpp")
+set(SOURCE
+    src/Main.cpp
+    src/GUI.cpp
+    src/Camera.cpp
+    src/Geometry.cpp)
 
 set(HEADERS
-    "src/Main.hpp"
-    "src/GUI.hpp"
-    "src/Camera.hpp"
-    "src/Geometry.hpp")
+    src/Main.hpp
+    src/GUI.hpp
+    src/Camera.hpp
+    src/Geometry.hpp)
 
 set(SOURCES_MATH
     src/math/Math.cpp
