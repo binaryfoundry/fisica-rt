@@ -17,17 +17,13 @@ option(EMSCRIPTEN "Web Compilation" OFF)
 set(SOURCES
     "src/Main.cpp"
     "src/GUI.cpp"
-    "src/Render.cpp"
     "src/Camera.cpp"
-    "src/Shaders.cpp"
     "src/Geometry.cpp")
 
 set(HEADERS
     "src/Main.hpp"
     "src/GUI.hpp"
-    "src/Render.hpp"
     "src/Camera.hpp"
-    "src/Shaders.hpp"
     "src/Geometry.hpp")
 
 set(SOURCES_MATH
@@ -66,13 +62,17 @@ set(SOURCES_GL
     src/gl/OpenGL.cpp
     src/gl/FrameBuffer.cpp
     src/gl/Texture2D.cpp
-    src/gl/UniformBuffer.cpp)
+    src/gl/UniformBuffer.cpp
+    src/gl/Render.cpp
+    src/gl/Shaders.cpp)
 
 set(HEADERS_GL
     src/gl/OpenGL.hpp
     src/gl/FrameBuffer.hpp
     src/gl/Texture2D.hpp
-    src/gl/UniformBuffer.hpp)
+    src/gl/UniformBuffer.hpp
+    src/gl/Render.hpp
+    src/gl/Shaders.hpp)
 
 set(SOURCES_IMGUI
     lib/imgui/imgui/imgui.cpp

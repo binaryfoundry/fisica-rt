@@ -1,7 +1,9 @@
 #include "Shaders.hpp"
 
-std::string frontbuffer_vertex_shader_string =
-    R"(#version 300 es
+namespace GL
+{
+    std::string frontbuffer_vertex_shader_string =
+        R"(#version 300 es
     #ifdef GL_ES
     precision mediump float;
     #endif
@@ -15,8 +17,8 @@ std::string frontbuffer_vertex_shader_string =
         gl_Position = projection * view * vec4(position, 1.0);
     })";
 
-std::string frontbuffer_fragment_shader_string =
-    R"(#version 300 es
+    std::string frontbuffer_fragment_shader_string =
+        R"(#version 300 es
     #ifdef GL_ES
     precision mediump float;
     #endif
@@ -56,8 +58,8 @@ std::string frontbuffer_fragment_shader_string =
         out_color = vec4(to_gamma_approx(tone_map(c, 1.0f)), 1.0);
     })";
 
-std::string raytracing_vertex_shader_string =
-    R"(#version 300 es
+    std::string raytracing_vertex_shader_string =
+        R"(#version 300 es
     #ifdef GL_ES
     precision lowp float;
     precision lowp int;
@@ -70,8 +72,8 @@ std::string raytracing_vertex_shader_string =
         gl_Position = vec4((position.xy - vec2(0.5))  * 2.0, -1.0, 1.0);
     })";
 
-std::string raytracing_fragment_shader_string =
-    R"(#version 300 es
+    std::string raytracing_fragment_shader_string =
+        R"(#version 300 es
     #ifdef GL_ES
     precision lowp float;
     precision lowp int;
@@ -353,3 +355,4 @@ std::string raytracing_fragment_shader_string =
 
         out_color = vec4(acc.xyz * exposure.x , 1.0);
     })";
+}

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "GUI.hpp"
-#include "Render.hpp"
 #include "Camera.hpp"
 #include "Geometry.hpp"
 
+#include "gl/Render.hpp"
 #include "gl/OpenGL.hpp"
 #include "gl/Texture2D.hpp"
 
@@ -12,7 +12,7 @@ class Main
 {
 private:
     GUI gui;
-    Render render;
+    GL::Render render;
 
     float move_speed = 0.1f;
 
