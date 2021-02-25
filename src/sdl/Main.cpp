@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 static int sdl_init_graphics()
 {
     sdl_window = SDL_CreateWindow(
-        "RTOW-GLSL",
+        "fisica-rt",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
         window_width,

@@ -128,7 +128,7 @@ static int sdl_init_graphics()
     element_height = static_cast<uint32_t>(cssH);
 
     sdl_window = SDL_CreateWindow(
-        "ZXSC",
+        "fisica-rt",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         element_width,

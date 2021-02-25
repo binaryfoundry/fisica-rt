@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
-set(PROJECT_NAME rtow-glsl)
-set(PROJECT_files_NAME rtow-glsl-files)
+set(PROJECT_NAME fisica-rt)
+set(PROJECT_files_NAME fisica-rt-files)
 
 project(${PROJECT_NAME})
 
