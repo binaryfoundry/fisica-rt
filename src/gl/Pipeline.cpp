@@ -1,6 +1,6 @@
 #include "Pipeline.hpp"
 
-#include "Shaders.hpp"
+#include "../sdl/File.hpp"
 #include "../noise/Noise.hpp"
 
 namespace GL
@@ -50,9 +50,10 @@ namespace GL
             scene_data_width,
             scene_data_height);
 
-        frontbuffer_shader_program = GL::LinkShader(
-            frontbuffer_vertex_shader_string,
-            frontbuffer_fragment_shader_string);
+        File frontbuffer_file("files/gl/frontbuffer.glsl", "r");
+
+        frontbuffer_shader_program = GL::LinkShaderFile(
+            frontbuffer_file.ReadString(frontbuffer_file.Length()));
 
         GL::CheckError();
 
@@ -103,9 +104,10 @@ namespace GL
         const uint32_t framebuffer_width,
         const uint32_t framebuffer_height)
     {
-        raytracing_shader_program = GL::LinkShader(
-            raytracing_vertex_shader_string,
-            raytracing_fragment_shader_string);
+        File raytracing_file("files/gl/raytracing.glsl", "r");
+
+        raytracing_shader_program = GL::LinkShaderFile(
+            raytracing_file.ReadString(raytracing_file.Length()));
 
         GL::CheckError();
 

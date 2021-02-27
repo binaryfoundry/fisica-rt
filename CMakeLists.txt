@@ -61,16 +61,14 @@ set(SOURCES_GL
     src/gl/FrameBuffer.cpp
     src/gl/Texture2D.cpp
     src/gl/UniformBuffer.cpp
-    src/gl/Pipeline.cpp
-    src/gl/Shaders.cpp)
+    src/gl/Pipeline.cpp)
 
 set(HEADERS_GL
     src/gl/OpenGL.hpp
     src/gl/FrameBuffer.hpp
     src/gl/Texture2D.hpp
     src/gl/UniformBuffer.hpp
-    src/gl/Pipeline.hpp
-    src/gl/Shaders.hpp)
+    src/gl/Pipeline.hpp)
 
 set(SOURCES_IMGUI
     lib/imgui/imgui/imgui.cpp

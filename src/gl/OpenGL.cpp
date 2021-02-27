@@ -1,12 +1,57 @@
 #include "OpenGL.hpp"
 
 #include <assert.h>
+#include <sstream>
 
 namespace GL
 {
     GLuint LoadShader(
         const GLenum type,
         const char* shader_src);
+
+    std::string InsertDefines(
+        const std::string shader_string,
+        const std::string defines)
+    {
+        const auto it = std::find(
+            shader_string.begin(),
+            shader_string.end(),
+            '\n');
+
+        const auto index = std::distance(
+            shader_string.begin(),
+            it);
+
+        const std::string header = shader_string.substr(
+            0,
+            index + 1);
+
+        const std::string body = shader_string.substr(
+            index + 1);
+
+        std::stringstream shader;
+        shader << header;
+        shader << defines << std::endl;
+        shader << "#line 2" << std::endl;
+        shader << body;
+        return shader.str();
+    }
+
+    GLuint LinkShaderFile(
+        const std::string shader_string)
+    {
+        const std::string vertex_shader_string = InsertDefines(
+            shader_string,
+            "#define COMPILING_VS");
+
+        const std::string fragment_shader_string = InsertDefines(
+            shader_string,
+            "#define COMPILING_FS");
+
+        return LinkShader(
+            vertex_shader_string,
+            fragment_shader_string);
+    }
 
     GLuint LinkShader(
         const std::string vertex_shader_string,

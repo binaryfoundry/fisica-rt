@@ -3,8 +3,6 @@
 #include <string>
 #include <vector>
 
-#include "../math/Math.hpp"
-
 class File
 {
 private:
