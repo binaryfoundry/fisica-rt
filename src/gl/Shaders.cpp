@@ -139,20 +139,24 @@ namespace GL
         return mix(c, env_spot_intensity, spot);
     }
 
+    const vec2 rand_offsets[4] = vec2[](
+        vec2(0.25, 0.25),
+        vec2(0.25, 0.75),
+        vec2(0.75, 0.25),
+        vec2(0.75, 0.75));
+
+    vec2 rand_offset = vec2(0.0);
     int rand_sample = 0;
 
-    vec3 rand_fetch(vec2 c) {
+    vec4 rand_fetch() {
         vec2 coords = gl_FragCoord.xy /
             vec2(textureSize(rand_sampler, 0));
-        return texture(rand_sampler, vec3(coords + c, rand_sample)).xyz;
+        return texture(rand_sampler, vec3(coords + rand_offset, rand_sample));
     }
 
-    //float rand() {
-    //    return rand_fetch(vec2(0.0, 0.0)).x;
-    //}
-
     vec2 rand2() {
-        return vec2(rand_fetch(vec2(0.0, 0.0)).x, rand_fetch(vec2(0.5, 0.5)).x);
+        vec4 s = rand_fetch();
+        return vec2(s.x, s.y);
     }
 
     vec3 rand_cos_hemisphere(const vec3 n) {
@@ -346,6 +350,7 @@ namespace GL
 
         vec4 acc;
         for (int s = 0; s < SAMPLES; s++) {
+            rand_offset = rand_offsets[s];
             acc += trace(r);
         }
         acc /= float(SAMPLES);
