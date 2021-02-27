@@ -37,12 +37,10 @@ set(HEADERS_MATH
     src/math/Random.hpp)
 
 set(SOURCES_NOISE
-    src/noise/Noise.cpp
-    src/noise/Sampler4SPP.cpp)
+    src/noise/Noise.cpp)
 
 set(HEADERS_NOISE
-    src/noise/Noise.hpp
-    src/noise/Sampler4SPP.hpp)
+    src/noise/Noise.hpp)
 
 set(SOURCES_SDL
     src/sdl/SDL.cpp
@@ -109,7 +107,8 @@ SOURCE_GROUP("Source\\imgui" FILES ${HEADERS_IMGUI})
 include_directories(
     ${PROJECT_SOURCE_DIR}/lib/glm
     ${PROJECT_SOURCE_DIR}/lib/stb
-    ${PROJECT_SOURCE_DIR}/lib/imgui)
+    ${PROJECT_SOURCE_DIR}/lib/imgui
+    ${PROJECT_SOURCE_DIR}/lib/noise)
 
 if (WIN32)
     message(STATUS "Platform: Windows")
