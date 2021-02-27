@@ -1,6 +1,7 @@
 #include "Pipeline.hpp"
 
 #include "Shaders.hpp"
+#include "../noise/Noise.hpp"
 
 namespace GL
 {
@@ -36,10 +37,10 @@ namespace GL
         camera_uniforms = std::make_unique<GL::UniformBuffer<CameraUniforms>>();
 
         noise = std::make_unique<GL::Texture2D<TexDataByteRGBA, 4>>(128, 128);
-        noise->Load("files/output_128x128_tri_0.bmp", 0);
-        noise->Load("files/output_128x128_tri_1.bmp", 1);
-        noise->Load("files/output_128x128_tri_2.bmp", 2);
-        noise->Load("files/output_128x128_tri_3.bmp", 3);
+        Noise::generate(noise->Data(0), 0);
+        Noise::generate(noise->Data(1), 1);
+        Noise::generate(noise->Data(2), 2);
+        Noise::generate(noise->Data(3), 3);
         noise->Update();
 
         environment = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(
