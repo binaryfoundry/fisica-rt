@@ -54,10 +54,10 @@
     }
 
     const vec2 rand_offsets[4] = vec2[](
-        vec2(0.25, 0.25),
-        vec2(0.25, 0.75),
-        vec2(0.75, 0.25),
-        vec2(0.75, 0.75));
+        vec2(0.0, 0.0),
+        vec2(0.5, 0.0),
+        vec2(0.25, 0.5),
+        vec2(0.75, 0.5));
 
     vec2 rand_offset = vec2(0.0);
     int rand_sample = 0;
