@@ -43,9 +43,6 @@ namespace GL
         Noise::generate(noise->Data(3), 3);
         noise->Update();
 
-        environment = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(
-            "files/loc00184-22-2k.hdr");
-
         scene = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(
             scene_data_width,
             scene_data_height);
@@ -76,6 +73,43 @@ namespace GL
         frontbuffer_texture_uniform_location = glGetUniformLocation(
             frontbuffer_shader_program,
             "tex");
+
+        environment = std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
+
+        environment->Create(
+            256,
+            256,
+            true);
+
+        File environment_file("files/gl/environment.glsl", "r");
+
+        environment_shader_program = GL::LinkShaderFile(
+            environment_file.ReadString());
+
+        glBindFramebuffer(
+            GL_FRAMEBUFFER,
+            environment->gl_frame_handle);
+
+        glViewport(
+            0, 0,
+            environment->Width(),
+            environment->Height());
+
+        glUseProgram(
+            environment_shader_program);
+
+        DrawQuad();
+
+        glBindTexture(
+            GL_TEXTURE_2D,
+            NULL);
+
+        glUseProgram(
+            NULL);
+
+        glBindFramebuffer(
+            GL_FRAMEBUFFER,
+            0);
     }
 
     void Pipeline::Deinit()
@@ -92,6 +126,9 @@ namespace GL
 
         glDeleteProgram(
             raytracing_shader_program);
+
+        glDeleteProgram(
+            environment_shader_program);
 
         glDeleteBuffers(
             1, &quad_vertex_buffer);

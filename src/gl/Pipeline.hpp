@@ -49,6 +49,8 @@ namespace GL
         GLuint raytracing_environment_texture_uniform_location = 0;
         GLuint raytracing_scene_texture_uniform_location = 0;
 
+        GLuint environment_shader_program = 0;
+
         const uint32_t scene_data_width = 8;
         const uint32_t scene_data_height = 1024;
 
@@ -56,7 +58,7 @@ namespace GL
         std::unique_ptr<GL::UniformBuffer<CameraUniforms>> camera_uniforms;
         std::unique_ptr<GL::UniformBuffer<SceneUniforms>> scene_uniforms;
 
-        std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> environment;
+        std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> environment;
         std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> scene;
         std::unique_ptr<GL::Texture2D<TexDataByteRGBA, 4>> noise;
 

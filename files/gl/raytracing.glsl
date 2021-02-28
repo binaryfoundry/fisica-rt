@@ -48,38 +48,9 @@
     }
 
     vec3 environment_emissive(vec3 n) {
-        n.y = -n.y;
         return texture(
             environment_sampler,
             env_spherical_to_equirect(n)).xyz;
-    }
-
-    vec3 env_color = vec3(0.18867, 0.49784, 0.66160) * 0.5;
-    vec3 env_direction = vec3(0.0, 0.7071, 0.7071);
-    vec3 env_spot_intensity = vec3(3.0);
-
-    float env_phase(float alpha, float g) {
-        float a = 3.0 * (1.0 - g * g);
-        float b = 2.0 * (2.0 + g * g);
-        float c = 1.0 + alpha * alpha;
-        float d = pow(1.0 + g  *g - 2.0  * g * alpha, 1.5);
-        return (a / b) * (c / d);
-    }
-
-    vec3 env_cie(vec3 v) {
-        v = normalize(v);
-        float g = dot(v, env_direction);
-        float s = env_direction.y;
-        float a = (0.91 + 10.0 * exp(-3.0 * acos(g)) + 0.45 * g * g) *
-            (1.0 - exp(-0.32 / max(v.y, 0.0)));
-        float b = (0.91 + 10.0 * exp(-3.0 * acos(s)) + 0.45 * s * s) *
-            (1.0 - exp(-0.32));
-        vec3 c = env_color * a / b;
-
-        float alpha = dot(v, env_direction);
-        float spot = smoothstep(0.0, 25.0, env_phase(alpha, 0.995));
-
-        return mix(c, env_spot_intensity, spot);
     }
 
     const vec2 rand_offsets[4] = vec2[](
@@ -282,7 +253,7 @@
             is_hit = 0;
             trace_world(r, acc, is_hit);
         }
-        acc.xyz *= env_cie(r.direction);
+        acc.xyz *= environment_emissive(r.direction);
         acc.xyz *= float(1 - is_hit);
         return acc;
     }
@@ -297,7 +268,7 @@
         }
         acc /= float(SAMPLES);
 
-        vec3 env = env_cie(r.direction);
+        vec3 env = environment_emissive(r.direction);
         acc.xyz = mix(acc.xyz, env, min(acc.w / 150.0, 1.0));
 
         out_color = vec4(acc.xyz * exposure.x , 1.0);
