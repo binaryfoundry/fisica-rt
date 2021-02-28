@@ -128,9 +128,9 @@ void Main::SetupScene()
     const std::array<Material, num_materials> materials =
     {
         Material(glm::vec3(1.0f), 0.8f, 1.0f, 0.0f, 0.0f),
-        Material(glm::vec3(1.0f), 0.0f, 0.0f, 0.0f, 0.0f),
-        Material(glm::vec3(1.0f), 1.0f, 1.0f, 1.0f, 0.5f),
-        Material(glm::vec3(1.0f), 0.7f, 0.3f, 0.0f, 0.0f)
+        Material(glm::vec3(0.6, 0.4, 0.5f), 0.0f, 0.0f, 0.0f, 0.0f),
+        Material(glm::vec3(0.83f, 0.69f, 0.22f), 1.0f, 1.0f, 1.0f, 0.5f),
+        Material(glm::vec3(0.4f, 0.5f, 0.6f), 0.7f, 0.3f, 0.0f, 0.0f)
     };
 
     geometry =

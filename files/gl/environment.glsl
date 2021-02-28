@@ -26,7 +26,7 @@
 
     float surface_height = 0.99;
 
-    vec3 color = vec3(0.18867, 0.49784, 0.66160) * 0.5;
+    vec3 color = vec3(1.0) * 0.5;
     vec3 direction = vec3(0.7071, 0.7071, 0.0);
     vec3 spot_intensity = vec3(3.0);
 
