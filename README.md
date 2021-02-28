@@ -1,4 +1,4 @@
-Stunt Car Racer Project
+A Filament type project for real-time ray tracing.
 
 # Supported Platforms
 
