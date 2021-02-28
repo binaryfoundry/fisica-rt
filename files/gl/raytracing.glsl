@@ -254,7 +254,6 @@
             trace_world(r, acc, is_hit);
         }
         acc.xyz *= environment_emissive(r.direction);
-        acc.xyz *= float(1 - is_hit);
         return acc;
     }
 
@@ -269,7 +268,7 @@
         acc /= float(SAMPLES);
 
         vec3 env = environment_emissive(r.direction);
-        acc.xyz = mix(acc.xyz, env, min(acc.w / 150.0, 1.0));
+        acc.xyz = mix(acc.xyz, env, min(acc.w / 550.0, 1.0));
 
         out_color = vec4(acc.xyz * exposure.x , 1.0);
     }

@@ -24,6 +24,8 @@
     precision lowp float;
     #endif
 
+    float surface_height = 0.99;
+
     vec3 env_color = vec3(0.18867, 0.49784, 0.66160) * 0.5;
     vec3 env_direction = vec3(0.7071, 0.7071, 0.0);
     vec3 env_spot_intensity = vec3(3.0);
@@ -66,9 +68,31 @@
         return mix(c, env_spot_intensity, spot);
     }
 
+    float horizon_extinction(vec3 position, vec3 dir, float radius){
+        float u = dot(dir, -position);
+        if(u<0.0){
+            return 1.0;
+        }
+        vec3 near = position + u*dir;
+        if(length(near) < radius){
+            return 0.0;
+        }
+        else{
+            vec3 v2 = normalize(near)*radius - position;
+            float diff = acos(dot(normalize(v2), dir));
+            return smoothstep(0.0, 1.0, pow(diff*2.0, 3.0));
+        }
+    }
+
     void main() {
         vec3 n = equirect_to_spherical(v_texcoord);
         vec3 env = env_cie(n);
+
+        env *= horizon_extinction(
+            vec3(0.0, surface_height, 0.0),
+            n,
+            surface_height - 0.05);
+
         out_color = vec4(env, 1.0);
     }
 
