@@ -116,7 +116,9 @@ namespace GL
         bilateral_shader_program = GL::LinkShaderFile(
             bilateral_file.ReadString());
 
-
+        bilateral_texture_uniform_location = glGetUniformLocation(
+            bilateral_shader_program,
+            "txtr");
     }
 
     void Pipeline::Deinit()
@@ -185,12 +187,20 @@ namespace GL
             framebuffer_height,
             true);
 
+        filterbuffer = std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
+
+        filterbuffer->Create(
+            framebuffer_width,
+            framebuffer_height,
+            true);
+
         GL::CheckError();
     }
 
     void Pipeline::DeinitRaytracing()
     {
         framebuffer->Delete();
+        filterbuffer->Delete();
 
         glDeleteProgram(
             raytracing_shader_program);
@@ -365,6 +375,53 @@ namespace GL
             GL_FRAMEBUFFER,
             0);
 
+        // Render to filter buffer
+
+#if defined (BILATERAL_BLUR)
+
+        glBindFramebuffer(
+            GL_FRAMEBUFFER,
+            filterbuffer->gl_frame_handle);
+
+        glViewport(
+            0, 0,
+            filterbuffer->Width(),
+            filterbuffer->Height());
+
+        glUseProgram(
+            bilateral_shader_program);
+
+        glActiveTexture(
+            GL_TEXTURE0);
+
+        glBindTexture(
+            GL_TEXTURE_2D,
+            framebuffer->gl_texture_handle);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        glUniform1i(
+            bilateral_texture_uniform_location,
+            0);
+
+        DrawQuad();
+
+        glUseProgram(
+            NULL);
+
+        glBindTexture(
+            GL_TEXTURE_2D,
+            NULL);
+
+        glBindFramebuffer(
+            GL_FRAMEBUFFER,
+            0);
+
+#endif
+
         // Render to front buffer
 
         glViewport(
@@ -420,7 +477,7 @@ namespace GL
             scale);
 
         glUseProgram(
-            frontbuffer_shader_program);
+            frontbuffer_shader_program); 
 
         glUniformMatrix4fv(
             frontbuffer_projection_uniform_location,
@@ -461,7 +518,6 @@ namespace GL
         glBindTexture(
             GL_TEXTURE_2D,
             NULL);
-
 
         GL::CheckError();
     }

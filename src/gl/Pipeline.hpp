@@ -52,6 +52,7 @@ namespace GL
         GLuint environment_shader_program = 0;
 
         GLuint bilateral_shader_program = 0;
+        GLuint bilateral_texture_uniform_location = 0;
 
         const uint32_t scene_data_width = 8;
         const uint32_t scene_data_height = 1024;
@@ -63,6 +64,8 @@ namespace GL
         std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> environment;
         std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> scene;
         std::unique_ptr<GL::Texture2D<TexDataByteRGBA, 4>> noise;
+
+        std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> filterbuffer;
 
         void DrawQuad();
 

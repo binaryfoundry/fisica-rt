@@ -43,7 +43,7 @@
     void main() {
         vec2 size = vec2(textureSize(txtr, 0));
 
-        vec3 c = texture(txtr, vec2(v_texcoord.x, 1.0 - v_texcoord.y)).rgb;
+        vec3 c = texture(txtr, vec2(v_texcoord.x, v_texcoord.y)).rgb;
 
         const int kSize = (MSIZE - 1) / 2;
         float kernel[MSIZE];
@@ -61,7 +61,7 @@
         for (int i = -kSize; i <= kSize; ++i) {
             for (int j = -kSize; j <= kSize; ++j) {
                 vec2 fc = v_texcoord + (vec2(float(i), float(j)) / size);
-                cc = texture(txtr, vec2(fc.x, 1.0 - fc.y)).rgb;
+                cc = texture(txtr, vec2(fc.x, fc.y)).rgb;
                 factor = normpdf3(cc - c, BSIGMA) * bZ *
                     kernel[kSize + j] * kernel[kSize + i];
                 Z += factor;
