@@ -110,6 +110,13 @@ namespace GL
         glBindFramebuffer(
             GL_FRAMEBUFFER,
             0);
+
+        File bilateral_file("files/gl/bilateral.glsl", "r");
+
+        bilateral_shader_program = GL::LinkShaderFile(
+            bilateral_file.ReadString());
+
+
     }
 
     void Pipeline::Deinit()
