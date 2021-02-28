@@ -181,6 +181,8 @@
         return false;
     }
 
+    float plane_size = 25.0;
+
     bool Plane_hit(Ray r, inout Hit h) {
         vec3 position;
         vec3 normal = vec3(0.0, 1.0, 0.0);
@@ -192,7 +194,11 @@
                 h.t = t;
                 h.position = Ray_at(r, t);
                 h.normal = normal;
-                return true;
+                return
+                    h.position.x < plane_size &&
+                    h.position.x > -plane_size &&
+                    h.position.z < plane_size &&
+                    h.position.z > -plane_size;
             }
         }
         return false;
