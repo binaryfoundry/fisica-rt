@@ -26,9 +26,9 @@
 
     float surface_height = 0.99;
 
-    vec3 env_color = vec3(0.18867, 0.49784, 0.66160) * 0.5;
-    vec3 env_direction = vec3(0.7071, 0.7071, 0.0);
-    vec3 env_spot_intensity = vec3(3.0);
+    vec3 color = vec3(0.18867, 0.49784, 0.66160) * 0.5;
+    vec3 direction = vec3(0.7071, 0.7071, 0.0);
+    vec3 spot_intensity = vec3(3.0);
 
     in vec2 v_texcoord;
     layout(location = 0) out vec4 out_color;
@@ -44,7 +44,7 @@
         return u;
     }
 
-    float env_phase(float alpha, float g) {
+    float phase(float alpha, float g) {
         float a = 3.0 * (1.0 - g * g);
         float b = 2.0 * (2.0 + g * g);
         float c = 1.0 + alpha * alpha;
@@ -52,41 +52,41 @@
         return (a / b) * (c / d);
     }
 
-    vec3 env_cie(vec3 v) {
+    vec3 cie(vec3 v) {
         v = normalize(v);
-        float g = dot(v, env_direction);
-        float s = env_direction.y;
+        float g = dot(v, direction);
+        float s = direction.y;
         float a = (0.91 + 10.0 * exp(-3.0 * acos(g)) + 0.45 * g * g) *
             (1.0 - exp(-0.32 / max(v.y, 0.0)));
         float b = (0.91 + 10.0 * exp(-3.0 * acos(s)) + 0.45 * s * s) *
             (1.0 - exp(-0.32));
-        vec3 c = env_color * a / b;
+        vec3 c = color * a / b;
 
-        float alpha = dot(v, env_direction);
-        float spot = smoothstep(0.0, 25.0, env_phase(alpha, 0.995));
+        float alpha = dot(v, direction);
+        float spot = smoothstep(0.0, 25.0, phase(alpha, 0.995));
 
-        return mix(c, env_spot_intensity, spot);
+        return mix(c, spot_intensity, spot);
     }
 
-    float horizon_extinction(vec3 position, vec3 dir, float radius){
+    float horizon_extinction(vec3 position, vec3 dir, float radius) {
         float u = dot(dir, -position);
-        if(u<0.0){
+        if(u<0.0) {
             return 1.0;
         }
-        vec3 near = position + u*dir;
-        if(length(near) < radius){
+        vec3 near = position + u * dir;
+        if(length(near) < radius) {
             return 0.0;
         }
-        else{
-            vec3 v2 = normalize(near)*radius - position;
+        else {
+            vec3 v2 = normalize(near) * radius - position;
             float diff = acos(dot(normalize(v2), dir));
-            return smoothstep(0.0, 1.0, pow(diff*2.0, 3.0));
+            return smoothstep(0.0, 1.0, pow(diff * 2.0, 3.0));
         }
     }
 
     void main() {
         vec3 n = equirect_to_spherical(v_texcoord);
-        vec3 env = env_cie(n);
+        vec3 env = cie(n);
 
         env *= horizon_extinction(
             vec3(0.0, surface_height, 0.0),
