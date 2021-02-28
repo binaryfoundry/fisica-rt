@@ -198,6 +198,15 @@
         return false;
     }
 
+    float EnvBRDFApprox(float NoV, float roughness) {
+        vec4 c0 = vec4(-1, -0.0275, -0.572, 0.022);
+        vec4 c1 = vec4(1, 0.0425, 1.0, -0.04);
+        vec4 r = roughness * c0 + c1;
+        float a004 = min(r.x * r.x, exp2(-9.28 * NoV)) * r.x + r.y;
+        vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
+        return AB.y;
+    }
+
     void trace_world(inout Ray r, inout vec4 acc, inout int is_hit) {
         Hit h = Hit(FLT_MAX, r.origin, r.direction);
         Hit h_temp;
@@ -234,20 +243,33 @@
             }
         }
 
+        float NoV = abs(dot(
+            normalize(h.normal),
+            normalize(-r.direction)));
+
+        vec3 f0 = m.albedo;
+
+        float fresnel_prob = rand_value.w;
+        float fresnel_val = 1.0 - EnvBRDFApprox(NoV, 1.0 - m.smoothness);
+        float fresnel = fresnel_prob < fresnel_val ? 0.0 : 1.0;
+
+        float specular_prob = rand_value.z;
         vec3 specular_vec = reflect(r.direction, h.normal);
         vec3 diffuse_vec = rand_cos_hemisphere(h.normal);
 
-        float specular_prob = rand_value.z;
         vec3 reflect_norm = mix(
             diffuse_vec,
             specular_vec,
             specular_prob < m.metalness ? 1.0 : 0.0);
 
+        reflect_norm = mix(reflect_norm, specular_vec, fresnel);
+        f0 = mix(f0, vec3(1.0), fresnel);
+
         //if (found) {
             is_hit = int(found);
             r.origin = mix(r.origin, h.position, found);
             r.direction = mix(r.direction, reflect_norm, found);
-            acc.xyz *= mix(vec3(1.0), m.albedo, found);
+            acc.xyz *= mix(vec3(1.0), f0, found);
             acc.w += mix(0.0, h.t, found);
         //}
     }
@@ -275,8 +297,8 @@
         }
         acc /= float(SAMPLES);
 
-        vec3 env = environment_emissive(r.direction);
-        acc.xyz = mix(acc.xyz, env, min(acc.w / 550.0, 1.0));
+        //vec3 env = environment_emissive(r.direction);
+        //acc.xyz = mix(acc.xyz, env, min(acc.w / 550.0, 1.0));
 
         out_color = vec4(acc.xyz * exposure.x , 1.0);
     }

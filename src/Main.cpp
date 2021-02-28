@@ -136,14 +136,23 @@ void Main::SetupScene()
     geometry =
     {
         Sphere(
-            glm::vec3(0.0f, 5.0f, 0.0f), 5.0f,
-            Material(glm::vec3(1.0f), 0.8f, 1.0f, 0.0f, 0.0f)),
+            glm::vec3(0.0f, 5.0f, 0.0f),
+            5.0f,
+            Material(
+                glm::vec3(1.0f),
+                0.8f, 1.0f, 0.0f, 0.0f)),
         Sphere(
-            glm::vec3(-20.0f, 5.0f, 0.0f), 5.0f,
-            Material(glm::vec3(1.0f), 0.0f, 0.0f, 0.0f, 0.0f)),
+            glm::vec3(-20.0f, 5.0f, 0.0f),
+            5.0f,
+            Material(
+                glm::vec3(1.0f),
+                0.0f, 0.0f, 0.0f, 0.0f)),
         Sphere(
-            glm::vec3(20.0f, 5.0f, 0.0f), 5.0f,
-            Material(glm::vec3(1.0f), 1.0f, 1.0f, 1.0f, 0.5f))
+            glm::vec3(20.0f, 5.0f, 0.0f),
+            5.0f,
+            Material(
+                glm::vec3(0.83f, 0.69f, 0.22f),
+                1.0f, 1.0f, 1.0f, 0.5f))
     };
 
     for (int32_t z = -placement_radius; z < placement_radius; z++)
