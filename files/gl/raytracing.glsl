@@ -243,15 +243,15 @@
             }
         }
 
-        float NoV = abs(dot(
+        float NoV = dot(
             normalize(h.normal),
-            normalize(-r.direction)));
+            normalize(-r.direction));
 
         vec3 f0 = m.albedo;
 
         float fresnel_prob = rand_value.w;
-        float fresnel_val = 1.0 - EnvBRDFApprox(NoV, m.roughness);
-        float fresnel = fresnel_prob < fresnel_val ? 0.0 : 1.0;
+        float fresnel_val = EnvBRDFApprox(NoV, m.roughness);
+        float fresnel = fresnel_prob > fresnel_val ? 0.0 : 1.0;
 
         float specular_prob = rand_value.z;
         vec3 specular_vec = reflect(r.direction, h.normal);
@@ -296,9 +296,6 @@
             acc += trace(r);
         }
         acc /= float(SAMPLES);
-
-        //vec3 env = environment_emissive(r.direction);
-        //acc.xyz = mix(acc.xyz, env, min(acc.w / 550.0, 1.0));
 
         out_color = vec4(acc.xyz * exposure.x , 1.0);
     }
