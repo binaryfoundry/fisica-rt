@@ -20,8 +20,8 @@ public:
 
     size_t Read(void* buffer, size_t size, size_t count);
 
-    std::string ReadString(uint16_t count);
     std::string ReadString();
+    std::string ReadStringPrefixed();
 
     size_t Length();
 };

@@ -79,8 +79,9 @@ size_t File::Length()
 
 #endif
 
-std::string File::ReadString(uint16_t count)
+std::string File::ReadString()
 {
+    const auto count = Length();
     char* buffer = new char[count + 1];
 
     Read(buffer, sizeof(char), count);
@@ -94,7 +95,7 @@ std::string File::ReadString(uint16_t count)
 }
 
 // string prefixed with length (uint16_t)
-std::string File::ReadString()
+std::string File::ReadStringPrefixed()
 {
     uint16_t count;
     Read(&count, sizeof(uint16_t), 1);

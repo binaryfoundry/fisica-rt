@@ -53,7 +53,7 @@ namespace GL
         File frontbuffer_file("files/gl/frontbuffer.glsl", "r");
 
         frontbuffer_shader_program = GL::LinkShaderFile(
-            frontbuffer_file.ReadString(frontbuffer_file.Length()));
+            frontbuffer_file.ReadString());
 
         GL::CheckError();
 
@@ -107,7 +107,7 @@ namespace GL
         File raytracing_file("files/gl/raytracing.glsl", "r");
 
         raytracing_shader_program = GL::LinkShaderFile(
-            raytracing_file.ReadString(raytracing_file.Length()));
+            raytracing_file.ReadString());
 
         GL::CheckError();
 
