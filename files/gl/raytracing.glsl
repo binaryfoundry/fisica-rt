@@ -138,7 +138,7 @@
 
     struct Material {
         vec3 albedo;
-        float smoothness;
+        float roughness;
         float metalness;
         float refraction;
         float refractive_index;
@@ -233,7 +233,7 @@
         }
 
         m_temp = Material(
-            vec3(1.0), 0.0, 0.0, 0.0, 0.0, 1.0);
+            vec3(1.0), 1.0, 0.0, 0.0, 0.0, 1.0);
 
         if (Plane_hit(r, h_temp)) {
             if (h_temp.t < h.t) {
@@ -250,7 +250,7 @@
         vec3 f0 = m.albedo;
 
         float fresnel_prob = rand_value.w;
-        float fresnel_val = 1.0 - EnvBRDFApprox(NoV, 1.0 - m.smoothness);
+        float fresnel_val = 1.0 - EnvBRDFApprox(NoV, m.roughness);
         float fresnel = fresnel_prob < fresnel_val ? 0.0 : 1.0;
 
         float specular_prob = rand_value.z;

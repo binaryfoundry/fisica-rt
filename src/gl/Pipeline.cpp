@@ -218,7 +218,7 @@ namespace GL
                 0.0f);
 
             data[idx + 2] = glm::vec4(
-                m.smoothness,
+                m.roughness,
                 m.metalness,
                 m.refraction,
                 m.refractive_index);

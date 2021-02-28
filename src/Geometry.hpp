@@ -6,12 +6,12 @@ struct Material
 {
     Material(
         glm::vec3 albedo,
-        float smoothness,
+        float roughness,
         float metalness,
         float refraction,
         float refractive_index) :
         albedo(albedo),
-        smoothness(smoothness),
+        roughness(roughness),
         metalness(metalness),
         refraction(refraction),
         refractive_index(refractive_index)
@@ -19,7 +19,7 @@ struct Material
     }
 
     glm::vec3 albedo;
-    float smoothness;
+    float roughness;
     float metalness;
     float refraction;
     float refractive_index;
