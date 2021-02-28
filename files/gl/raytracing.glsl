@@ -61,20 +61,19 @@
 
     vec2 rand_offset = vec2(0.0);
     int rand_sample = 0;
+    vec4 rand_value;
 
-    vec4 rand_fetch() {
+    void rand_update() {
         vec2 coords = gl_FragCoord.xy /
             vec2(textureSize(rand_sampler, 0));
-        return texture(rand_sampler, vec3(coords + rand_offset, rand_sample));
-    }
-
-    vec2 rand2() {
-        vec4 s = rand_fetch();
-        return vec2(s.x, s.y);
+        coords += rand_offset;
+        rand_value = texture(
+            rand_sampler,
+            vec3(coords, rand_sample));
     }
 
     vec3 rand_cos_hemisphere(const vec3 n) {
-        vec2 r = rand2();
+        vec2 r = rand_value.xy;
         vec3  uu = normalize(cross(n, vec3(0.0, 1.0, 1.0)));
         vec3  vv = cross(uu, n);
         float ra = sqrt(r.y);
@@ -86,7 +85,7 @@
     }
 
     vec3 rand_sphere_direction() {
-        vec2 r = rand2() * 6.2831;
+        vec2 r = rand_value.xy * 6.2831;
         return vec3(sin(r.x) * vec2(sin(r.y), cos(r.y)), cos(r.x));
     }
 
@@ -125,7 +124,7 @@
         vec4 v = vec4(0.0, size * 2.0 * aspect, 0.0, 1.0);
         vec4 c = vec4(-size, -size * aspect, -1.5, 1.0);
 
-        coords += rand2() / viewport.zw;
+        coords += rand_value.xy / viewport.zw;
 
         h = h * view;
         v = v * view;
@@ -224,6 +223,9 @@
             }
         }
 
+        m_temp = Material(
+            vec3(1.0), 0.0, 0.0, 0.0, 0.0, 1.0);
+
         if (Plane_hit(r, h_temp)) {
             if (h_temp.t < h.t) {
                 h = h_temp;
@@ -232,14 +234,19 @@
             }
         }
 
-        vec3 rv = reflect(r.direction, h.normal);
-        vec3 dv = rand_cos_hemisphere(h.normal);
+        vec3 specular_vec = reflect(r.direction, h.normal);
+        vec3 diffuse_vec = rand_cos_hemisphere(h.normal);
+
+        float specular_prob = rand_value.z;
+        vec3 reflect_norm = mix(
+            diffuse_vec,
+            specular_vec,
+            specular_prob < m.metalness ? 1.0 : 0.0);
 
         //if (found) {
             is_hit = int(found);
             r.origin = mix(r.origin, h.position, found);
-            //r.direction = mix(r.direction, rv, found);
-            r.direction = mix(r.direction, dv, found);
+            r.direction = mix(r.direction, reflect_norm, found);
             acc.xyz *= mix(vec3(1.0), m.albedo, found);
             acc.w += mix(0.0, h.t, found);
         //}
@@ -250,6 +257,7 @@
         vec4 acc = vec4(1.0, 1.0, 1.0, 0.0);
         for (int i = 0; i < BOUNCES; i++) {
             rand_sample = i;
+            rand_update();
             is_hit = 0;
             trace_world(r, acc, is_hit);
         }
