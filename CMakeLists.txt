@@ -18,13 +18,15 @@ set(SOURCES
     src/Main.cpp
     src/GUI.cpp
     src/Camera.cpp
-    src/Geometry.cpp)
+    src/Geometry.cpp
+    src/Noise.cpp)
 
 set(HEADERS
     src/Main.hpp
     src/GUI.hpp
     src/Camera.hpp
-    src/Geometry.hpp)
+    src/Geometry.hpp
+    src/Noise.hpp)
 
 set(SOURCES_MATH
     src/math/Math.cpp
@@ -35,12 +37,6 @@ set(HEADERS_MATH
     src/math/Math.hpp
     src/math/Angles.hpp
     src/math/Random.hpp)
-
-set(SOURCES_NOISE
-    src/noise/Noise.cpp)
-
-set(HEADERS_NOISE
-    src/noise/Noise.hpp)
 
 set(SOURCES_SDL
     src/sdl/SDL.cpp
@@ -89,9 +85,6 @@ SOURCE_GROUP("Source" FILES ${HEADERS})
 
 SOURCE_GROUP("Source\\math" FILES ${SOURCES_MATH})
 SOURCE_GROUP("Source\\math" FILES ${HEADERS_MATH})
-
-SOURCE_GROUP("Source\\noise" FILES ${SOURCES_NOISE})
-SOURCE_GROUP("Source\\noise" FILES ${HEADERS_NOISE})
 
 SOURCE_GROUP("Source\\sdl" FILES ${SOURCES_SDL})
 SOURCE_GROUP("Source\\sdl" FILES ${HEADERS_SDL})
@@ -144,8 +137,6 @@ add_executable(
     ${HEADERS}
     ${SOURCES_MATH}
     ${HEADERS_MATH}
-    ${SOURCES_NOISE}
-    ${HEADERS_NOISE}
     ${SOURCES_SDL}
     ${HEADERS_SDL}
     ${SOURCES_GL}

@@ -1,7 +1,7 @@
 #include "Pipeline.hpp"
 
+#include "../Noise.hpp"
 #include "../sdl/File.hpp"
-#include "../noise/Noise.hpp"
 
 namespace GL
 {

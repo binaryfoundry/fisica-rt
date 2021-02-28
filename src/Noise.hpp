@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 
-#include "../math/Math.hpp"
+#include "math/Math.hpp"
 
 namespace Noise
 {
