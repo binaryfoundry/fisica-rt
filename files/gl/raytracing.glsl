@@ -239,7 +239,7 @@
         }
 
         m_temp = Material(
-            vec3(1.0), 1.0, 0.0, 0.0, 0.0, 1.0);
+            vec3(1.0), 0.0, 0.0, 0.0, 0.0, 1.0);
 
         if (Plane_hit(r, h_temp)) {
             if (h_temp.t < h.t) {
