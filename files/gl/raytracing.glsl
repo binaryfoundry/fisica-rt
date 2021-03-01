@@ -85,7 +85,7 @@
     }
 
     vec3 rand_sphere_direction() {
-        vec2 r = rand_value.xy * 6.2831;
+        vec2 r = rand_value.zw * 6.2831;
         return vec3(sin(r.x) * vec2(sin(r.y), cos(r.y)), cos(r.x));
     }
 
@@ -260,15 +260,20 @@
         float fresnel = fresnel_prob > fresnel_val ? 0.0 : 1.0;
 
         float specular_prob = rand_value.z;
-        vec3 specular_vec = reflect(r.direction, h.normal);
+        vec3 reflect_vec = reflect(r.direction, h.normal);
         vec3 diffuse_vec = rand_cos_hemisphere(h.normal);
+
+        vec3 specular_vec = mix(
+            reflect_vec,
+            rand_hemisphere_direction(h.normal),
+            m.roughness);
 
         vec3 reflect_norm = mix(
             diffuse_vec,
             specular_vec,
             specular_prob < m.metalness ? 1.0 : 0.0);
 
-        reflect_norm = mix(reflect_norm, specular_vec, fresnel);
+        reflect_norm = mix(reflect_norm, reflect_vec, fresnel);
         f0 = mix(f0, vec3(1.0), fresnel);
 
         //if (found) {

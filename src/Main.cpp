@@ -132,10 +132,10 @@ void Main::SetupScene()
 
     const std::array<Material, num_materials> materials =
     {
-        Material(glm::vec3(1.0f), 0.2f, 1.0f, 0.0f, 0.0f),
+        Material(glm::vec3(1.0f), 0.4f, 1.0f, 0.0f, 0.0f),
         Material(glm::vec3(0.6, 0.4, 0.5f), 1.0f, 0.0f, 0.0f, 0.0f),
         Material(glm::vec3(0.83f, 0.69f, 0.22f), 0.0f, 1.0f, 1.0f, 0.5f),
-        Material(glm::vec3(0.4f, 0.5f, 0.6f), 0.3f, 0.3f, 0.0f, 0.0f)
+        Material(glm::vec3(0.4f, 0.5f, 0.6f), 0.0f, 0.2f, 0.0f, 0.0f)
     };
 
     geometry =
@@ -145,7 +145,7 @@ void Main::SetupScene()
             5.0f,
             Material(
                 glm::vec3(1.0f),
-                0.2f, 1.0f, 0.0f, 0.0f)),
+                0.0f, 1.0f, 0.0f, 0.0f)),
         Sphere(
             glm::vec3(-20.0f, 5.0f, 0.0f),
             5.0f,
