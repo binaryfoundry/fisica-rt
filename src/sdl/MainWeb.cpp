@@ -99,12 +99,12 @@ static void sdl_update()
                 if (!cs.b[i] && state.digitalButton[i])
                 {
                     cs.b[i] = true;
-                    sdl_controller_button_down_callback(i);
+                    //sdl_controller_button_down_callback(i);
                 }
                 else if (cs.b[i] && !state.digitalButton[i])
                 {
                     cs.b[i] = false;
-                    sdl_controller_button_up_callback(i);
+                    //sdl_controller_button_up_callback(i);
                 }
             }
         }
