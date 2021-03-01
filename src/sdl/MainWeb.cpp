@@ -339,6 +339,9 @@ static void sdl_update()
     sdl_imgui_update_input(sdl_window);
     sdl_imgui_update_cursor();
     m.Update();
+
+    sdl_captured_mouse_delta_x = 0;
+    sdl_captured_mouse_delta_y = 0;
 }
 
 static void sdl_update_inputs()
@@ -411,6 +414,17 @@ EM_BOOL em_pointerlock_callback(
     const EmscriptenPointerlockChangeEvent* pointer_event,
     void* user_data)
 {
+    if (!pointer_event->isActive)
+    {
+        sdl_mouse_captured = false;
+        SDL_SetRelativeMouseMode(static_cast<SDL_bool>(false));
+    }
+    else
+    {
+        sdl_mouse_captured = true;
+        SDL_SetRelativeMouseMode(static_cast<SDL_bool>(true));
+    }
+
     return false;
 }
 
@@ -419,7 +433,18 @@ EM_BOOL em_mouse_click_callback(
     const EmscriptenMouseEvent* mouse_event,
     void* user_data)
 {
-    return false;
+
+    return true;
+}
+
+EM_BOOL em_mouse_dblclick_callback(
+    int event_type,
+    const EmscriptenMouseEvent* mouse_event,
+    void* user_data)
+{
+    sdl_mouse_captured = !sdl_mouse_captured;
+    SDL_SetRelativeMouseMode(static_cast<SDL_bool>(sdl_mouse_captured));
+    return true;
 }
 
 EM_BOOL em_mouse_move_callback(
@@ -427,7 +452,20 @@ EM_BOOL em_mouse_move_callback(
     const EmscriptenMouseEvent *mouse_event,
     void* user_data)
 {
-    return false;
+    //sdl_mouse_x = mouse_event->motion.x;
+    //sdl_mouse_y = mouse_event->motion.y;
+    //sdl_mouse_delta_x = mouse_event->motion.xrel;
+    //sdl_mouse_delta_y = mouse_event->motion.yrel;
+
+    if (sdl_mouse_captured)
+    {
+        sdl_captured_mouse_x = mouse_event->canvasX;
+        sdl_captured_mouse_y = mouse_event->canvasY;
+        sdl_captured_mouse_delta_x = mouse_event->movementX / 4;
+        sdl_captured_mouse_delta_y = mouse_event->movementY / 4;
+    }
+
+    return true;
 }
 
 EM_BOOL on_canvassize_changed(
@@ -480,8 +518,10 @@ EM_BOOL em_key_down_callback(
     const EmscriptenKeyboardEvent* key_event,
     void* user_data)
 {
-    sdl_key_down_callback(emscripten_scancode_table[key_event->keyCode]);
-    return false;
+    SDL_Scancode code = emscripten_scancode_table[key_event->keyCode];
+    sdl_key_down_callback(code);
+
+    return true;
 }
 
 EM_BOOL em_key_up_callback(
@@ -489,8 +529,10 @@ EM_BOOL em_key_up_callback(
     const EmscriptenKeyboardEvent* key_event,
     void *user_data)
 {
-    sdl_key_up_callback(emscripten_scancode_table[key_event->keyCode]);
-    return false;
+    SDL_Scancode code = emscripten_scancode_table[key_event->keyCode];
+    sdl_key_up_callback(code);
+
+    return true;
 }
 
 EM_BOOL em_resize_callback(
@@ -603,6 +645,8 @@ static void sdl_run()
         NULL, NULL, true, em_fullscreen_callback);
     emscripten_set_click_callback(
         NULL, NULL, true, em_mouse_click_callback);
+    emscripten_set_dblclick_callback(
+        NULL, NULL, true, em_mouse_dblclick_callback);
     emscripten_set_mousemove_callback(
         NULL, NULL, true, em_mouse_move_callback);
     emscripten_set_keydown_callback(
