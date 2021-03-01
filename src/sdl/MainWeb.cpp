@@ -422,7 +422,6 @@ EM_BOOL em_pointerlock_callback(
     else
     {
         sdl_mouse_captured = true;
-        SDL_SetRelativeMouseMode(static_cast<SDL_bool>(true));
     }
 
     return false;
@@ -433,7 +432,11 @@ EM_BOOL em_mouse_click_callback(
     const EmscriptenMouseEvent* mouse_event,
     void* user_data)
 {
-
+    if (!sdl_mouse_captured)
+    {
+        sdl_mouse_captured = true;
+        SDL_SetRelativeMouseMode(static_cast<SDL_bool>(sdl_mouse_captured));
+    }
     return true;
 }
 
@@ -442,8 +445,6 @@ EM_BOOL em_mouse_dblclick_callback(
     const EmscriptenMouseEvent* mouse_event,
     void* user_data)
 {
-    sdl_mouse_captured = !sdl_mouse_captured;
-    SDL_SetRelativeMouseMode(static_cast<SDL_bool>(sdl_mouse_captured));
     return true;
 }
 
