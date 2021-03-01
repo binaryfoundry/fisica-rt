@@ -167,13 +167,15 @@ void Main::SetupScene()
             Material material = materials[Math::element_rand(
                 num_materials)];
 
+            auto geom = Sphere(glm::vec3(
+                z + 0.9f * Math::unit_randf(),
+                0.2f,
+                x + 0.9f * Math::unit_randf()) * 5.0f,
+                0.2f * 5.0f,
+                material);
+
             geometry.push_back(
-                    Sphere(glm::vec3(
-                        z + 0.9f * Math::unit_randf(),
-                        0.2f,
-                        x + 0.9f * Math::unit_randf()) * 5.0f,
-                    0.2f * 5.0f,
-                    material));
+                geom);
         }
     }
 }
