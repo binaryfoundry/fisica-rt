@@ -7,12 +7,12 @@
     precision lowp int;
     #endif
 
-    in vec4 position;
+    in vec4 pos;
     in vec2 texcoord;
     out vec2 v_texcoord;
     void main() {
         v_texcoord = texcoord;
-        gl_Position = vec4((position.xy - vec2(0.5))  * 2.0, -1.0, 1.0);
+        gl_Position = vec4((pos.xy - vec2(0.5))  * 2.0, -1.0, 1.0);
     }
 
 #elif defined(COMPILING_FS)
