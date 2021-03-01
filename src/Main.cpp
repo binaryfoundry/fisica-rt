@@ -35,6 +35,8 @@ void Main::Init()
         case SDL_SCANCODE_D:
             strafe_speed = -move_speed;
             break;
+        default:
+            break;
         }
     };
 
@@ -53,6 +55,8 @@ void Main::Init()
             break;
         case SDL_SCANCODE_D:
             strafe_speed = 0.0f;
+            break;
+        default:
             break;
         }
     };

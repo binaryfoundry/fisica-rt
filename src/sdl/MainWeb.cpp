@@ -254,7 +254,7 @@ EM_BOOL em_key_down_callback(
     const EmscriptenKeyboardEvent* key_event,
     void* user_data)
 {
-    sdl_key_down_callback(static_cast<uint16_t>(key_event->keyCode));
+    //sdl_key_down_callback(static_cast<uint16_t>(key_event->keyCode));
     return false;
 }
 
@@ -263,7 +263,7 @@ EM_BOOL em_key_up_callback(
     const EmscriptenKeyboardEvent* key_event,
     void *user_data)
 {
-    sdl_key_up_callback(static_cast<uint16_t>(key_event->keyCode));
+    //sdl_key_up_callback(static_cast<uint16_t>(key_event->keyCode));
     return false;
 }
 

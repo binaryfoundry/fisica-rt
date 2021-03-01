@@ -44,7 +44,7 @@ namespace GL
         }
         else
         {
-            static_assert(false);
+            assert(false);
         }
     };
 
@@ -230,7 +230,7 @@ namespace GL
         }
         else
         {
-            static_assert(false);
+            assert(false);
         }
     }
 
