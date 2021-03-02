@@ -39,11 +39,15 @@ if __name__ == "__main__":
     makedirs_silent(build_dir)
     os.chdir(build_dir)
 
+    build_string = "emcmake cmake ../.. "
+    build_string += "-DCMAKE_BUILD_TYPE=" + build_type + " "
+    build_string += "-DEMSCRIPTEN=ON "
+
     if platform == "linux" or platform == "linux2":
-        os.system("emcmake cmake ../.. -DCMAKE_BUILD_TYPE=" + build_type + " -DEMSCRIPTEN=ON -G \"Unix Makefiles\"")
+        os.system(build_string + " -G \"Unix Makefiles\"")
         os.system("make")
     elif platform == "win32":
-        os.system("emcmake cmake ../.. -DCMAKE_BUILD_TYPE=" + build_type + " -DEMSCRIPTEN=ON -G \"NMake Makefiles\"")
+        os.system(build_string + " -G \"NMake Makefiles\"")
         os.system("nmake")
     else:
         print("Unknown platform")
