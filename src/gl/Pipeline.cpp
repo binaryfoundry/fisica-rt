@@ -39,13 +39,6 @@ namespace GL
 
         camera_uniforms = std::make_unique<GL::UniformBuffer<CameraUniforms>>();
 
-        noise = std::make_unique<GL::Texture2D<TexDataByteRGBA, 4>>(128, 128);
-        Noise::generate(noise->Data(0), 0);
-        Noise::generate(noise->Data(1), 1);
-        Noise::generate(noise->Data(2), 2);
-        Noise::generate(noise->Data(3), 3);
-        noise->Update();
-
         scene = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(
             scene_data_width,
             scene_data_height);
@@ -152,6 +145,15 @@ namespace GL
         const uint16_t samples,
         const uint16_t bounces)
     {
+        noise = std::make_unique<GL::Texture2D<TexDataByteRGBA, 16>>(128, 128);
+
+        for (uint16_t i = 0; i < bounces; i++)
+        {
+            Noise::generate(noise->Data(i), i, samples);
+        }
+
+        noise->Update();
+
         File raytracing_file("files/gl/raytracing.glsl", "r");
 
         std::stringstream defines;
@@ -213,7 +215,7 @@ namespace GL
 
         framebuffer->Delete();
         filterbuffer->Delete();
-
+        noise->Delete();
         camera_uniforms->Delete();
         scene_uniforms->Delete();
 

@@ -68,7 +68,7 @@ namespace GL
 
         std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> environment;
         std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> scene;
-        std::unique_ptr<GL::Texture2D<TexDataByteRGBA, 4>> noise;
+        std::unique_ptr<GL::Texture2D<TexDataByteRGBA, 16>> noise;
 
         std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> filterbuffer;
 

@@ -17,11 +17,12 @@ static const char* resolution_labels[] {
 static const char* samples_labels[] {
     "1",
     "2",
-    "3",
     "4"
 };
 
 static const char* bounces_labels[] {
+    "1",
+    "2",
     "4"
 };
 
@@ -241,9 +242,6 @@ void Main::Update()
         new_samples = 2;
         break;
     case 2:
-        new_samples = 3;
-        break;
-    case 3:
         new_samples = 4;
         break;
     }
@@ -259,6 +257,12 @@ void Main::Update()
     switch (selected_bounces)
     {
     case 0:
+        new_bounces = 1;
+        break;
+    case 1:
+        new_bounces = 2;
+        break;
+    case 2:
         new_bounces = 4;
         break;
     }
