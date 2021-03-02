@@ -1,5 +1,7 @@
 #version 300 es
 
+#define CIE
+
 #if defined(COMPILING_VS)
 
     #ifdef GL_ES
@@ -99,7 +101,40 @@
         return color - color * pow(Kr.xyz, vec3(factor / dist));
     }
 
+    vec3 cie(vec3 v) {
+        vec3 color = vec3(1.0) * 0.5;
+        vec3 dir = vec3(0.7071, 0.7071, 0.0);
+        vec3 intensity = vec3(3.0);
+
+        v = normalize(v);
+        float g = dot(v, dir);
+        float s = dir.y;
+        float a = (0.91 + 10.0 * exp(-3.0 * acos(g)) + 0.45 * g * g) *
+            (1.0 - exp(-0.32 / max(v.y, 0.0)));
+        float b = (0.91 + 10.0 * exp(-3.0 * acos(s)) + 0.45 * s * s) *
+            (1.0 - exp(-0.32));
+        vec3 c = color * a / b;
+
+        float alpha = dot(v, dir);
+        float spot = smoothstep(0.0, 25.0, phase(alpha, 0.995));
+
+        return mix(c, intensity, spot);
+    }
+
     void main() {
+
+#if defined(CIE)
+
+        vec3 n = equirect_to_spherical(v_texcoord);
+        vec3 env = cie(n) * horizon_extinction(
+            vec3(0.0, surface_height, 0.0),
+            n,
+            surface_height - 0.25);
+
+        out_color = vec4(env, 1.0);
+
+#else
+
         vec3 direction = normalize(-light_direction.xyz);
 
         vec3 eyedir = equirect_to_spherical(v_texcoord);
@@ -181,7 +216,7 @@
             rayleigh_factor * rayleigh_collected);
 
         out_color = vec4(final_color, 1.0);
-
+#endif
     }
 
 #endif
