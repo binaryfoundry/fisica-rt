@@ -15,6 +15,8 @@ private:
 
     bool upscale = true;
     int selected_resolution = 3;
+    int selected_samples = 3;
+    int selected_bounces = 0;
 
     float move_speed = 0.1f;
 
@@ -23,6 +25,8 @@ private:
     float mouse_speed = 75.0f;
     std::unique_ptr<Camera> camera;
 
+    uint16_t raytracing_samples = 4;
+    uint16_t raytracing_bounces = 4;
     uint32_t raytracing_framebuffer_width = 0;
     uint32_t raytracing_framebuffer_height = 0;
 

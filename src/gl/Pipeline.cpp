@@ -3,6 +3,7 @@
 #include "../Noise.hpp"
 #include "../sdl/File.hpp"
 
+#include <sstream>
 #include <algorithm>
 
 namespace GL
@@ -147,12 +148,19 @@ namespace GL
 
     void Pipeline::InitRaytracing(
         const uint32_t framebuffer_width,
-        const uint32_t framebuffer_height)
+        const uint32_t framebuffer_height,
+        const uint16_t samples,
+        const uint16_t bounces)
     {
         File raytracing_file("files/gl/raytracing.glsl", "r");
 
+        std::stringstream defines;
+        defines << "#define SAMPLES " << samples << std::endl;
+        defines << "#define BOUNCES " << bounces << std::endl;
+
         raytracing_shader_program = GL::LinkShaderFile(
-            raytracing_file.ReadString());
+            raytracing_file.ReadString(),
+            defines.str());
 
         GL::CheckError();
 

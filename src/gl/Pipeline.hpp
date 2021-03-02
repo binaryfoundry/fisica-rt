@@ -81,7 +81,9 @@ namespace GL
 
         void InitRaytracing(
             const uint32_t framebuffer_width,
-            const uint32_t framebuffer_height);
+            const uint32_t framebuffer_height,
+            const uint16_t samples,
+            const uint16_t bounces);
 
         void Deinit();
 

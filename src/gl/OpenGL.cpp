@@ -38,15 +38,24 @@ namespace GL
     }
 
     GLuint LinkShaderFile(
-        const std::string shader_string)
+        const std::string shader_string,
+        const std::string defines)
     {
+        std::stringstream vertex_defines;
+        vertex_defines << "#define COMPILING_VS" << std::endl;
+        vertex_defines << defines << std::endl;
+
+        std::stringstream fragment_defines;
+        fragment_defines << "#define COMPILING_FS" << std::endl;
+        fragment_defines << defines << std::endl;
+
         const std::string vertex_shader_string = InsertDefines(
             shader_string,
-            "#define COMPILING_VS");
+            vertex_defines.str());
 
         const std::string fragment_shader_string = InsertDefines(
             shader_string,
-            "#define COMPILING_FS");
+            fragment_defines.str());
 
         return LinkShader(
             vertex_shader_string,

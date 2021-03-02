@@ -14,6 +14,16 @@ static const char* resolution_labels[] {
     "1920x1080"
 };
 
+static const char* samples_labels[] {
+    "1",
+    "2",
+    "3",
+    "4"
+};
+
+static const char* bounces_labels[] {
+    "4"
+};
 
 void Main::Init()
 {
@@ -168,43 +178,94 @@ void Main::Update()
         resolution_labels,
         IM_ARRAYSIZE(resolution_labels));
 
+    ImGui::Combo(
+        "Samples",
+        &selected_samples,
+        samples_labels,
+        IM_ARRAYSIZE(samples_labels));
+
+    ImGui::Combo(
+        "Bounces",
+        &selected_bounces,
+        bounces_labels,
+        IM_ARRAYSIZE(bounces_labels));
+
     ImGui::End();
 
     bool reinit_pipeline = false;
 
-    uint32_t selected_width = 0;
-    uint32_t selected_height = 0;
+    uint32_t new_width = 0;
+    uint32_t new_height = 0;
 
     switch (selected_resolution)
     {
     case 0:
-        selected_width = 352;
-        selected_height = 240;
+        new_width = 352;
+        new_height = 240;
         break;
     case 1:
-        selected_width = 480;
-        selected_height = 360;
+        new_width = 480;
+        new_height = 360;
         break;
     case 2:
-        selected_width = 858;
-        selected_height = 480;
+        new_width = 858;
+        new_height = 480;
         break;
     case 3:
-        selected_width = 1280;
-        selected_height = 720;
+        new_width = 1280;
+        new_height = 720;
         break;
     case 4:
-        selected_width = 1920;
-        selected_height = 1080;
+        new_width = 1920;
+        new_height = 1080;
         break;
     default:
         break;
     };
 
-    if (selected_height != raytracing_framebuffer_height)
+    if (new_height != raytracing_framebuffer_height)
     {
-        raytracing_framebuffer_width = selected_width;
-        raytracing_framebuffer_height = selected_height;
+        raytracing_framebuffer_width = new_width;
+        raytracing_framebuffer_height = new_height;
+        reinit_pipeline = true;
+    }
+
+    uint16_t new_samples = 0;
+
+    switch (selected_samples)
+    {
+    case 0:
+        new_samples = 1;
+        break;
+    case 1:
+        new_samples = 2;
+        break;
+    case 2:
+        new_samples = 3;
+        break;
+    case 3:
+        new_samples = 4;
+        break;
+    }
+
+    if (new_samples != raytracing_samples)
+    {
+        raytracing_samples = new_samples;
+        reinit_pipeline = true;
+    }
+
+    uint16_t new_bounces = 0;
+
+    switch (selected_bounces)
+    {
+    case 0:
+        new_bounces = 4;
+        break;
+    }
+
+    if (new_bounces != raytracing_bounces)
+    {
+        raytracing_bounces = new_bounces;
         reinit_pipeline = true;
     }
 
@@ -234,7 +295,9 @@ void Main::Update()
 
         pipeline.InitRaytracing(
             raytracing_framebuffer_width,
-            raytracing_framebuffer_height);
+            raytracing_framebuffer_height,
+            raytracing_samples,
+            raytracing_bounces);
     }
 
     pipeline.Update(geometry);

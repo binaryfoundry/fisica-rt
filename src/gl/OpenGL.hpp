@@ -27,7 +27,8 @@ namespace GL
     void CheckError();
 
     GLuint LinkShaderFile(
-        const std::string shader_string);
+        const std::string shader_string,
+        const std::string defines = "");
 
     GLuint LinkShader(
         const std::string vertex_shader_string,

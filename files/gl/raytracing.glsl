@@ -27,9 +27,6 @@
     #define PHI 1.61803398875
     #define FLT_MAX 3.402823466e+38
 
-    #define SAMPLES 4
-    #define BOUNCES 4
-
     const float t_min = 0.003;
     const float t_max = 100000.0;
 
