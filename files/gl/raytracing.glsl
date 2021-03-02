@@ -36,13 +36,6 @@
     in vec2 v_texcoord;
     layout(location = 0) out vec4 out_color;
 
-    uniform mat4 view;
-    uniform mat4 projection;
-    uniform vec4 viewport;
-    uniform vec4 position;
-    uniform vec4 exposure;
-    uniform int num_geometry;
-
     uniform sampler2DArray rand_sampler;
     uniform sampler2D scene_sampler;
     uniform sampler2D environment_sampler;
@@ -100,6 +93,18 @@
         vec3 dr = rand_sphere_direction();
         return dot(dr, n) * dr;
     }
+
+    layout(std140) uniform camera{
+        mat4 view;
+        mat4 projection;
+        vec4 viewport;
+        vec4 position;
+        vec4 exposure;
+    };
+
+    layout(std140) uniform scene{
+        int num_geometry;
+    };
 
     struct Ray {
         vec3 origin;

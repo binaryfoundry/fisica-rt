@@ -34,6 +34,8 @@ namespace GL
         quad_index_buffer = GL::GenBufferIndex(
             quad_indices_data);
 
+        camera_uniforms = std::make_unique<GL::UniformBuffer<CameraUniforms>>();
+
         noise = std::make_unique<GL::Texture2D<TexDataByteRGBA, 4>>(128, 128);
         Noise::generate(noise->Data(0), 0);
         Noise::generate(noise->Data(1), 1);
@@ -121,6 +123,9 @@ namespace GL
 
     void Pipeline::Deinit()
     {
+        camera_uniforms->Delete();
+        scene_uniforms->Delete();
+
         environment->Delete();
         scene->Delete();
         noise->Delete();
@@ -172,29 +177,8 @@ namespace GL
             raytracing_shader_program,
             "scene_sampler");
 
-        ray_tracing_view_uniform_location = glGetUniformLocation(
-            raytracing_shader_program,
-            "view");
-
-        ray_tracing_projection_uniform_location = glGetUniformLocation(
-            raytracing_shader_program,
-            "projection");
-
-        ray_tracing_viewport_uniform_location = glGetUniformLocation(
-            raytracing_shader_program,
-            "viewport");
-
-        ray_tracing_position_uniform_location = glGetUniformLocation(
-            raytracing_shader_program,
-            "position");
-
-        ray_tracing_exposure_uniform_location = glGetUniformLocation(
-            raytracing_shader_program,
-            "exposure");
-
-        ray_tracing_num_geometry_uniform_location = glGetUniformLocation(
-            raytracing_shader_program,
-            "num_geometry");
+        camera_uniforms = std::make_unique<GL::UniformBuffer<CameraUniforms>>();
+        scene_uniforms = std::make_unique<GL::UniformBuffer<SceneUniforms>>();
 
         framebuffer = std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
 
@@ -257,7 +241,8 @@ namespace GL
                 m.refractive_index);
         }
 
-        geometry_count = num_geometry;
+        scene_uniforms->object.num_geometry = static_cast<uint32_t>(
+            num_geometry);
     }
 
     void Pipeline::Draw(
@@ -285,39 +270,41 @@ namespace GL
             raytracing_shader_program);
 
         camera->Validate();
+        camera_uniforms->object.view =
+            camera->View();
+        camera_uniforms->object.projection =
+            camera->Projection();
+        camera_uniforms->object.viewport =
+            camera->viewport;
+        camera_uniforms->object.position = glm::vec4(
+            camera->position, 1.0f);
+        camera_uniforms->object.exposure = glm::vec4(
+            camera->exposure, 0.0, 0.0, 0.0);
+        camera_uniforms->Update();
 
-        glUniformMatrix4fv(
-            ray_tracing_view_uniform_location,
-            1,
-            false,
-            &camera->View()[0][0]);
+        scene_uniforms->Update();
 
-        glUniformMatrix4fv(
-            ray_tracing_projection_uniform_location,
-            1,
-            false,
-            &camera->Projection()[0][0]);
+        glBindBufferBase(
+            GL_UNIFORM_BUFFER,
+            raytracing_camera_uniform_location,
+            camera_uniforms->gl_buffer_handle);
 
-        glUniform4fv(
-            ray_tracing_viewport_uniform_location,
-            1,
-            &camera->viewport[0]);
+        glUniformBlockBinding(
+            raytracing_shader_program,
+            raytracing_camera_uniform_location,
+            raytracing_camera_uniform_location);
 
-        glUniform4fv(
-            ray_tracing_position_uniform_location,
-            1,
-            &camera->position[0]);
+        // ...
 
-        auto exp = glm::vec4(camera->exposure, 0.0, 0.0, 0.0);
+        glBindBufferBase(
+            GL_UNIFORM_BUFFER,
+            raytracing_scene_uniform_location,
+            scene_uniforms->gl_buffer_handle);
 
-        glUniform4fv(
-            ray_tracing_exposure_uniform_location,
-            1,
-            &exp[0]);
-
-        glUniform1i(
-            ray_tracing_num_geometry_uniform_location,
-            geometry_count);
+        glUniformBlockBinding(
+            raytracing_shader_program,
+            raytracing_scene_uniform_location,
+            raytracing_scene_uniform_location);
 
         // ...
 
