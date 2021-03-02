@@ -21,7 +21,7 @@ if __name__ == "__main__":
         print("Must supply build flags: debug/release")
         exit()
 
-    build_arg = lower(str(sys.argv[1]));
+    build_arg = str(sys.argv[1]).lower();
 
     if build_arg == "debug":
         build_type = "Debug"
