@@ -100,7 +100,7 @@ namespace GL
     {
         if (created)
         {
-            glDeleteBuffers(
+            glDeleteFramebuffers(
                 1, &gl_frame_handle);
 
             glDeleteTextures(

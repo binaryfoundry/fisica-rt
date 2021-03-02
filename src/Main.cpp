@@ -6,16 +6,20 @@
 
 #include <array>
 
+static const char* resolution_labels[] {
+    "352x240",
+    "480x360",
+    "858x480",
+    "1280x720",
+    "1920x1080"
+};
+
 void Main::Init()
 {
     camera = std::make_unique<Camera>();
     camera->position = glm::vec3(0, 5, 35);
 
     pipeline.Init();
-
-    pipeline.InitRaytracing(
-        raytracing_framebuffer_width,
-        raytracing_framebuffer_height);
 
     gui.Init();
 
@@ -94,7 +98,51 @@ void Main::Update()
         0,
         2);
 
+    ImGui::Combo(
+        "Resolution",
+        &selected_resolution,
+        resolution_labels,
+        IM_ARRAYSIZE(resolution_labels));
+
     ImGui::End();
+
+    bool reinit_pipeline = false;
+
+    uint32_t selected_width = 0;
+    uint32_t selected_height = 0;
+
+    switch (selected_resolution)
+    {
+    case 0:
+        selected_width = 352;
+        selected_height = 240;
+        break;
+    case 1:
+        selected_width = 480;
+        selected_height = 360;
+        break;
+    case 2:
+        selected_width = 858;
+        selected_height = 480;
+        break;
+    case 3:
+        selected_width = 1280;
+        selected_height = 720;
+        break;
+    case 4:
+        selected_width = 1920;
+        selected_height = 1080;
+        break;
+    default:
+        break;
+    };
+
+    if (selected_height != raytracing_framebuffer_height)
+    {
+        raytracing_framebuffer_width = selected_width;
+        raytracing_framebuffer_height = selected_height;
+        reinit_pipeline = true;
+    }
 
     const float window_aspect_ratio =
         static_cast<float>(sdl_window_width) /
@@ -115,6 +163,15 @@ void Main::Update()
 
     camera->Strafe(strafe_speed);
     camera->Forward(forward_speed);
+
+    if (reinit_pipeline)
+    {
+        pipeline.DeinitRaytracing();
+
+        pipeline.InitRaytracing(
+            raytracing_framebuffer_width,
+            raytracing_framebuffer_height);
+    }
 
     pipeline.Update(geometry);
 

@@ -34,6 +34,8 @@ namespace GL
     class Pipeline
     {
     private:
+        bool initialized = false;
+
         GLuint quad_vertex_buffer = 0;
         GLuint quad_index_buffer = 0;
 

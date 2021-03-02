@@ -14,6 +14,7 @@ private:
     GL::Pipeline pipeline;
 
     bool upscale = true;
+    int selected_resolution = 3;
 
     float move_speed = 0.1f;
 
@@ -22,8 +23,8 @@ private:
     float mouse_speed = 75.0f;
     std::unique_ptr<Camera> camera;
 
-    uint32_t raytracing_framebuffer_width = 1280;
-    uint32_t raytracing_framebuffer_height = 720;
+    uint32_t raytracing_framebuffer_width = 0;
+    uint32_t raytracing_framebuffer_height = 0;
 
     std::vector<Sphere> geometry;
 

@@ -125,9 +125,6 @@ namespace GL
 
     void Pipeline::Deinit()
     {
-        camera_uniforms->Delete();
-        scene_uniforms->Delete();
-
         environment->Delete();
         scene->Delete();
         noise->Delete();
@@ -201,8 +198,16 @@ namespace GL
 
     void Pipeline::DeinitRaytracing()
     {
+        if (framebuffer == nullptr)
+        {
+            return;
+        }
+
         framebuffer->Delete();
         filterbuffer->Delete();
+
+        camera_uniforms->Delete();
+        scene_uniforms->Delete();
 
         glDeleteProgram(
             raytracing_shader_program);
