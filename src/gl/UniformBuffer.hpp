@@ -45,22 +45,6 @@ namespace GL
                 GL_UNIFORM_BUFFER,
                 gl_buffer_handle);
 
-/*#if !defined(EMSCRIPTEN)
-            GLvoid* buffer_map;
-
-            buffer_map = glMapBufferRange(
-                GL_UNIFORM_BUFFER,
-                0,
-                sizeof(T),
-                GL_MAP_WRITE_BIT);
-
-            memcpy(
-                buffer_map,
-                (void*)&object,
-                sizeof(T));
-
-            glUnmapBuffer(GL_UNIFORM_BUFFER);
-#else*/
             glBufferData(
                 GL_UNIFORM_BUFFER,
                 sizeof(T),
@@ -70,7 +54,6 @@ namespace GL
             glBindBuffer(
                 GL_UNIFORM_BUFFER,
                 0);
-//#endif
         }
     };
 }
