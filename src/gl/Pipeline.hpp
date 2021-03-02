@@ -43,8 +43,17 @@ namespace GL
         GLuint frontbuffer_texture_uniform_location = 0;
 
         GLuint raytracing_shader_program = 0;
+
         GLuint raytracing_camera_uniform_location = 0;
         GLuint raytracing_scene_uniform_location = 0;
+
+        GLuint ray_tracing_view_uniform_location = 0;
+        GLuint ray_tracing_projection_uniform_location = 0;
+        GLuint ray_tracing_viewport_uniform_location = 0;
+        GLuint ray_tracing_position_uniform_location = 0;
+        GLuint ray_tracing_exposure_uniform_location = 0;
+        GLuint ray_tracing_num_geometry_uniform_location = 0;
+
         GLuint raytracing_noise_texture_uniform_location = 0;
         GLuint raytracing_environment_texture_uniform_location = 0;
         GLuint raytracing_scene_texture_uniform_location = 0;
@@ -54,13 +63,12 @@ namespace GL
         GLuint bilateral_shader_program = 0;
         GLuint bilateral_texture_uniform_location = 0;
 
+        size_t geometry_count = 0;
+
         const uint32_t scene_data_width = 8;
         const uint32_t scene_data_height = 1024;
 
         std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> framebuffer;
-        std::unique_ptr<GL::UniformBuffer<CameraUniforms>> camera_uniforms;
-        std::unique_ptr<GL::UniformBuffer<SceneUniforms>> scene_uniforms;
-
         std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> environment;
         std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> scene;
         std::unique_ptr<GL::Texture2D<TexDataByteRGBA, 4>> noise;
