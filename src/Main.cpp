@@ -84,6 +84,10 @@ void Main::Update()
         "Controls",
         "Mouse, WSAD.");
 
+    ImGui::Checkbox(
+        "Upscale",
+        &upscale);
+
     ImGui::SliderFloat(
         "Exposure",
         &camera->exposure,
@@ -117,7 +121,8 @@ void Main::Update()
     pipeline.Draw(
         sdl_window_width,
         sdl_window_height,
-        camera);
+        camera,
+        upscale);
 
     gui.Draw(
         sdl_window_width,

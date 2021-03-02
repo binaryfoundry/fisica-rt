@@ -3,6 +3,8 @@
 #include "../Noise.hpp"
 #include "../sdl/File.hpp"
 
+#include <algorithm>
+
 namespace GL
 {
     static const std::vector<float> quad_vertices_data
@@ -248,7 +250,8 @@ namespace GL
     void Pipeline::Draw(
         const uint32_t window_width,
         const uint32_t window_height,
-        const std::unique_ptr<Camera>& camera)
+        const std::unique_ptr<Camera>& camera,
+        const bool upscale)
     {
         glDisable(GL_CULL_FACE);
         glCullFace(GL_BACK);
@@ -448,15 +451,24 @@ namespace GL
         const float aspect = window_aspect / framebuffer_ratio;
         const bool wide = window_width / framebuffer_ratio > window_height;
 
-        const glm::vec3 scale = wide ?
+        glm::vec3 scale = wide ?
             glm::vec3(std::floor(window_width / aspect), window_height, 1) :
             glm::vec3(window_width, std::floor(window_height * aspect), 1);
 
-        const float hpos = wide ?
-            std::round((window_width / 2) - (scale.x / 2)) : 0;
+        if (!upscale)
+        {
+            scale.x = std::min<float>(
+                scale.x, static_cast<float>(framebuffer->Width()));
 
-        const float vpos = wide ?
-            0 : std::round((window_height / 2) - (scale.y / 2));
+            scale.y = std::min<float>(
+                scale.y, static_cast<float>(framebuffer->Height()));
+        }
+
+        const float hpos =
+            std::round((window_width / 2) - (scale.x / 2));
+
+        const float vpos =
+            std::round((window_height / 2) - (scale.y / 2));
 
         const glm::mat4 proj = glm::ortho<float>(
             0,

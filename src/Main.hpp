@@ -13,6 +13,8 @@ private:
     GUI gui;
     GL::Pipeline pipeline;
 
+    bool upscale = true;
+
     float move_speed = 0.1f;
 
     float forward_speed = 0.0f;

@@ -91,6 +91,7 @@ namespace GL
         void Draw(
             const uint32_t window_width,
             const uint32_t window_height,
-            const std::unique_ptr<Camera>& camera);
+            const std::unique_ptr<Camera>& camera,
+            const bool upscale);
     };
 }
