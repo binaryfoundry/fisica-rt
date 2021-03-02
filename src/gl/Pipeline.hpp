@@ -26,6 +26,9 @@ namespace GL
     struct SceneUniforms
     {
         uint32_t num_geometry;
+        uint32_t padding_0;
+        uint32_t padding_1;
+        uint32_t padding_2;
     };
 
     class Pipeline
