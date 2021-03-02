@@ -14,6 +14,7 @@ static const char* resolution_labels[] {
     "1920x1080"
 };
 
+
 void Main::Init()
 {
     camera = std::make_unique<Camera>();
@@ -73,6 +74,69 @@ void Main::Deinit()
     pipeline.DeinitRaytracing();
     pipeline.Deinit();
     gui.Deinit();
+}
+
+void Main::SetupScene()
+{
+    const int32_t placement_radius = 3;
+    const size_t num_materials = 4;
+
+    geometry =
+    {
+        Sphere(
+            glm::vec3(0.0f, 5.0f, 0.0f),
+            5.0f,
+            Material(
+                glm::vec3(1.0f),
+                0.0f, 1.0f, 0.0f, 0.0f)),
+        Sphere(
+            glm::vec3(-20.0f, 5.0f, 0.0f),
+            5.0f,
+            Material(
+                glm::vec3(0.0f, 0.5f, 0.5f),
+                1.0f, 0.0f, 0.0f, 0.0f)),
+        Sphere(
+            glm::vec3(20.0f, 5.0f, 0.0f),
+            5.0f,
+            Material(
+                glm::vec3(0.83f, 0.69f, 0.22f),
+                0.0f, 1.0f, 1.0f, 0.5f))
+    };
+
+    const std::array<Material, num_materials> materials =
+    {
+        Material(
+            glm::vec3(1.0f),
+            0.4f, 1.0f, 0.0f, 0.0f),
+        Material(
+            glm::vec3(0.6, 0.4, 0.5f),
+            1.0f, 0.0f, 0.0f, 0.0f),
+        Material(
+            glm::vec3(0.83f, 0.69f, 0.22f),
+            0.0f, 1.0f, 1.0f, 0.5f),
+        Material(
+            glm::vec3(0.4f, 0.5f, 0.6f),
+            0.0f, 0.2f, 0.0f, 0.0f)
+    };
+
+    for (int32_t z = -placement_radius; z < placement_radius; z++)
+    {
+        for (int32_t x = -placement_radius; x < placement_radius; x++)
+        {
+            Material material = materials[Math::element_rand(
+                num_materials)];
+
+            auto geom = Sphere(glm::vec3(
+                z + 0.9f * Math::unit_randf(),
+                0.2f,
+                x + 0.9f * Math::unit_randf()) * 5.0f,
+                0.2f * 5.0f,
+                material);
+
+            geometry.push_back(
+                geom);
+        }
+    }
 }
 
 void Main::Update()
@@ -184,59 +248,4 @@ void Main::Update()
     gui.Draw(
         sdl_window_width,
         sdl_window_height);
-}
-
-void Main::SetupScene()
-{
-    const int32_t placement_radius = 3;
-    const size_t num_materials = 4;
-
-    const std::array<Material, num_materials> materials =
-    {
-        Material(glm::vec3(1.0f), 0.4f, 1.0f, 0.0f, 0.0f),
-        Material(glm::vec3(0.6, 0.4, 0.5f), 1.0f, 0.0f, 0.0f, 0.0f),
-        Material(glm::vec3(0.83f, 0.69f, 0.22f), 0.0f, 1.0f, 1.0f, 0.5f),
-        Material(glm::vec3(0.4f, 0.5f, 0.6f), 0.0f, 0.2f, 0.0f, 0.0f)
-    };
-
-    geometry =
-    {
-        Sphere(
-            glm::vec3(0.0f, 5.0f, 0.0f),
-            5.0f,
-            Material(
-                glm::vec3(1.0f),
-                0.0f, 1.0f, 0.0f, 0.0f)),
-        Sphere(
-            glm::vec3(-20.0f, 5.0f, 0.0f),
-            5.0f,
-            Material(
-                glm::vec3(0.0f, 0.5f, 0.5f),
-                1.0f, 0.0f, 0.0f, 0.0f)),
-        Sphere(
-            glm::vec3(20.0f, 5.0f, 0.0f),
-            5.0f,
-            Material(
-                glm::vec3(0.83f, 0.69f, 0.22f),
-                0.0f, 1.0f, 1.0f, 0.5f))
-    };
-
-    for (int32_t z = -placement_radius; z < placement_radius; z++)
-    {
-        for (int32_t x = -placement_radius; x < placement_radius; x++)
-        {
-            Material material = materials[Math::element_rand(
-                num_materials)];
-
-            auto geom = Sphere(glm::vec3(
-                z + 0.9f * Math::unit_randf(),
-                0.2f,
-                x + 0.9f * Math::unit_randf()) * 5.0f,
-                0.2f * 5.0f,
-                material);
-
-            geometry.push_back(
-                geom);
-        }
-    }
 }
