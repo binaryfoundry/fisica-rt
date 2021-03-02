@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 import stat
 from sys import platform
 from shutil import rmtree
@@ -16,6 +17,20 @@ def makedirs_silent(root):
         pass
 
 if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Must supply build flags: debug/release")
+        exit()
+
+    build_arg = lower(str(sys.argv[1]));
+
+    if build_arg == "debug":
+        build_type = "Debug"
+    elif build_arg == "release":
+        build_type = "Release"
+    else:
+        print("Must supply valid build flags: debug/release")
+        exit()
+
     if platform == "linux" or platform == "linux2":
         build_dir = resolve_path("bin/web")
     else:
@@ -25,10 +40,10 @@ if __name__ == "__main__":
     os.chdir(build_dir)
 
     if platform == "linux" or platform == "linux2":
-        os.system("emcmake cmake ../.. -DEMSCRIPTEN=ON -G \"Unix Makefiles\"")
+        os.system("emcmake cmake ../.. -DCMAKE_BUILD_TYPE=" + build_type + " -DEMSCRIPTEN=ON -G \"Unix Makefiles\"")
         os.system("make")
     elif platform == "win32":
-        os.system("emcmake cmake ../.. -DEMSCRIPTEN=ON -G \"NMake Makefiles\"")
+        os.system("emcmake cmake ../.. -DCMAKE_BUILD_TYPE=" + build_type + " -DEMSCRIPTEN=ON -G \"NMake Makefiles\"")
         os.system("nmake")
     else:
         print("Unknown platform")
