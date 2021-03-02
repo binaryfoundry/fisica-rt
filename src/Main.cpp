@@ -154,7 +154,7 @@ void Main::SetupScene()
             glm::vec3(-20.0f, 5.0f, 0.0f),
             5.0f,
             Material(
-                glm::vec3(1.0f),
+                glm::vec3(0.0f, 0.5f, 0.5f),
                 1.0f, 0.0f, 0.0f, 0.0f)),
         Sphere(
             glm::vec3(20.0f, 5.0f, 0.0f),
