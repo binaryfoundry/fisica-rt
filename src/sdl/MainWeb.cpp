@@ -301,8 +301,8 @@ int main(int argc, char *argv[])
 
 static void sdl_update()
 {
-    double cssW, cssH;
-    emscripten_get_element_css_size(0, &cssW, &cssH);
+    int cssW, cssH;
+    emscripten_get_canvas_element_size("#canvas", &cssW, &cssH);
     sdl_window_width = static_cast<int>(cssW);
     sdl_window_height = static_cast<int>(cssH);
 
@@ -336,6 +336,21 @@ static void sdl_update()
         }
     }
 
+    EmscriptenPointerlockChangeEvent* pointer_event;
+    emscripten_get_pointerlock_status(pointer_event);
+
+    if (!pointer_event->isActive && sdl_mouse_captured)
+    {
+        std::cout << "lok1\n";
+        sdl_mouse_captured = false;
+        SDL_SetRelativeMouseMode(static_cast<SDL_bool>(false));
+    }
+    else if (pointer_event->isActive && !sdl_mouse_captured)
+    {
+        std::cout << "lok2\n";
+        sdl_mouse_captured = true;
+    }
+
     sdl_imgui_update_input(sdl_window);
     sdl_imgui_update_cursor();
     m.Update();
@@ -351,8 +366,8 @@ static void sdl_update_inputs()
 
 static int sdl_init_graphics()
 {
-    double cssW, cssH;
-    emscripten_get_element_css_size(0, &cssW, &cssH);
+    int cssW, cssH;
+    emscripten_get_canvas_element_size("#canvas", &cssW, &cssH);
     element_width = static_cast<uint32_t>(cssW);
     element_height = static_cast<uint32_t>(cssH);
 
@@ -371,7 +386,6 @@ static int sdl_init_graphics()
     attr.stencil = 0;
     attr.antialias = 1;
     attr.preserveDrawingBuffer = 0;
-    attr.preferLowPowerToHighPerformance = 0;
     attr.failIfMajorPerformanceCaveat = 0;
     attr.enableExtensionsByDefault = 1;
     attr.premultipliedAlpha = 0;
@@ -380,7 +394,7 @@ static int sdl_init_graphics()
     attr.minorVersion = 0;
 
     EMSCRIPTEN_WEBGL_CONTEXT_HANDLE ctx = emscripten_webgl_create_context(
-        0, &attr);
+        "#canvas", &attr);
 
     emscripten_webgl_make_context_current(
         ctx);
@@ -475,12 +489,10 @@ EM_BOOL on_canvassize_changed(
     void* user_data)
 {
     int w, h, fs;
-    double cssW, cssH;
-    emscripten_get_element_css_size(0, &cssW, &cssH);
+    int cssW, cssH;
+    emscripten_get_canvas_element_size("#canvas", &cssW, &cssH);
     element_width = static_cast<uint32_t>(cssW);
     element_height = static_cast<uint32_t>(cssH);
-
-    printf("Canvas resized: %dx%d, canvas CSS size: %02gx%02g\n", w, h, cssW, cssH);
     return 0;
 }
 
@@ -541,8 +553,8 @@ EM_BOOL em_resize_callback(
     const EmscriptenUiEvent* e,
     void* user_data)
 {
-    double cssW, cssH;
-    emscripten_get_element_css_size(0, &cssW, &cssH);
+    int cssW, cssH;
+    emscripten_get_canvas_element_size("#canvas", &cssW, &cssH);
     element_width = static_cast<uint32_t>(cssW);
     element_height = static_cast<uint32_t>(cssH);
     return 0;
@@ -641,32 +653,32 @@ static EM_BOOL em_gamepaddisconnected_callbackk(
 static void sdl_run()
 {
     emscripten_set_pointerlockchange_callback(
-        NULL, NULL, true, em_pointerlock_callback);
+        EMSCRIPTEN_EVENT_TARGET_DOCUMENT, NULL, false, em_pointerlock_callback);
     emscripten_set_fullscreenchange_callback(
-        NULL, NULL, true, em_fullscreen_callback);
+        EMSCRIPTEN_EVENT_TARGET_DOCUMENT, NULL, true, em_fullscreen_callback);
     emscripten_set_click_callback(
-        NULL, NULL, true, em_mouse_click_callback);
+        "#canvas", NULL, false, em_mouse_click_callback);
     emscripten_set_dblclick_callback(
-        NULL, NULL, true, em_mouse_dblclick_callback);
+        "#canvas", NULL, true, em_mouse_dblclick_callback);
     emscripten_set_mousemove_callback(
-        NULL, NULL, true, em_mouse_move_callback);
+        "#canvas", NULL, true, em_mouse_move_callback);
     emscripten_set_keydown_callback(
-        NULL, NULL, true, em_key_down_callback);
+        EMSCRIPTEN_EVENT_TARGET_DOCUMENT, NULL, true, em_key_down_callback);
     emscripten_set_keyup_callback(
-        NULL, NULL, true, em_key_up_callback);
+        EMSCRIPTEN_EVENT_TARGET_DOCUMENT, NULL, true, em_key_up_callback);
     emscripten_set_resize_callback(
-        NULL, NULL, true, em_resize_callback);
+        "#canvas", NULL, true, em_resize_callback);
     emscripten_set_keypress_callback(
-        NULL, NULL, true, em_handle_key_press);
+        "#canvas", NULL, true, em_handle_key_press);
     emscripten_set_wheel_callback(
-        NULL, NULL, true, em_wheel_callback);
+        "#canvas", NULL, true, em_wheel_callback);
     emscripten_set_gamepadconnected_callback(
         NULL, true, em_gamepadconnected_callback);
     emscripten_set_gamepaddisconnected_callback(
         NULL, true, em_gamepaddisconnected_callbackk);
 
-    emscripten_set_element_css_size(
-        NULL, element_width, element_height);
+    emscripten_set_canvas_element_size(
+        "#canvas", (int)element_width, (int)element_height);
 
     emscripten_set_main_loop(
         sdl_update, 0, true);
