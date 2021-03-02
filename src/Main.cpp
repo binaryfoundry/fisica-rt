@@ -90,11 +90,6 @@ void Main::Update()
         0,
         2);
 
-    ImGui::Text(
-        "Application average %.3f ms/frame (%.1f FPS)",
-        1000.0f / ImGui::GetIO().Framerate,
-        ImGui::GetIO().Framerate);
-
     ImGui::End();
 
     const float window_aspect_ratio =
