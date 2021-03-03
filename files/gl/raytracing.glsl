@@ -248,7 +248,7 @@
             rand_hemisphere_direction(hit.normal),
             mat.roughness);
 
-        vec3 reflect_norm = mix(
+        vec3 new_direction = mix(
             diffuse_vec,
             specular_vec,
             diffuse_prob < mat.metalness ? 1.0 : 0.0);
@@ -257,11 +257,11 @@
         float fresnel_val = EnvBRDFApprox(NoV, mat.roughness);
         float fresnel = fresnel_prob > fresnel_val ? 0.0 : 1.0;
 
-        reflect_norm = mix(reflect_norm, reflect_vec, fresnel);
+        new_direction = mix(new_direction, reflect_vec, fresnel);
         f0 = mix(f0, vec3(1.0), fresnel);
 
         r.origin = mix(r.origin, hit.position, found);
-        r.direction = mix(r.direction, reflect_norm, found);
+        r.direction = mix(r.direction, new_direction, found);
         acc.xyz *= mix(vec3(1.0), f0, found);
         acc.w += mix(0.0, hit.t, found);
     }
