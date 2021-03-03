@@ -140,6 +140,7 @@
 
     struct Hit {
         float t;
+        float exists;
         vec3 position;
         vec3 normal;
     };
@@ -207,10 +208,9 @@
     }
 
     void trace_world(inout Ray r, inout vec4 acc, bool end) {
-        Hit hit = Hit(FLT_MAX, r.origin, r.direction);
+        Hit hit = Hit(FLT_MAX, 0.0, r.origin, r.direction);
         Material mat;
         Material mat_temp;
-        float found = 0.0;
         for (int i = 0; i < num_geometry; i++) {
             vec4 dat0 = texelFetch(scene_sampler, ivec2(0, i), 0);
             vec4 dat1 = texelFetch(scene_sampler, ivec2(1, i), 0);
@@ -223,14 +223,14 @@
 
             if (Sphere_hit(s, r, hit)) {
                 mat = mat_temp;
-                found = 1.0;
+                hit.exists = 1.0;
             }
         }
 
         if (Plane_hit(r, hit)) {
             mat = Material(
                 vec3(1.0), 0.0, 0.0, 0.0, 0.0, 1.0);;
-            found = 1.0;
+            hit.exists = 1.0;
         }
 
         float NoV = dot(
@@ -259,10 +259,10 @@
         new_direction = mix(new_direction, reflect_vec, fresnel);
         f0 = mix(f0, vec3(1.0), fresnel);
 
-        r.origin = mix(r.origin, hit.position, found);
-        r.direction = mix(r.direction, new_direction, found);
-        acc.xyz *= mix(vec3(1.0), f0, found);
-        acc.w += mix(0.0, hit.t, found);
+        r.origin = mix(r.origin, hit.position, hit.exists);
+        r.direction = mix(r.direction, new_direction, hit.exists);
+        acc.xyz *= mix(vec3(1.0), f0, hit.exists);
+        acc.w += mix(0.0, hit.t, hit.exists);
     }
 
     vec4 trace(Ray r) {
