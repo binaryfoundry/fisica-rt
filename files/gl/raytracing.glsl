@@ -208,15 +208,15 @@
     }
 
     void trace_world(inout Ray r, inout vec4 acc, bool end) {
-        Hit hit = Hit(FLT_MAX, 0.0, r.origin, r.direction);
         Material mat;
-        Material mat_temp;
+        Hit hit = Hit(FLT_MAX, 0.0, r.origin, r.direction);
+
         for (int i = 0; i < num_geometry; i++) {
             vec4 dat0 = texelFetch(scene_sampler, ivec2(0, i), 0);
             vec4 dat1 = texelFetch(scene_sampler, ivec2(1, i), 0);
             vec4 dat2 = texelFetch(scene_sampler, ivec2(2, i), 0);
 
-            mat_temp = Material(
+            Material mat_temp = Material(
                 dat1.xyz, dat2.x, dat2.y, dat2.z, dat2.w, 1.0);
             Sphere s = Sphere(
                 dat0.xyz, dat0.w);
