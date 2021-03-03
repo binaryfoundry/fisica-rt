@@ -1,7 +1,7 @@
 #pragma once
 
-#include "math/Math.hpp"
-#include "gl/OpenGL.hpp"
+#include "OpenGL.hpp"
+#include "../math/Math.hpp"
 
 class GUI
 {

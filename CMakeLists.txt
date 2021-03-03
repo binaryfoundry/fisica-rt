@@ -16,7 +16,6 @@ option(EMSCRIPTEN "Web Compilation" OFF)
 
 set(SOURCES
     src/Main.cpp
-    src/GUI.cpp
     src/Camera.cpp
     src/Geometry.cpp
     src/Noise.cpp
@@ -24,7 +23,6 @@ set(SOURCES
 
 set(HEADERS
     src/Main.hpp
-    src/GUI.hpp
     src/Camera.hpp
     src/Geometry.hpp
     src/Noise.hpp
@@ -56,6 +54,7 @@ set(HEADERS_SDL
 
 set(SOURCES_GL
     src/gl/OpenGL.cpp
+    src/gl/GUI.cpp
     src/gl/FrameBuffer.cpp
     src/gl/Texture2D.cpp
     src/gl/UniformBuffer.cpp
@@ -63,6 +62,7 @@ set(SOURCES_GL
 
 set(HEADERS_GL
     src/gl/OpenGL.hpp
+    src/gl/GUI.hpp
     src/gl/FrameBuffer.hpp
     src/gl/Texture2D.hpp
     src/gl/UniformBuffer.hpp

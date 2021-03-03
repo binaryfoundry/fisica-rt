@@ -1,10 +1,11 @@
 #pragma once
 
-#include "GUI.hpp"
+
 #include "Timing.hpp"
 #include "Camera.hpp"
 #include "Geometry.hpp"
 
+#include "gl/GUI.hpp"
 #include "gl/OpenGL.hpp"
 #include "gl/Pipeline.hpp"
 
