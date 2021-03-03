@@ -253,9 +253,8 @@
             specular_vec,
             diffuse_prob < mat.metalness ? 1.0 : 0.0);
 
-        float fresnel_prob = rand_value.w;
-        float fresnel_val = EnvBRDFApprox(NoV, mat.roughness);
-        float fresnel = fresnel_prob > fresnel_val ? 0.0 : 1.0;
+        float fresnel = rand_value.w >
+            EnvBRDFApprox(NoV, mat.roughness) ? 0.0 : 1.0;
 
         new_direction = mix(new_direction, reflect_vec, fresnel);
         f0 = mix(f0, vec3(1.0), fresnel);
