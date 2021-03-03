@@ -206,7 +206,7 @@
         return AB.y;
     }
 
-    void trace_world(inout Ray r, inout vec4 acc, inout int is_hit, bool end) {
+    void trace_world(inout Ray r, inout vec4 acc, bool end) {
         Hit hit = Hit(FLT_MAX, r.origin, r.direction);
         Material mat;
         Material mat_temp;
@@ -261,7 +261,6 @@
         f0 = mix(f0, vec3(1.0), fresnel);
 
         //if (found) {
-            is_hit = int(found);
             r.origin = mix(r.origin, hit.position, found);
             r.direction = mix(r.direction, reflect_norm, found);
             acc.xyz *= mix(vec3(1.0), f0, found);
@@ -270,12 +269,10 @@
     }
 
     vec4 trace(Ray r) {
-        int is_hit = 0;
         vec4 acc = vec4(1.0, 1.0, 1.0, 0.0);
         for (int i = 0; i < BOUNCES; i++) {
             rand_update();
-            is_hit = 0;
-            trace_world(r, acc, is_hit, i == BOUNCES - 1);
+            trace_world(r, acc, i == BOUNCES - 1);
         }
         acc.xyz *= environment_emissive(r.direction);
         return acc;
