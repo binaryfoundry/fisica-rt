@@ -16,7 +16,7 @@ private:
     bool upscale = true;
     int selected_resolution = 3;
     int selected_samples = 2;
-    int selected_bounces = 2;
+    int selected_bounces = 1;
 
     float move_speed = 0.1f;
 

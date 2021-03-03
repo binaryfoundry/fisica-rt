@@ -203,7 +203,7 @@
         return AB.y;
     }
 
-    void trace_world(inout Ray r, inout vec4 acc, inout int is_hit) {
+    void trace_world(inout Ray r, inout vec4 acc, inout int is_hit, bool end) {
         Hit h = Hit(FLT_MAX, r.origin, r.direction);
         Hit h_temp;
         Material m;
@@ -249,7 +249,7 @@
         float fresnel_val = EnvBRDFApprox(NoV, m.roughness);
         float fresnel = fresnel_prob > fresnel_val ? 0.0 : 1.0;
 
-        float specular_prob = rand_value.z;
+        float diffuse_prob = end ? 1.0 : rand_value.z;
         vec3 reflect_vec = reflect(r.direction, h.normal);
         vec3 diffuse_vec = rand_cos_hemisphere(h.normal);
 
@@ -261,7 +261,7 @@
         vec3 reflect_norm = mix(
             diffuse_vec,
             specular_vec,
-            specular_prob < m.metalness ? 1.0 : 0.0);
+            diffuse_prob < m.metalness ? 1.0 : 0.0);
 
         reflect_norm = mix(reflect_norm, reflect_vec, fresnel);
         f0 = mix(f0, vec3(1.0), fresnel);
@@ -281,7 +281,7 @@
         for (int i = 0; i < BOUNCES; i++) {
             rand_update();
             is_hit = 0;
-            trace_world(r, acc, is_hit);
+            trace_world(r, acc, is_hit, i == BOUNCES - 1);
         }
         acc.xyz *= environment_emissive(r.direction);
         return acc;
