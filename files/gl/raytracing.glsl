@@ -237,16 +237,15 @@
             normalize(hit.normal),
             normalize(-r.direction));
 
-        vec3 f0 = mat.albedo;
-
-        float diffuse_prob = end ? 1.0 : rand_value.z;
         vec3 reflect_vec = reflect(r.direction, hit.normal);
-        vec3 diffuse_vec = rand_cos_hemisphere(hit.normal);
 
         vec3 specular_vec = mix(
             reflect_vec,
             rand_hemisphere_direction(hit.normal),
             mat.roughness);
+
+        vec3 diffuse_vec = rand_cos_hemisphere(hit.normal);
+        float diffuse_prob = end ? 1.0 : rand_value.z;
 
         vec3 new_direction = mix(
             diffuse_vec,
@@ -257,7 +256,7 @@
             EnvBRDFApprox(NoV, mat.roughness) ? 0.0 : 1.0;
 
         new_direction = mix(new_direction, reflect_vec, fresnel);
-        f0 = mix(f0, vec3(1.0), fresnel);
+        vec3 f0 = mix(mat.albedo, vec3(1.0), fresnel);
 
         r.origin = mix(r.origin, hit.position, hit.exists);
         r.direction = mix(r.direction, new_direction, hit.exists);
