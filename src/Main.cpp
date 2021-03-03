@@ -156,10 +156,10 @@ void Main::SetupScene()
 
 void Main::Update()
 {
-    float time_ms = timer_end(fps_time);
+    const float time_ms = timer_end(fps_time);
     fps_time = timer_start();
     fps_time_avg = fps_alpha * fps_time_avg + (1.0f - fps_alpha) * time_ms;
-    float fps_scale = std::min<float>(5.0f, fps_time_avg / 16.66666f);
+    const float fps_scale = std::min<float>(5.0f, fps_time_avg / 16.66666f);
 
     ImGui::NewFrame();
 
