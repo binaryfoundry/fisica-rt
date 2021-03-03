@@ -5,7 +5,7 @@
 #include "Camera.hpp"
 #include "Geometry.hpp"
 
-#include "gl/GUI.hpp"
+#include "gl/ImGui.hpp"
 #include "gl/OpenGL.hpp"
 #include "gl/Pipeline.hpp"
 
