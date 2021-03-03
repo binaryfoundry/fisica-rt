@@ -164,7 +164,7 @@
         float d = b * b - a * c;
         if (d > 0.0) {
             float t = (-b - sqrt(b * b - a * c)) / a;
-            if (t < t_max && t > t_min) {
+            if (t < t_max && t > t_min && t < h.t) {
                 h.t = t;
                 h.position = Ray_at(r, t);
                 h.normal = (h.position - s.position) / s.radius;
@@ -183,7 +183,7 @@
         if (d > t_min) {
             vec3 v = position - r.origin;
             float t = dot(v, -normal) / d;
-            if (t >= t_min) {
+            if (t >= t_min  && t < h.t) {
                 h.t = t;
                 h.position = Ray_at(r, t);
                 h.normal = normal;
@@ -207,74 +207,65 @@
     }
 
     void trace_world(inout Ray r, inout vec4 acc, inout int is_hit, bool end) {
-        Hit h = Hit(FLT_MAX, r.origin, r.direction);
-        Hit h_temp;
-        Material m;
-        Material m_temp;
+        Hit hit = Hit(FLT_MAX, r.origin, r.direction);
+        Material mat;
+        Material mat_temp;
         float found = 0.0;
         for (int i = 0; i < num_geometry; i++) {
             vec4 dat0 = texelFetch(scene_sampler, ivec2(0, i), 0);
             vec4 dat1 = texelFetch(scene_sampler, ivec2(1, i), 0);
             vec4 dat2 = texelFetch(scene_sampler, ivec2(2, i), 0);
 
-            m_temp = Material(
+            mat_temp = Material(
                 dat1.xyz, dat2.x, dat2.y, dat2.z, dat2.w, 1.0);
             Sphere s = Sphere(
                 dat0.xyz, dat0.w);
 
-            if (Sphere_hit(s, r, h_temp)) {
-                if (h_temp.t < h.t) {
-                    h = h_temp;
-                    m = m_temp;
-                    found = 1.0;
-                }
-            }
-        }
-
-        m_temp = Material(
-            vec3(1.0), 0.0, 0.0, 0.0, 0.0, 1.0);
-
-        if (Plane_hit(r, h_temp)) {
-            if (h_temp.t < h.t) {
-                h = h_temp;
-                m = m_temp;
+            if (Sphere_hit(s, r, hit)) {
+                mat = mat_temp;
                 found = 1.0;
             }
         }
 
+        if (Plane_hit(r, hit)) {
+            mat = Material(
+                vec3(1.0), 0.0, 0.0, 0.0, 0.0, 1.0);;
+            found = 1.0;
+        }
+
         float NoV = dot(
-            normalize(h.normal),
+            normalize(hit.normal),
             normalize(-r.direction));
 
-        vec3 f0 = m.albedo;
+        vec3 f0 = mat.albedo;
 
         float fresnel_prob = rand_value.w;
-        float fresnel_val = EnvBRDFApprox(NoV, m.roughness);
+        float fresnel_val = EnvBRDFApprox(NoV, mat.roughness);
         float fresnel = fresnel_prob > fresnel_val ? 0.0 : 1.0;
 
         float diffuse_prob = end ? 1.0 : rand_value.z;
-        vec3 reflect_vec = reflect(r.direction, h.normal);
-        vec3 diffuse_vec = rand_cos_hemisphere(h.normal);
+        vec3 reflect_vec = reflect(r.direction, hit.normal);
+        vec3 diffuse_vec = rand_cos_hemisphere(hit.normal);
 
         vec3 specular_vec = mix(
             reflect_vec,
-            rand_hemisphere_direction(h.normal),
-            m.roughness);
+            rand_hemisphere_direction(hit.normal),
+            mat.roughness);
 
         vec3 reflect_norm = mix(
             diffuse_vec,
             specular_vec,
-            diffuse_prob < m.metalness ? 1.0 : 0.0);
+            diffuse_prob < mat.metalness ? 1.0 : 0.0);
 
         reflect_norm = mix(reflect_norm, reflect_vec, fresnel);
         f0 = mix(f0, vec3(1.0), fresnel);
 
         //if (found) {
             is_hit = int(found);
-            r.origin = mix(r.origin, h.position, found);
+            r.origin = mix(r.origin, hit.position, found);
             r.direction = mix(r.direction, reflect_norm, found);
             acc.xyz *= mix(vec3(1.0), f0, found);
-            acc.w += mix(0.0, h.t, found);
+            acc.w += mix(0.0, hit.t, found);
         //}
     }
 
