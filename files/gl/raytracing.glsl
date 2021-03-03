@@ -239,10 +239,6 @@
 
         vec3 f0 = mat.albedo;
 
-        float fresnel_prob = rand_value.w;
-        float fresnel_val = EnvBRDFApprox(NoV, mat.roughness);
-        float fresnel = fresnel_prob > fresnel_val ? 0.0 : 1.0;
-
         float diffuse_prob = end ? 1.0 : rand_value.z;
         vec3 reflect_vec = reflect(r.direction, hit.normal);
         vec3 diffuse_vec = rand_cos_hemisphere(hit.normal);
@@ -256,6 +252,10 @@
             diffuse_vec,
             specular_vec,
             diffuse_prob < mat.metalness ? 1.0 : 0.0);
+
+        float fresnel_prob = rand_value.w;
+        float fresnel_val = EnvBRDFApprox(NoV, mat.roughness);
+        float fresnel = fresnel_prob > fresnel_val ? 0.0 : 1.0;
 
         reflect_norm = mix(reflect_norm, reflect_vec, fresnel);
         f0 = mix(f0, vec3(1.0), fresnel);
