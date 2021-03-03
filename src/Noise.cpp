@@ -6,6 +6,10 @@
 #include <noise/samplerBlueNoiseErrorDistribution_128x128_OptimizedFor_4spp.h>
 #include <noise/samplerBlueNoiseErrorDistribution_128x128_OptimizedFor_8spp.h>
 #include <noise/samplerBlueNoiseErrorDistribution_128x128_OptimizedFor_16spp.h>
+#include <noise/samplerBlueNoiseErrorDistribution_128x128_OptimizedFor_32spp.h>
+#include <noise/samplerBlueNoiseErrorDistribution_128x128_OptimizedFor_64spp.h>
+#include <noise/samplerBlueNoiseErrorDistribution_128x128_OptimizedFor_128spp.h>
+#include <noise/samplerBlueNoiseErrorDistribution_128x128_OptimizedFor_256spp.h>
 
 #define DIM 128
 
@@ -33,6 +37,18 @@ namespace Noise
             break;
         case 16:
             v = sbned_128x128_2d2d2d2d_16spp(x, y, s, d);
+            break;
+        case 32:
+            v = sbned_128x128_2d2d2d2d_32spp(x, y, s, d);
+            break;
+        case 64:
+            v = sbned_128x128_2d2d2d2d_64spp(x, y, s, d);
+            break;
+        case 128:
+            v = sbned_128x128_2d2d2d2d_128spp(x, y, s, d);
+            break;
+        case 256:
+            v = sbned_128x128_2d2d2d2d_256spp(x, y, s, d);
             break;
         }
 

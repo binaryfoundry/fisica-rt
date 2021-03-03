@@ -17,7 +17,9 @@ static const char* resolution_labels[] {
 static const char* samples_labels[] {
     "1",
     "2",
-    "4"
+    "4",
+    "8",
+    "16"
 };
 
 static const char* bounces_labels[] {
@@ -243,6 +245,12 @@ void Main::Update()
         break;
     case 2:
         new_samples = 4;
+        break;
+    case 3:
+        new_samples = 8;
+        break;
+    case 4:
+        new_samples = 16;
         break;
     }
 

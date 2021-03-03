@@ -249,11 +249,11 @@ namespace GL
     template class Texture2D<TexDataByteRGBA, 2>;
     template class Texture2D<TexDataByteRGBA, 3>;
     template class Texture2D<TexDataByteRGBA, 4>;
-    template class Texture2D<TexDataByteRGBA, 16>;
+    template class Texture2D<TexDataByteRGBA, 64>;
 
     template class Texture2D<TexDataFloatRGBA, 1>;
     template class Texture2D<TexDataFloatRGBA, 2>;
     template class Texture2D<TexDataFloatRGBA, 3>;
     template class Texture2D<TexDataFloatRGBA, 4>;
-    template class Texture2D<TexDataFloatRGBA, 16>;
+    template class Texture2D<TexDataFloatRGBA, 64>;
 }

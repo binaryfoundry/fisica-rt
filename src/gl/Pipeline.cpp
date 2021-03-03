@@ -145,11 +145,13 @@ namespace GL
         const uint16_t samples,
         const uint16_t bounces)
     {
-        noise = std::make_unique<GL::Texture2D<TexDataByteRGBA, 16>>(128, 128);
+        noise = std::make_unique<GL::Texture2D<TexDataByteRGBA, 64>>(128, 128);
 
-        for (uint16_t i = 0; i < bounces; i++)
+        uint16_t noise_samples = samples * bounces;
+
+        for (uint16_t i = 0; i < noise_samples; i++)
         {
-            Noise::generate(noise->Data(i), i, samples);
+            Noise::generate(noise->Data(i), i, noise_samples);
         }
 
         noise->Update();

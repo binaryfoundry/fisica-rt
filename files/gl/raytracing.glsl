@@ -50,23 +50,16 @@
             env_spherical_to_equirect(n)).xyz;
     }
 
-    const vec2 rand_offsets[4] = vec2[](
-        vec2(0.0, 0.0),
-        vec2(0.5, 0.0),
-        vec2(0.25, 0.5),
-        vec2(0.75, 0.5));
-
-    vec2 rand_offset = vec2(0.0);
     int rand_sample = 0;
     vec4 rand_value;
 
     void rand_update() {
         vec2 coords = gl_FragCoord.xy /
             vec2(textureSize(rand_sampler, 0));
-        coords += rand_offset;
         rand_value = texture(
             rand_sampler,
             vec3(coords, rand_sample));
+        rand_sample++;
     }
 
     vec3 rand_cos_hemisphere(const vec3 n) {
@@ -286,7 +279,6 @@
         int is_hit = 0;
         vec4 acc = vec4(1.0, 1.0, 1.0, 0.0);
         for (int i = 0; i < BOUNCES; i++) {
-            rand_sample = i;
             rand_update();
             is_hit = 0;
             trace_world(r, acc, is_hit);
@@ -300,7 +292,6 @@
 
         vec4 acc;
         for (int s = 0; s < SAMPLES; s++) {
-            rand_offset = rand_offsets[s];
             acc += trace(r);
         }
         acc /= float(SAMPLES);
