@@ -19,14 +19,16 @@ set(SOURCES
     src/GUI.cpp
     src/Camera.cpp
     src/Geometry.cpp
-    src/Noise.cpp)
+    src/Noise.cpp
+    src/Timing.cpp)
 
 set(HEADERS
     src/Main.hpp
     src/GUI.hpp
     src/Camera.hpp
     src/Geometry.hpp
-    src/Noise.hpp)
+    src/Noise.hpp
+    src/Timing.hpp)
 
 set(SOURCES_MATH
     src/math/Math.cpp

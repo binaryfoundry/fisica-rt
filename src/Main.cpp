@@ -80,6 +80,8 @@ void Main::Init()
     };
 
     SetupScene();
+
+    fps_time = timer_start();
 }
 
 void Main::Deinit()
@@ -154,6 +156,11 @@ void Main::SetupScene()
 
 void Main::Update()
 {
+    float time_ms = timer_end(fps_time);
+    fps_time = timer_start();
+    fps_time_avg = fps_alpha * fps_time_avg + (1.0f - fps_alpha) * time_ms;
+    float fps_scale = std::min<float>(5.0f, fps_time_avg / 16.66666f);
+
     ImGui::NewFrame();
 
     ImGui::Begin(
@@ -192,6 +199,11 @@ void Main::Update()
         &selected_bounces,
         bounces_labels,
         IM_ARRAYSIZE(bounces_labels));
+
+    ImGui::Text(
+        "Application average %.3f ms/frame (%.1f FPS)",
+        fps_time_avg,
+        1000.0f / fps_time_avg);
 
     ImGui::End();
 
@@ -287,19 +299,19 @@ void Main::Update()
 
     camera->orientation.yaw +=
         static_cast<float>(sdl_captured_mouse_delta_x) /
-        (mouse_speed * window_aspect_ratio);
+        ((mouse_speed / fps_scale) * window_aspect_ratio);
 
     camera->orientation.pitch +=
         static_cast<float>(-sdl_captured_mouse_delta_y) /
-        (mouse_speed);
+        (mouse_speed / fps_scale);
 
     camera->viewport = glm::vec4(
         0, 0,
         raytracing_framebuffer_width,
         raytracing_framebuffer_height);
 
-    camera->Strafe(strafe_speed);
-    camera->Forward(forward_speed);
+    camera->Strafe(strafe_speed * fps_scale);
+    camera->Forward(forward_speed * fps_scale);
 
     if (reinit_pipeline)
     {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GUI.hpp"
+#include "Timing.hpp"
 #include "Camera.hpp"
 #include "Geometry.hpp"
 
@@ -12,6 +13,10 @@ class Main
 private:
     GUI gui;
     GL::Pipeline pipeline;
+
+    const float fps_alpha = 0.9f;
+    hrc::time_point fps_time;
+    float fps_time_avg = 60;
 
     bool upscale = true;
     int selected_resolution = 3;
