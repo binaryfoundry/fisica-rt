@@ -260,12 +260,10 @@
         reflect_norm = mix(reflect_norm, reflect_vec, fresnel);
         f0 = mix(f0, vec3(1.0), fresnel);
 
-        //if (found) {
-            r.origin = mix(r.origin, hit.position, found);
-            r.direction = mix(r.direction, reflect_norm, found);
-            acc.xyz *= mix(vec3(1.0), f0, found);
-            acc.w += mix(0.0, hit.t, found);
-        //}
+        r.origin = mix(r.origin, hit.position, found);
+        r.direction = mix(r.direction, reflect_norm, found);
+        acc.xyz *= mix(vec3(1.0), f0, found);
+        acc.w += mix(0.0, hit.t, found);
     }
 
     vec4 trace(Ray r) {
