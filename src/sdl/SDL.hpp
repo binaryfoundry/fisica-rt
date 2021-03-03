@@ -27,8 +27,8 @@ extern int16_t sdl_mouse_delta_x;
 extern int16_t sdl_mouse_delta_y;
 extern int16_t sdl_captured_mouse_x;
 extern int16_t sdl_captured_mouse_y;
-extern int16_t sdl_captured_mouse_delta_x;
-extern int16_t sdl_captured_mouse_delta_y;
+extern float sdl_captured_mouse_delta_x;
+extern float sdl_captured_mouse_delta_y;
 
 extern std::function<void()> sdl_app_init;
 extern std::function<void()> sdl_app_deinit;

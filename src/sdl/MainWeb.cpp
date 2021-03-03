@@ -355,8 +355,8 @@ static void sdl_update()
     sdl_imgui_update_cursor();
     m.Update();
 
-    sdl_captured_mouse_delta_x = 0;
-    sdl_captured_mouse_delta_y = 0;
+    sdl_captured_mouse_delta_x = 0.0f;
+    sdl_captured_mouse_delta_y = 0.0f;
 }
 
 static void sdl_update_inputs()
@@ -476,8 +476,10 @@ EM_BOOL em_mouse_move_callback(
     {
         sdl_captured_mouse_x = mouse_event->canvasX;
         sdl_captured_mouse_y = mouse_event->canvasY;
-        sdl_captured_mouse_delta_x = mouse_event->movementX / 4;
-        sdl_captured_mouse_delta_y = mouse_event->movementY / 4;
+        sdl_captured_mouse_delta_x = static_cast<float>(
+            mouse_event->movementX) / 8.0f;
+        sdl_captured_mouse_delta_y = static_cast<float>(
+            mouse_event->movementY) / 8.0f;
     }
 
     return true;

@@ -235,8 +235,8 @@ static bool sdl_poll_events()
     SDL_GameController* controller;
     SDL_GameControllerAxis axis;
 
-    sdl_captured_mouse_delta_x = 0;
-    sdl_captured_mouse_delta_y = 0;
+    sdl_captured_mouse_delta_x = 0.0f;
+    sdl_captured_mouse_delta_y = 0.0f;
 
     while (SDL_PollEvent(&event))
     {
@@ -274,8 +274,8 @@ static bool sdl_poll_events()
             {
                 sdl_captured_mouse_x = event.motion.x;
                 sdl_captured_mouse_y = event.motion.y;
-                sdl_captured_mouse_delta_x = event.motion.xrel;
-                sdl_captured_mouse_delta_y = event.motion.yrel;
+                sdl_captured_mouse_delta_x = static_cast<float>(event.motion.xrel);
+                sdl_captured_mouse_delta_y = static_cast<float>(event.motion.yrel);
             }
             break;
 
@@ -284,8 +284,8 @@ static bool sdl_poll_events()
             {
                 if (!sdl_mouse_captured && event.button.clicks == 2)
                 {
-                    sdl_captured_mouse_delta_x = 0;
-                    sdl_captured_mouse_delta_y = 0;
+                    sdl_captured_mouse_delta_x = 0.0f;
+                    sdl_captured_mouse_delta_y = 0.0f;
                     sdl_mouse_captured = true;
                     SDL_SetRelativeMouseMode(static_cast<SDL_bool>(sdl_mouse_captured));
                 }

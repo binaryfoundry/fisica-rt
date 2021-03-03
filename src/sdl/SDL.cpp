@@ -11,8 +11,8 @@ int16_t sdl_mouse_delta_x = 0;
 int16_t sdl_mouse_delta_y = 0;
 int16_t sdl_captured_mouse_x = -1;
 int16_t sdl_captured_mouse_y = -1;
-int16_t sdl_captured_mouse_delta_x = 0;
-int16_t sdl_captured_mouse_delta_y = 0;
+float sdl_captured_mouse_delta_x = 0;
+float sdl_captured_mouse_delta_y = 0;
 
 std::function<void(SDL_Scancode key)> sdl_key_up_callback;
 std::function<void(SDL_Scancode key)> sdl_key_down_callback;
