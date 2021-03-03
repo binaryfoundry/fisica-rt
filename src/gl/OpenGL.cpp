@@ -170,6 +170,7 @@ namespace GL
                     info_len,
                     NULL,
                     info_log);
+                std::cout << shader_src << std::endl;
                 std::cout << "compile error " << info_log << std::endl;
             }
 
