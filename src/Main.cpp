@@ -159,7 +159,9 @@ void Main::Update()
     const float time_ms = timer_end(fps_time);
     fps_time = timer_start();
     fps_time_avg = fps_alpha * fps_time_avg + (1.0f - fps_alpha) * time_ms;
-    const float fps_scale = std::min<float>(5.0f, fps_time_avg / 16.66666f);
+
+    const float fps_scale = std::max<float>(
+        1.0f / std::min<float>(5.0f, fps_time_avg / 16.66666f), 0.1f);
 
     const bool reinit_pipeline = GuiUpdate();
 
@@ -169,19 +171,19 @@ void Main::Update()
 
     camera->orientation.yaw +=
         static_cast<float>(sdl_captured_mouse_delta_x) /
-        ((mouse_speed / fps_scale) * window_aspect_ratio);
+        (mouse_speed * fps_scale * window_aspect_ratio);
 
     camera->orientation.pitch +=
         static_cast<float>(-sdl_captured_mouse_delta_y) /
-        (mouse_speed / fps_scale);
+        (mouse_speed * fps_scale);
 
     camera->viewport = glm::vec4(
         0, 0,
         raytracing_framebuffer_width,
         raytracing_framebuffer_height);
 
-    camera->Strafe(strafe_speed * fps_scale);
-    camera->Forward(forward_speed * fps_scale);
+    camera->Strafe(strafe_speed / fps_scale);
+    camera->Forward(forward_speed / fps_scale);
 
     if (reinit_pipeline)
     {
