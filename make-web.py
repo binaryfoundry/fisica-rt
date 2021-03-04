@@ -32,14 +32,14 @@ if __name__ == "__main__":
         exit()
 
     if platform == "linux" or platform == "linux2":
-        build_dir = resolve_path("bin/web")
+        build_dir = resolve_path("bin/web/" + build_type)
     else:
-        build_dir = resolve_path(".\\bin\\web")
+        build_dir = resolve_path(".\\bin\\web\\" + build_type)
 
     makedirs_silent(build_dir)
     os.chdir(build_dir)
 
-    build_string = "emcmake cmake ../.. "
+    build_string = "emcmake cmake ../../.. "
     build_string += "-DCMAKE_BUILD_TYPE=" + build_type + " "
     build_string += "-DEMSCRIPTEN=ON "
 
