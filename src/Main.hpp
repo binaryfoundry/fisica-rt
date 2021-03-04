@@ -39,6 +39,7 @@ private:
     std::vector<Sphere> geometry;
 
     void SetupScene();
+    bool GuiUpdate();
 
 public:
     void Init();
