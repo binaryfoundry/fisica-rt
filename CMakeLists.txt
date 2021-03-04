@@ -28,6 +28,12 @@ set(HEADERS
     src/Noise.hpp
     src/Timing.hpp)
 
+set(SOURCES_INTERFACES
+    src/interfaces/IApplication.cpp)
+
+set(HEADERS_INTERFACES
+    src/interfaces/IApplication.hpp)
+
 set(SOURCES_MATH
     src/math/Math.cpp
     src/math/Angles.cpp
@@ -85,6 +91,9 @@ set(HEADERS_IMGUI
 SOURCE_GROUP("Source" FILES ${SOURCES})
 SOURCE_GROUP("Source" FILES ${HEADERS})
 
+SOURCE_GROUP("Source\\interfaces" FILES ${SOURCES_INTERFACES})
+SOURCE_GROUP("Source\\interfaces" FILES ${HEADERS_INTERFACES})
+
 SOURCE_GROUP("Source\\math" FILES ${SOURCES_MATH})
 SOURCE_GROUP("Source\\math" FILES ${HEADERS_MATH})
 
@@ -137,6 +146,8 @@ add_executable(
     ${PROJECT_NAME}
     ${SOURCES}
     ${HEADERS}
+    ${SOURCES_INTERFACES}
+    ${HEADERS_INTERFACES}
     ${SOURCES_MATH}
     ${HEADERS_MATH}
     ${SOURCES_SDL}

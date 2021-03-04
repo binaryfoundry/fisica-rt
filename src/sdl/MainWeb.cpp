@@ -2,8 +2,6 @@
 
 #if defined(EMSCRIPTEN)
 
-#include "../Application.hpp"
-
 #include "../gl/OpenGL.hpp"
 
 #include "SDL.hpp"
@@ -265,10 +263,12 @@ static const SDL_Scancode emscripten_scancode_table[] = {
 
 static std::map<int32_t, ControllerState> sdl_controllers;
 
-Application app;
+static std::unique_ptr<IApplication> application;
 
-int main(int argc, char *argv[])
+int sdl_init(std::unique_ptr<IApplication>& app)
 {
+    application = std::move(app);
+
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
     {
         std::cout << "SDL error: " << SDL_GetError() << std::endl;
@@ -287,11 +287,11 @@ int main(int argc, char *argv[])
     sdl_imgui_initialise();
     sdl_init_graphics();
 
-    app.Init();
+    application->Init();
 
     sdl_run();
 
-    app.Deinit();
+    application->Deinit();
 
     SDL_DestroyWindow(sdl_window);
     SDL_Quit();
@@ -353,7 +353,7 @@ static void sdl_update()
 
     sdl_imgui_update_input(sdl_window);
     sdl_imgui_update_cursor();
-    app.Update();
+    application->Update();
 
     sdl_captured_mouse_delta_x = 0.0f;
     sdl_captured_mouse_delta_y = 0.0f;

@@ -6,6 +6,18 @@
 
 #include <array>
 
+#if !defined(EMSCRIPTEN)
+#include "sdl/Main.hpp"
+#else
+#include "sdl/MainWeb.hpp"
+#endif
+
+int main(int argc, char* argv[])
+{
+    std::unique_ptr<IApplication> app = std::make_unique<Application>();
+    return sdl_init(app);
+}
+
 static const char* resolution_labels[] {
     "352x240",
     "480x360",

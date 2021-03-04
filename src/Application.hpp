@@ -5,11 +5,13 @@
 #include "Camera.hpp"
 #include "Geometry.hpp"
 
+#include "interfaces/IApplication.hpp"
+
 #include "gl/ImGui.hpp"
 #include "gl/OpenGL.hpp"
 #include "gl/Pipeline.hpp"
 
-class Application
+class Application : public IApplication
 {
 private:
     GUI gui;

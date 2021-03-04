@@ -2,8 +2,6 @@
 
 #if !defined(EMSCRIPTEN)
 
-#include "../Application.hpp"
-
 #include "../gl/OpenGL.hpp"
 
 #include "SDL.hpp"
@@ -32,10 +30,12 @@ static std::map<int32_t, SDL_GameController*> sdl_controllers;
 static int window_width = 1280;
 static int window_height = 720;
 
-static Application app;
+static std::unique_ptr<IApplication> application;
 
-int main(int argc, char *argv[])
+int sdl_init(std::unique_ptr<IApplication>& app)
 {
+    application = std::move(app);
+
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
     {
         std::cout << SDL_GetError() << std::endl;
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     sdl_imgui_initialise();
     sdl_init_graphics();
 
-    app.Init();
+    application->Init();
 
     bool done = false;
 
@@ -69,11 +69,11 @@ int main(int argc, char *argv[])
         sdl_imgui_update_input(sdl_window);
         sdl_imgui_update_cursor();
 
-        app.Update();
+        application->Update();
         eglSwapBuffers(egl_display, egl_surface);
     }
 
-    app.Deinit();
+    application->Deinit();
 
     sdl_imgui_destroy();
     SDL_GL_DeleteContext(gl);
