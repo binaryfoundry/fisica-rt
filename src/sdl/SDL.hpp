@@ -16,7 +16,6 @@ enum class DPadDirection
     RIGHT
 };
 
-extern SDL_Window* sdl_window;
 extern int sdl_window_width;
 extern int sdl_window_height;
 
@@ -29,10 +28,6 @@ extern int16_t sdl_captured_mouse_x;
 extern int16_t sdl_captured_mouse_y;
 extern float sdl_captured_mouse_delta_x;
 extern float sdl_captured_mouse_delta_y;
-
-extern std::function<void()> sdl_app_init;
-extern std::function<void()> sdl_app_deinit;
-extern std::function<void()> sdl_app_update;
 
 extern std::function<void(SDL_Scancode key)> sdl_key_up_callback;
 extern std::function<void(SDL_Scancode key)> sdl_key_down_callback;

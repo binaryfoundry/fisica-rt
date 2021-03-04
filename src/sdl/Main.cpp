@@ -17,6 +17,7 @@
 #include <EGL/eglext.h>
 
 static SDL_GLContext gl;
+extern SDL_Window* sdl_window;
 
 static EGLDisplay egl_display;
 static EGLContext egl_context;

@@ -16,6 +16,7 @@
 #include <emscripten.h>
 #include <emscripten/html5.h>
 
+static SDL_Window* sdl_window;
 static uint32_t element_width;
 static uint32_t element_height;
 static bool is_full_screen = false;
