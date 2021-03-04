@@ -5,6 +5,7 @@
 #include "Camera.hpp"
 #include "Geometry.hpp"
 
+#include "properties/Property.hpp"
 #include "interfaces/IApplication.hpp"
 
 #include "gl/ImGui.hpp"
@@ -16,6 +17,8 @@ class Application : public IApplication
 private:
     GUI gui;
     GL::Pipeline pipeline;
+
+    Properties::Property<float> prop;
 
     const float fps_alpha = 0.9f;
     hrc::time_point fps_time;

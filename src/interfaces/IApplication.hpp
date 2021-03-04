@@ -2,6 +2,7 @@
 
 #include <functional>
 
+#include "../Context.hpp"
 #include "../Input.hpp"
 
 class IApplication
@@ -9,6 +10,8 @@ class IApplication
 public:
     IApplication()
     {
+        context = std::make_unique<Context>();
+
         key_up_callback = [](Scancode) {};
         key_down_callback = [](Scancode) {};
 
@@ -18,6 +21,8 @@ public:
         controller_dpad_up_callback = [](DPadDirection) {};
         controller_dpad_down_callback = [](DPadDirection) {};
     }
+
+    std::unique_ptr<Context> context;
 
     virtual void Init() = 0;
     virtual void Deinit() = 0;

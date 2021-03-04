@@ -9,16 +9,14 @@ namespace Properties
 {
     class Manager
     {
-        friend class IProperty;
-
     private:
         std::vector<IProperty*> properties;
-        void Add(IProperty* property);
 
     public:
         Manager() = default;
         Manager(const Manager&) = delete;
 
+        void Add(IProperty* property);
         void Update(const float time_step);
     };
 }

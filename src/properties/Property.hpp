@@ -60,7 +60,7 @@ namespace Properties
         }
 
         void Animate(
-            std::unique_ptr<Manager>& manager,
+            Manager& manager,
             const T start,
             const T end,
             const float seconds,
@@ -69,7 +69,7 @@ namespace Properties
         {
             if (InterpolatorCount() == 0)
             {
-                manager->Add(this);
+                manager.Add(this);
             }
 
             Interpolator<T> it(start, end, seconds, func,

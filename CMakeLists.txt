@@ -16,6 +16,7 @@ option(EMSCRIPTEN "Web Compilation" OFF)
 
 set(SOURCES
     src/Application.cpp
+    src/Context.cpp
     src/Camera.cpp
     src/Geometry.cpp
     src/Noise.cpp
@@ -25,6 +26,7 @@ set(SOURCES
 
 set(HEADERS
     src/Application.hpp
+    src/Context.hpp
     src/Camera.hpp
     src/Geometry.hpp
     src/Noise.hpp

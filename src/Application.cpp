@@ -12,8 +12,6 @@
 #include "sdl/MainWeb.hpp"
 #endif
 
-#include "properties/Property.hpp"
-
 int main(int argc, char* argv[])
 {
     std::unique_ptr<IApplication> app = std::make_unique<Application>();
@@ -96,6 +94,15 @@ void Application::Init()
     SetupScene();
 
     fps_time = timer_start();
+
+    prop.Animate(
+        context->property_manager,
+        0, 1.0f, 1.0f,
+        Properties::EasingFunction::Linear,
+        []() {
+            std::cout << "Complete!\n";
+        }
+    );
 }
 
 void Application::Deinit()
@@ -176,6 +183,9 @@ void Application::Update()
 
     const float fps_scale = std::max<float>(
         1.0f / std::min<float>(5.0f, fps_time_avg / 16.66666f), 0.1f);
+
+    context->property_manager.Update(
+        time_ms / 1000.0f);
 
     const bool reinit_pipeline = GuiUpdate();
 
