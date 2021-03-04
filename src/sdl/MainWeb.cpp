@@ -341,13 +341,11 @@ static void sdl_update()
 
     if (!pointer_event->isActive && sdl_mouse_captured)
     {
-        std::cout << "lok1\n";
         sdl_mouse_captured = false;
         SDL_SetRelativeMouseMode(static_cast<SDL_bool>(false));
     }
     else if (pointer_event->isActive && !sdl_mouse_captured)
     {
-        std::cout << "lok2\n";
         sdl_mouse_captured = true;
     }
 
