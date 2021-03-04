@@ -17,7 +17,7 @@
 #include <EGL/eglext.h>
 
 static SDL_GLContext gl;
-extern SDL_Window* sdl_window;
+extern SDL_Window* sdl_window = nullptr;
 
 static EGLDisplay egl_display;
 static EGLContext egl_context;
@@ -62,8 +62,8 @@ int sdl_init(std::unique_ptr<IApplication>& app)
     {
         SDL_GetWindowSize(
             sdl_window,
-            &sdl_window_width,
-            &sdl_window_height);
+            &application->window_width,
+            &application->window_height);
 
         done = sdl_poll_events();
 
@@ -236,8 +236,8 @@ static bool sdl_poll_events()
     SDL_GameController* controller;
     SDL_GameControllerAxis axis;
 
-    sdl_captured_mouse_delta_x = 0.0f;
-    sdl_captured_mouse_delta_y = 0.0f;
+    application->captured_mouse_delta_x = 0.0f;
+    application->captured_mouse_delta_y = 0.0f;
 
     while (SDL_PollEvent(&event))
     {
@@ -266,29 +266,32 @@ static bool sdl_poll_events()
             break;
 
         case SDL_MOUSEMOTION:
-            sdl_mouse_x = event.motion.x;
-            sdl_mouse_y = event.motion.y;
-            sdl_mouse_delta_x = event.motion.xrel;
-            sdl_mouse_delta_y = event.motion.yrel;;
+            application->mouse_x = event.motion.x;
+            application->mouse_y = event.motion.y;
+            application->mouse_delta_x = event.motion.xrel;
+            application->mouse_delta_y = event.motion.yrel;;
 
-            if (sdl_mouse_captured)
+            if (application->mouse_captured)
             {
-                sdl_captured_mouse_x = event.motion.x;
-                sdl_captured_mouse_y = event.motion.y;
-                sdl_captured_mouse_delta_x = static_cast<float>(event.motion.xrel);
-                sdl_captured_mouse_delta_y = static_cast<float>(event.motion.yrel);
+                application->captured_mouse_x = event.motion.x;
+                application->captured_mouse_y = event.motion.y;
+                application->captured_mouse_delta_x =
+                    static_cast<float>(event.motion.xrel);
+                application->captured_mouse_delta_y =
+                    static_cast<float>(event.motion.yrel);
             }
             break;
 
         case SDL_MOUSEBUTTONUP:
             if (event.button.button == SDL_BUTTON_LEFT)
             {
-                if (!sdl_mouse_captured && event.button.clicks == 2)
+                if (!application->mouse_captured && event.button.clicks == 2)
                 {
-                    sdl_captured_mouse_delta_x = 0.0f;
-                    sdl_captured_mouse_delta_y = 0.0f;
-                    sdl_mouse_captured = true;
-                    SDL_SetRelativeMouseMode(static_cast<SDL_bool>(sdl_mouse_captured));
+                    application->captured_mouse_delta_x = 0.0f;
+                    application->captured_mouse_delta_y = 0.0f;
+                    application->mouse_captured = true;
+                    SDL_SetRelativeMouseMode(static_cast<SDL_bool>(
+                        application->mouse_captured));
                 }
             }
 
@@ -340,11 +343,13 @@ static bool sdl_poll_events()
             break;
 
         case SDL_KEYDOWN:
-            sdl_key_down_callback(event.key.keysym.scancode);
+            application->key_down_callback(
+                static_cast<Scancode>(event.key.keysym.scancode));
             break;
 
         case SDL_KEYUP:
-            sdl_key_up_callback(event.key.keysym.scancode);
+            application->key_up_callback(
+                static_cast<Scancode>(event.key.keysym.scancode));
             key = event.key.keysym.scancode;
             IM_ASSERT(key >= 0 && key < IM_ARRAYSIZE(io.KeysDown));
             io.KeysDown[key] = (event.type == SDL_KEYDOWN);
@@ -355,8 +360,9 @@ static bool sdl_poll_events()
 
             if (key == SDL_Scancode::SDL_SCANCODE_ESCAPE)
             {
-                sdl_mouse_captured = false;
-                SDL_SetRelativeMouseMode(static_cast<SDL_bool>(sdl_mouse_captured));
+                application->mouse_captured = false;
+                SDL_SetRelativeMouseMode(static_cast<SDL_bool>(
+                    application->mouse_captured));
             }
 
             break;
@@ -373,12 +379,12 @@ static bool sdl_poll_events()
             break;
 
         case SDL_CONTROLLERBUTTONDOWN:
-            sdl_controller_button_down_callback(
+            application->controller_button_down_callback(
                 static_cast<uint16_t>(event.cbutton.button));
             break;
 
         case SDL_CONTROLLERBUTTONUP:
-            sdl_controller_button_up_callback(
+            application->controller_button_up_callback(
                 static_cast<uint16_t>(event.cbutton.button));
             break;
 

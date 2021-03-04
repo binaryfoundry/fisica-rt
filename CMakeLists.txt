@@ -19,14 +19,16 @@ set(SOURCES
     src/Camera.cpp
     src/Geometry.cpp
     src/Noise.cpp
-    src/Timing.cpp)
+    src/Timing.cpp
+    src/Input.cpp)
 
 set(HEADERS
     src/Application.hpp
     src/Camera.hpp
     src/Geometry.hpp
     src/Noise.hpp
-    src/Timing.hpp)
+    src/Timing.hpp
+    src/Input.hpp)
 
 set(SOURCES_INTERFACES
     src/interfaces/IApplication.cpp)

@@ -1,6 +1,6 @@
 #include "Application.hpp"
 
-#include "sdl/SDL.hpp"
+#include "Input.hpp"
 #include "imgui/imgui.h"
 #include "math/Random.hpp"
 
@@ -49,20 +49,20 @@ void Application::Init()
 
     gui.Init();
 
-    sdl_key_down_callback = [=](SDL_Scancode key)
+    key_down_callback = [=](Scancode key)
     {
         switch (key)
         {
-        case SDL_SCANCODE_W:
+        case Scancode::S_W:
             forward_speed = move_speed;
             break;
-        case SDL_SCANCODE_S:
+        case Scancode::S_S:
             forward_speed = -move_speed;
             break;
-        case SDL_SCANCODE_A:
+        case Scancode::S_A:
             strafe_speed = move_speed;
             break;
-        case SDL_SCANCODE_D:
+        case Scancode::S_D:
             strafe_speed = -move_speed;
             break;
         default:
@@ -70,20 +70,20 @@ void Application::Init()
         }
     };
 
-    sdl_key_up_callback = [=](SDL_Scancode key)
+    key_up_callback = [=](Scancode key)
     {
         switch (key)
         {
-        case SDL_SCANCODE_W:
+        case Scancode::S_W:
             forward_speed = 0.0f;
             break;
-        case SDL_SCANCODE_S:
+        case Scancode::S_S:
             forward_speed = 0.0f;
             break;
-        case SDL_SCANCODE_A:
+        case Scancode::S_A:
             strafe_speed = 0.0f;
             break;
-        case SDL_SCANCODE_D:
+        case Scancode::S_D:
             strafe_speed = 0.0f;
             break;
         default:
@@ -178,15 +178,15 @@ void Application::Update()
     const bool reinit_pipeline = GuiUpdate();
 
     const float window_aspect_ratio =
-        static_cast<float>(sdl_window_width) /
-        sdl_window_height;
+        static_cast<float>(window_width) /
+        window_height;
 
     camera->orientation.yaw +=
-        static_cast<float>(sdl_captured_mouse_delta_x) /
+        static_cast<float>(captured_mouse_delta_x) /
         (mouse_speed * fps_scale * window_aspect_ratio);
 
     camera->orientation.pitch +=
-        static_cast<float>(-sdl_captured_mouse_delta_y) /
+        static_cast<float>(-captured_mouse_delta_y) /
         (mouse_speed * fps_scale);
 
     camera->viewport = glm::vec4(
@@ -211,14 +211,14 @@ void Application::Update()
     pipeline.Update(geometry);
 
     pipeline.Draw(
-        sdl_window_width,
-        sdl_window_height,
+        window_width,
+        window_height,
         camera,
         upscale);
 
     gui.Draw(
-        sdl_window_width,
-        sdl_window_height);
+        window_width,
+        window_height);
 }
 
 bool Application::GuiUpdate()

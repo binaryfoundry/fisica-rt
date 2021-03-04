@@ -2,6 +2,7 @@
 
 #if defined(EMSCRIPTEN)
 
+#include "../Input.hpp"
 #include "../gl/OpenGL.hpp"
 
 #include "SDL.hpp"
@@ -16,7 +17,7 @@
 #include <emscripten.h>
 #include <emscripten/html5.h>
 
-static SDL_Window* sdl_window;
+static SDL_Window* sdl_window = nullptr;
 static uint32_t element_width;
 static uint32_t element_height;
 static bool is_full_screen = false;
@@ -304,14 +305,14 @@ static void sdl_update()
 {
     int cssW, cssH;
     emscripten_get_canvas_element_size("#canvas", &cssW, &cssH);
-    sdl_window_width = static_cast<int>(cssW);
-    sdl_window_height = static_cast<int>(cssH);
+    application->window_width = static_cast<int>(cssW);
+    application->window_height = static_cast<int>(cssH);
 
     if (emscripten_sample_gamepad_data() == EMSCRIPTEN_RESULT_SUCCESS)
     {
         int joy_count = emscripten_get_num_gamepads();
 
-        for (int i = 0; i < joy_count; i++)
+        for (uint16_t i = 0; i < joy_count; i++)
         {
             EmscriptenGamepadEvent state;
             emscripten_get_gamepad_status(i, &state);
@@ -326,36 +327,23 @@ static void sdl_update()
                 if (!cs.b[i] && state.digitalButton[i])
                 {
                     cs.b[i] = true;
-                    //sdl_controller_button_down_callback(i);
+                    application->controller_button_down_callback(i);
                 }
                 else if (cs.b[i] && !state.digitalButton[i])
                 {
                     cs.b[i] = false;
-                    //sdl_controller_button_up_callback(i);
+                    application->controller_button_up_callback(i);
                 }
             }
         }
-    }
-
-    EmscriptenPointerlockChangeEvent* pointer_event;
-    emscripten_get_pointerlock_status(pointer_event);
-
-    if (!pointer_event->isActive && sdl_mouse_captured)
-    {
-        sdl_mouse_captured = false;
-        SDL_SetRelativeMouseMode(static_cast<SDL_bool>(false));
-    }
-    else if (pointer_event->isActive && !sdl_mouse_captured)
-    {
-        sdl_mouse_captured = true;
     }
 
     sdl_imgui_update_input(sdl_window);
     sdl_imgui_update_cursor();
     application->Update();
 
-    sdl_captured_mouse_delta_x = 0.0f;
-    sdl_captured_mouse_delta_y = 0.0f;
+    application->captured_mouse_delta_x = 0.0f;
+    application->captured_mouse_delta_y = 0.0f;
 }
 
 static void sdl_update_inputs()
@@ -429,12 +417,12 @@ EM_BOOL em_pointerlock_callback(
 {
     if (!pointer_event->isActive)
     {
-        sdl_mouse_captured = false;
+        application->mouse_captured = false;
         SDL_SetRelativeMouseMode(static_cast<SDL_bool>(false));
     }
     else
     {
-        sdl_mouse_captured = true;
+        application->mouse_captured = true;
     }
 
     return false;
@@ -453,10 +441,11 @@ EM_BOOL em_mouse_dblclick_callback(
     const EmscriptenMouseEvent* mouse_event,
     void* user_data)
 {
-    if (!sdl_mouse_captured)
+    if (!application->mouse_captured)
     {
-        sdl_mouse_captured = true;
-        SDL_SetRelativeMouseMode(static_cast<SDL_bool>(sdl_mouse_captured));
+        application->mouse_captured = true;
+        SDL_SetRelativeMouseMode(static_cast<SDL_bool>(
+            application->mouse_captured));
     }
     return true;
 }
@@ -466,19 +455,19 @@ EM_BOOL em_mouse_move_callback(
     const EmscriptenMouseEvent *mouse_event,
     void* user_data)
 {
-    //sdl_mouse_x = mouse_event->motion.x;
-    //sdl_mouse_y = mouse_event->motion.y;
-    //sdl_mouse_delta_x = mouse_event->motion.xrel;
-    //sdl_mouse_delta_y = mouse_event->motion.yrel;
+    //application->mouse_x = mouse_event->motion.x;
+    //application->mouse_y = mouse_event->motion.y;
+    //application->mouse_delta_x = mouse_event->motion.xrel;
+    //application->mouse_delta_y = mouse_event->motion.yrel;
 
-    if (sdl_mouse_captured)
+    if (application->mouse_captured)
     {
-        sdl_captured_mouse_x = mouse_event->canvasX;
-        sdl_captured_mouse_y = mouse_event->canvasY;
-        sdl_captured_mouse_delta_x = static_cast<float>(
-            mouse_event->movementX) / 8.0f;
-        sdl_captured_mouse_delta_y = static_cast<float>(
-            mouse_event->movementY) / 8.0f;
+        application->captured_mouse_x = mouse_event->canvasX;
+        application->captured_mouse_y = mouse_event->canvasY;
+        application->captured_mouse_delta_x = static_cast<float>(
+            mouse_event->movementX);
+        application->captured_mouse_delta_y = static_cast<float>(
+            mouse_event->movementY);
     }
 
     return true;
@@ -533,7 +522,7 @@ EM_BOOL em_key_down_callback(
     void* user_data)
 {
     SDL_Scancode code = emscripten_scancode_table[key_event->keyCode];
-    sdl_key_down_callback(code);
+    application->key_down_callback(static_cast<Scancode>(code));
 
     return true;
 }
@@ -544,7 +533,7 @@ EM_BOOL em_key_up_callback(
     void *user_data)
 {
     SDL_Scancode code = emscripten_scancode_table[key_event->keyCode];
-    sdl_key_up_callback(code);
+    application->key_up_callback(static_cast<Scancode>(code));
 
     return true;
 }
