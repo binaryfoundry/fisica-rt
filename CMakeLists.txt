@@ -15,14 +15,14 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(EMSCRIPTEN "Web Compilation" OFF)
 
 set(SOURCES
-    src/Main.cpp
+    src/Application.cpp
     src/Camera.cpp
     src/Geometry.cpp
     src/Noise.cpp
     src/Timing.cpp)
 
 set(HEADERS
-    src/Main.hpp
+    src/Application.hpp
     src/Camera.hpp
     src/Geometry.hpp
     src/Noise.hpp

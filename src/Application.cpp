@@ -1,4 +1,4 @@
-#include "Main.hpp"
+#include "Application.hpp"
 
 #include "sdl/SDL.hpp"
 #include "imgui/imgui.h"
@@ -28,7 +28,7 @@ static const char* bounces_labels[] {
     "4"
 };
 
-void Main::Init()
+void Application::Init()
 {
     camera = std::make_unique<Camera>();
     camera->position = glm::vec3(0, 5, 35);
@@ -84,14 +84,14 @@ void Main::Init()
     fps_time = timer_start();
 }
 
-void Main::Deinit()
+void Application::Deinit()
 {
     pipeline.DeinitRaytracing();
     pipeline.Deinit();
     gui.Deinit();
 }
 
-void Main::SetupScene()
+void Application::SetupScene()
 {
     const int32_t placement_radius = 3;
     const size_t num_materials = 4;
@@ -154,7 +154,7 @@ void Main::SetupScene()
     }
 }
 
-void Main::Update()
+void Application::Update()
 {
     const float time_ms = timer_end(fps_time);
     fps_time = timer_start();
@@ -209,7 +209,7 @@ void Main::Update()
         sdl_window_height);
 }
 
-bool Main::GuiUpdate()
+bool Application::GuiUpdate()
 {
     ImGui::NewFrame();
 

@@ -2,7 +2,7 @@
 
 #if !defined(EMSCRIPTEN)
 
-#include "../Main.hpp"
+#include "../Application.hpp"
 
 #include "../gl/OpenGL.hpp"
 
@@ -32,7 +32,7 @@ static std::map<int32_t, SDL_GameController*> sdl_controllers;
 static int window_width = 1280;
 static int window_height = 720;
 
-static Main m;
+static Application app;
 
 int main(int argc, char *argv[])
 {
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     sdl_imgui_initialise();
     sdl_init_graphics();
 
-    m.Init();
+    app.Init();
 
     bool done = false;
 
@@ -69,11 +69,11 @@ int main(int argc, char *argv[])
         sdl_imgui_update_input(sdl_window);
         sdl_imgui_update_cursor();
 
-        m.Update();
+        app.Update();
         eglSwapBuffers(egl_display, egl_surface);
     }
 
-    m.Deinit();
+    app.Deinit();
 
     sdl_imgui_destroy();
     SDL_GL_DeleteContext(gl);

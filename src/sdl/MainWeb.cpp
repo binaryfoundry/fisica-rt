@@ -2,7 +2,7 @@
 
 #if defined(EMSCRIPTEN)
 
-#include "../Main.hpp"
+#include "../Application.hpp"
 
 #include "../gl/OpenGL.hpp"
 
@@ -265,7 +265,7 @@ static const SDL_Scancode emscripten_scancode_table[] = {
 
 static std::map<int32_t, ControllerState> sdl_controllers;
 
-Main m;
+Application app;
 
 int main(int argc, char *argv[])
 {
@@ -287,11 +287,11 @@ int main(int argc, char *argv[])
     sdl_imgui_initialise();
     sdl_init_graphics();
 
-    m.Init();
+    app.Init();
 
     sdl_run();
 
-    m.Deinit();
+    app.Deinit();
 
     SDL_DestroyWindow(sdl_window);
     SDL_Quit();
@@ -353,7 +353,7 @@ static void sdl_update()
 
     sdl_imgui_update_input(sdl_window);
     sdl_imgui_update_cursor();
-    m.Update();
+    app.Update();
 
     sdl_captured_mouse_delta_x = 0.0f;
     sdl_captured_mouse_delta_y = 0.0f;

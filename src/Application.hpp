@@ -9,7 +9,7 @@
 #include "gl/OpenGL.hpp"
 #include "gl/Pipeline.hpp"
 
-class Main
+class Application
 {
 private:
     GUI gui;
