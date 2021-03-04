@@ -76,6 +76,20 @@ set(HEADERS_GL
     src/gl/UniformBuffer.hpp
     src/gl/Pipeline.hpp)
 
+set(SOURCES_PROPERTIES
+    src/properties/Interpolator.cpp
+    src/properties/Easing.cpp
+    src/properties/IProperty.cpp
+    src/properties/Property.cpp
+    src/properties/Manager.cpp)
+
+set(HEADERS_PROPERTIES
+    src/properties/Interpolator.hpp
+    src/properties/Easing.hpp
+    src/properties/IProperty.hpp
+    src/properties/Property.hpp
+    src/properties/Manager.hpp)
+
 set(SOURCES_IMGUI
     lib/imgui/imgui/imgui.cpp
     lib/imgui/imgui/imgui_draw.cpp
@@ -104,6 +118,9 @@ SOURCE_GROUP("Source\\sdl" FILES ${HEADERS_SDL})
 
 SOURCE_GROUP("Source\\gl" FILES ${SOURCES_GL})
 SOURCE_GROUP("Source\\gl" FILES ${HEADERS_GL})
+
+SOURCE_GROUP("Source\\properties" FILES ${SOURCES_PROPERTIES})
+SOURCE_GROUP("Source\\properties" FILES ${HEADERS_PROPERTIES})
 
 SOURCE_GROUP("Source\\imgui" FILES ${SOURCES_IMGUI})
 SOURCE_GROUP("Source\\imgui" FILES ${HEADERS_IMGUI})
@@ -156,6 +173,8 @@ add_executable(
     ${HEADERS_SDL}
     ${SOURCES_GL}
     ${HEADERS_GL}
+    ${SOURCES_PROPERTIES}
+    ${HEADERS_PROPERTIES}
     ${SOURCES_IMGUI}
     ${HEADERS_IMGUI})
 
