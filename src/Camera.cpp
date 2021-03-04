@@ -21,10 +21,9 @@ void Camera::Strafe(float speed)
 
 void Camera::Forward(float speed)
 {
-    // TODO Fix OpenGL Y axis.
     const glm::vec3 d = glm::vec3(
         direction.x,
-        -direction.y,
+        direction.y,
         direction.z);
     position += d * speed;
 }
@@ -54,16 +53,10 @@ void Camera::Validate()
     const glm::mat4x4 temp_matrix = mat4_cast(
         temp_3);
 
-    const float f = 1.0f / std::tanf(fov * (PIf / 360.0f));
-    float viewport_ratio = 1.0f; // TODO
-
-    const float proj_matrix_values[16] =
-    {
-        f / viewport_ratio, 0, 0, 0,
-        0, f, 0, 0,
-        0, 0, (far_plane + near_plane) / (near_plane - far_plane), -1,
-        0, 0, 2 * far_plane*near_plane / (near_plane - far_plane), 0
-    };
+    projection = glm::ortho(
+        -1.0f, 1.0f,
+        -1.0f, 1.0f,
+        0.1f, 2.0f);
 
     direction = glm::vec3(
         temp_matrix[2][0],
@@ -71,9 +64,6 @@ void Camera::Validate()
         -temp_matrix[2][2]);
 
     translation = -position;
-
-    projection = glm::make_mat4(
-        proj_matrix_values);
 
     view = translate(
         mat4_cast(temp_2),

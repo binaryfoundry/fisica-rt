@@ -188,7 +188,7 @@ void Application::Update()
         (mouse_speed * fps_scale * window_aspect_ratio);
 
     camera->orientation.pitch +=
-        static_cast<float>(-captured_mouse_delta_y) /
+        static_cast<float>(captured_mouse_delta_y) /
         (mouse_speed * fps_scale);
 
     camera->viewport = glm::vec4(
