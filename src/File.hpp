@@ -1,5 +1,4 @@
-#include "SDL.hpp"
-
+#include <any>
 #include <string>
 #include <vector>
 
@@ -7,12 +6,7 @@ class File
 {
 private:
     size_t length;
-
-#if defined (EMSCRIPTEN)
-    FILE* handle;
-#else
-    SDL_RWops* handle;
-#endif
+    std::any handle;
 
 public:
     File(std::string path, std::string mode);

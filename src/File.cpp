@@ -1,7 +1,5 @@
 #include "File.hpp"
 
-#include "SDL.hpp"
-
 #include <iostream>
 #include <assert.h>
 
@@ -9,27 +7,29 @@
 
 File::File(std::string path, std::string mode)
 {
-    handle = fopen(path.c_str(), mode.c_str());
+    auto h = fopen(path.c_str(), mode.c_str());
 
-    if (handle == nullptr)
+    if (h == nullptr)
     {
         std::cout << "Failed to open file: " << path << std::endl;
         throw std::runtime_error("Failed to open file.");
     }
 
-    fseek(handle, 0, SEEK_END);
-    length = static_cast<size_t>(ftell(handle));
-    rewind(handle);
+    fseek(h, 0, SEEK_END);
+    length = static_cast<size_t>(ftell(h));
+    rewind(h);
+
+    handle = h;
 }
 
 File::~File()
 {
-    fclose(handle);
+    fclose(std::any_cast<FILE*>(handle));
 }
 
 size_t File::Read(void* buffer, size_t size, size_t count)
 {
-    return fread(buffer, size, count, handle);
+    return fread(buffer, size, count, std::any_cast<FILE*>(handle));
 }
 
 size_t File::Length()
@@ -39,37 +39,43 @@ size_t File::Length()
 
 #else
 
+#include "sdl/SDL.hpp"
+
 File::File(std::string path, std::string mode)
 {
-    handle = SDL_RWFromFile(
+    auto h = SDL_RWFromFile(
         path.c_str(),
         mode.c_str());
 
-    if (handle == nullptr)
+    if (h == nullptr)
     {
         std::cout << "Failed to open file: " << path << std::endl;
         throw std::runtime_error("Failed to open file.");
     }
 
     length = static_cast<size_t>(SDL_RWseek(
-        handle,
+        h,
         0,
         SEEK_END));
 
     SDL_RWseek(
-        handle,
+        h,
         0,
         SEEK_SET);
+
+    handle = h;
 }
 
 File::~File()
 {
-    SDL_RWclose(handle);
+    SDL_RWclose(
+        std::any_cast<SDL_RWops*>(handle));
 }
 
 size_t File::Read(void* buffer, size_t size, size_t count)
 {
-    return SDL_RWread(handle, buffer, size, count);
+    return SDL_RWread(
+        std::any_cast<SDL_RWops*>(handle), buffer, size, count);
 }
 
 size_t File::Length()

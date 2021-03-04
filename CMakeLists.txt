@@ -20,7 +20,8 @@ set(SOURCES
     src/Geometry.cpp
     src/Noise.cpp
     src/Timing.cpp
-    src/Input.cpp)
+    src/Input.cpp
+    src/File.cpp)
 
 set(HEADERS
     src/Application.hpp
@@ -28,7 +29,8 @@ set(HEADERS
     src/Geometry.hpp
     src/Noise.hpp
     src/Timing.hpp
-    src/Input.hpp)
+    src/Input.hpp
+    src/File.hpp)
 
 set(SOURCES_INTERFACES
     src/interfaces/IApplication.cpp)
@@ -50,14 +52,12 @@ set(SOURCES_SDL
     src/sdl/SDL.cpp
     src/sdl/Main.cpp
     src/sdl/MainWeb.cpp
-    src/sdl/File.cpp
     src/sdl/Imgui.cpp)
 
 set(HEADERS_SDL
     src/sdl/SDL.hpp
     src/sdl/Main.hpp
     src/sdl/MainWeb.hpp
-    src/sdl/File.hpp
     src/sdl/Imgui.hpp)
 
 set(SOURCES_GL
