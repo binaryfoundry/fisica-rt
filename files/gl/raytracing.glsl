@@ -139,6 +139,7 @@
     struct Hit {
         float t;
         float exists;
+        float depth;
         vec3 position;
         vec3 normal;
     };
@@ -163,8 +164,10 @@
         float d = b * b - a * c;
         if (d > 0.0) {
             float t = (-b - sqrt(b * b - a * c)) / a;
+            float t1 = -(b - sqrt(b * b - a * c)) / a;
             if (t > t_min && t < h.t) {
                 h.t = t;
+                h.depth = t1 - t;
                 h.position = Ray_at(r, t);
                 h.normal = (h.position - s.position) / s.radius;
                 return true;
@@ -184,6 +187,7 @@
             float t = dot(v, -normal) / d;
             if (t >= t_min  && t < h.t) {
                 h.t = t;
+                h.depth = FLT_MAX;
                 h.position = Ray_at(r, t);
                 h.normal = normal;
                 return
@@ -207,7 +211,7 @@
 
     void trace_world(inout Ray r, inout vec4 acc, bool end) {
         Material mat;
-        Hit hit = Hit(FLT_MAX, 0.0, r.origin, r.direction);
+        Hit hit = Hit(FLT_MAX, 0.0, FLT_MAX, r.origin, r.direction);
 
         for (int i = 0; i < num_geometry; i++) {
             vec4 dat0 = texelFetch(scene_sampler, ivec2(0, i), 0);
