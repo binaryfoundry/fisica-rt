@@ -28,14 +28,30 @@
     #define PHI 1.61803398875
     #define FLT_MAX 3.402823466e+38
 
-    const float t_min = 0.003;
-
     in vec2 v_texcoord;
-    layout(location = 0) out vec4 out_color;
 
     uniform sampler2DArray rand_sampler;
     uniform sampler2D scene_sampler;
     uniform sampler2D environment_sampler;
+
+    layout(std140) uniform camera{
+        mat4 view;
+        mat4 projection;
+        vec4 viewport;
+        vec4 position;
+        vec4 exposure;
+    };
+
+    layout(std140) uniform scene{
+        int num_geometry;
+        int scene_padding_0;
+        int scene_padding_1;
+        int scene_padding_2;
+    };
+
+    layout(location = 0) out vec4 out_color;
+
+    const float t_min = 0.003;
 
     vec2 env_spherical_to_equirect(vec3 n) {
         vec2 uv = vec2(atan(n.z, n.x), asin(n.y));
@@ -83,21 +99,6 @@
         vec3 dr = rand_sphere_direction();
         return dot(dr, n) * dr;
     }
-
-    layout(std140) uniform camera{
-        mat4 view;
-        mat4 projection;
-        vec4 viewport;
-        vec4 position;
-        vec4 exposure;
-    };
-
-    layout(std140) uniform scene{
-        int num_geometry;
-        int scene_padding_0;
-        int scene_padding_1;
-        int scene_padding_2;
-    };
 
     struct Ray {
         vec3 origin;
