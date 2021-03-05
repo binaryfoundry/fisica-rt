@@ -29,7 +29,6 @@
     #define FLT_MAX 3.402823466e+38
 
     const float t_min = 0.003;
-    const float t_max = 100000.0;
 
     in vec2 v_texcoord;
     layout(location = 0) out vec4 out_color;
@@ -164,7 +163,7 @@
         float d = b * b - a * c;
         if (d > 0.0) {
             float t = (-b - sqrt(b * b - a * c)) / a;
-            if (t < t_max && t > t_min && t < h.t) {
+            if (t > t_min && t < h.t) {
                 h.t = t;
                 h.position = Ray_at(r, t);
                 h.normal = (h.position - s.position) / s.radius;
