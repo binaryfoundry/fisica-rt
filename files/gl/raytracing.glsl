@@ -138,6 +138,18 @@
         return Ray(position.xyz, direction, 1.0f / direction);
     }
 
+    struct Geom {
+        vec3 position;
+        float radius;
+    };
+
+    struct Plane {
+        vec3 position;
+        float padding_0;
+        vec3 normal;
+        float padding_1;
+    };
+
     struct Material {
         vec3 albedo;
         float roughness;
@@ -155,18 +167,6 @@
         vec3 normal;
     };
 
-    struct Plane {
-        vec3 position;
-        float padding_0;
-        vec3 normal;
-        float padding_1;
-    };
-
-    struct Geom {
-        vec3 position;
-        float radius;
-    };
-
     bool Sphere_hit(Geom s, Ray r, inout Hit h) {
         vec3 oc = r.origin - s.position;
         float a = dot(r.direction, r.direction);
@@ -181,6 +181,7 @@
                 h.depth = t1 - t;
                 h.position = Ray_at(r, t);
                 h.normal = (h.position - s.position) / s.radius;
+                h.exists = 1.0;
                 return true;
             }
         }
@@ -201,11 +202,15 @@
                 h.depth = FLT_MAX;
                 h.position = Ray_at(r, t);
                 h.normal = normal;
-                return
+                bool inside =
                     h.position.x < plane_size &&
                     h.position.x > -plane_size &&
                     h.position.z < plane_size &&
                     h.position.z > -plane_size;
+                if (inside) {
+                    h.exists = 1.0;
+                    return true;
+                }
             }
         }
         return false;
@@ -246,14 +251,12 @@
 
             if (Sphere_hit(s, r, hit)) {
                 mat = mat_temp;
-                hit.exists = 1.0;
             }
         }
 
         if (Plane_hit(r, hit)) {
             mat = Material(
                 vec3(1.0), 0.0, 0.0, 0.0, 0.0, 1.0);;
-            hit.exists = 1.0;
         }
 
         float NoV = dot(
