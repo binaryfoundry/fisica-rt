@@ -53,6 +53,14 @@
 
     const float t_min = 0.003;
 
+    float max_component(vec3 v) {
+        return max(max(v.x, v.y), v.z);
+    }
+
+    float min_component(vec3 v) {
+        return min(min(v.x, v.y), v.z);
+    }
+
     vec2 env_spherical_to_equirect(vec3 n) {
         vec2 uv = vec2(atan(n.z, n.x), asin(n.y));
         uv *= vec2(0.1591, 0.3183);
@@ -103,6 +111,7 @@
     struct Ray {
         vec3 origin;
         vec3 direction;
+        vec3 direction_inv;
     };
 
     vec3 Ray_at(Ray r, float t) {
@@ -124,8 +133,9 @@
         v = v * view;
         c = c * view;
 
-        vec4 direction = c + coords.x * h + coords.y * v;
-        return Ray(position.xyz, normalize(direction.xyz));
+        vec3 direction = normalize(
+            c + coords.x * h + coords.y * v).xyz;
+        return Ray(position.xyz, direction, 1.0f / direction);
     }
 
     struct Material {
@@ -152,12 +162,12 @@
         float padding_1;
     };
 
-    struct Sphere {
+    struct Geom {
         vec3 position;
         float radius;
     };
 
-    bool Sphere_hit(Sphere s, Ray r, inout Hit h) {
+    bool Sphere_hit(Geom s, Ray r, inout Hit h) {
         vec3 oc = r.origin - s.position;
         float a = dot(r.direction, r.direction);
         float b = dot(oc, r.direction);
@@ -201,6 +211,16 @@
         return false;
     }
 
+    bool Cube_hit(Geom s, Ray r, inout Hit h) {
+        vec3 p0 = s.position - vec3(s.radius);
+        vec3 p1 = s.position + vec3(s.radius);
+        vec3 t0 = (p0 - r.origin) * r.direction_inv;
+        vec3 t1 = (p1 - r.origin) * r.direction_inv;
+        vec3 tmin = min(t0, t1);
+        vec3 tmax = max(t0, t1);
+        return max_component(tmin) <= min_component(tmax);
+    }
+
     float EnvBRDFApprox(float NoV, float roughness) {
         vec4 c0 = vec4(-1, -0.0275, -0.572, 0.022);
         vec4 c1 = vec4(1, 0.0425, 1.0, -0.04);
@@ -221,7 +241,7 @@
 
             Material mat_temp = Material(
                 dat1.xyz, dat2.x, dat2.y, dat2.z, dat2.w, 1.0);
-            Sphere s = Sphere(
+            Geom s = Geom(
                 dat0.xyz, dat0.w);
 
             if (Sphere_hit(s, r, hit)) {
@@ -263,6 +283,7 @@
 
         r.origin = mix(r.origin, hit.position, hit.exists);
         r.direction = mix(r.direction, new_direction, hit.exists);
+        r.direction_inv = 1.0f / r.direction;
         acc.xyz *= mix(vec3(1.0), f0, hit.exists);
         acc.w += mix(0.0, hit.t, hit.exists);
     }
