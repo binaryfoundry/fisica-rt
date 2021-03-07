@@ -223,7 +223,19 @@
         vec3 t1 = (p1 - r.origin) * r.direction_inv;
         vec3 tmin = min(t0, t1);
         vec3 tmax = max(t0, t1);
-        return max_component(tmin) <= min_component(tmax);
+        float d0 = max_component(tmin);
+        float d1 = min_component(tmax);
+        float d = d1 - d0;
+        vec3 pos = Ray_at(r, d0);
+        if (d0 < d1 && d0 >= t_min && d0 < h.t) {
+            h.t = d0;
+            h.depth = d;
+            h.position = pos;
+            h.normal = vec3(0.0, 1.0, 0.0);
+            h.exists = 1.0;
+            return true;
+        }
+        return false;
     }
 
     float EnvBRDFApprox(float NoV, float roughness) {
