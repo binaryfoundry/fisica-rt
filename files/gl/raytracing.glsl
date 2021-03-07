@@ -216,6 +216,13 @@
         return false;
     }
 
+    vec3 Cube_normal(vec3 local_pos) {
+        vec3 a = abs(local_pos);
+        float x = max_component(a);
+        vec3 m = step(vec3(x), a);
+        return m * sign(local_pos);
+    }
+
     bool Cube_hit(Geom s, Ray r, inout Hit h) {
         vec3 p0 = s.position - vec3(s.radius);
         vec3 p1 = s.position + vec3(s.radius);
@@ -227,11 +234,12 @@
         float d1 = min_component(tmax);
         float d = d1 - d0;
         vec3 pos = Ray_at(r, d0);
+        vec3 lp = pos - s.position;
         if (d0 < d1 && d0 >= t_min && d0 < h.t) {
             h.t = d0;
             h.depth = d;
             h.position = pos;
-            h.normal = vec3(0.0, 1.0, 0.0);
+            h.normal = Cube_normal(lp);
             h.exists = 1.0;
             return true;
         }
