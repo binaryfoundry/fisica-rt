@@ -134,7 +134,7 @@
         c = c * view;
 
         vec3 direction = normalize(
-            c + coords.x * h + coords.y * v).xyz;
+            (c + coords.x * h + coords.y * v).xyz);
         return Ray(position.xyz, direction, 1.0f / direction);
     }
 
