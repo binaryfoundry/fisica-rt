@@ -204,7 +204,6 @@ void Parser::Parse(
         case ParseMode::ATTRIBUTE:
             if (token.value == ";")
             {
-                // TODO if current_attribute_type == NONE not found error
                 attributes.push_back({
                     state.type,
                     state.name
@@ -272,7 +271,6 @@ void Parser::Parse(
                     state.name
                 });
 
-                // TODO if current_uniform_type == NONE not found error
                 ClearUniformBlockState();
             }
             else if (state.type == "")

@@ -1,5 +1,7 @@
 #include "Pipeline.hpp"
 
+#include "Parser.hpp"
+
 #include "../File.hpp"
 #include "../Noise.hpp"
 
@@ -153,11 +155,15 @@ namespace GL
         defines << "#define SAMPLES " << samples << std::endl;
         defines << "#define BOUNCES " << bounces << std::endl;
 
+        std::string rt_shader = raytracing_file.ReadString();
+
         raytracing_shader_program = GL::LinkShaderFile(
-            raytracing_file.ReadString(),
+            rt_shader,
             defines.str());
 
         GL::CheckError();
+
+        Parser rt(ShaderParseType::FRAGMENT, rt_shader);
 
         raytracing_camera_uniform_location = glGetUniformBlockIndex(
             raytracing_shader_program,
