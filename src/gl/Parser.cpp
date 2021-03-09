@@ -52,6 +52,7 @@ struct State
     std::string name = "";
     std::string type = "";
     std::string shader_block_name = "";
+    std::string shader_block_type = "";
     std::vector<TypePair> uniform_list;
 };
 
@@ -186,6 +187,14 @@ void Parser::Parse(
             {
                 PushParseMode(ParseMode::NONE);
             }
+            if (state.token.value == "std140")
+            {
+                state.type = state.token.value;
+            }
+            else if (state.token.value == "std430")
+            {
+                state.type = state.token.value;
+            }
             else if (state.token.value == ";")
             {
                 ClearState();
@@ -236,6 +245,7 @@ void Parser::Parse(
             if (state.token.value == "{")
             {
                 state.shader_block_name = state.name;
+                state.shader_block_type = state.type;
                 ClearUniformBlockState();
                 PushParseMode(ParseMode::UNIFORM_BLOCK_MEMBERS);
             }
@@ -248,8 +258,10 @@ void Parser::Parse(
         case ParseMode::UNIFORM_BLOCK_MEMBERS:
             if (state.token.value == "}")
             {
-                uniform_blocks[state.shader_block_name] =
-                    state.uniform_list;
+                uniform_blocks[state.shader_block_name] = {
+                    state.shader_block_type,
+                    state.uniform_list
+                };
 
                 ClearState();
             }

@@ -16,6 +16,12 @@ enum class ShaderParseType
 
 using TypePair = std::tuple<std::string, std::string>;
 
+struct UniformBlock
+{
+    std::string type;
+    std::vector<TypePair> members;
+};
+
 class Parser
 {
 private:
@@ -36,5 +42,5 @@ public:
 
     std::vector<TypePair> attributes;
     std::vector<TypePair> uniforms;
-    std::map<std::string, std::vector<TypePair>> uniform_blocks;
+    std::map<std::string, UniformBlock> uniform_blocks;
 };
