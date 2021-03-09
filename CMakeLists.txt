@@ -22,7 +22,8 @@ set(SOURCES
     src/Noise.cpp
     src/Timing.cpp
     src/Input.cpp
-    src/File.cpp)
+    src/File.cpp
+    src/Parsing.cpp)
 
 set(HEADERS
     src/Application.hpp
@@ -32,7 +33,8 @@ set(HEADERS
     src/Noise.hpp
     src/Timing.hpp
     src/Input.hpp
-    src/File.hpp)
+    src/File.hpp
+    src/Parsing.hpp)
 
 set(SOURCES_INTERFACES
     src/interfaces/IApplication.cpp)
