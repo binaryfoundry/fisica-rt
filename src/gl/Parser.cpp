@@ -48,7 +48,6 @@ const std::set<std::string> keywords = {
 
 struct State
 {
-    Token token;
     std::string name = "";
     std::string type = "";
     std::string shader_block_name = "";
@@ -70,6 +69,7 @@ void Parser::Parse(
     const std::vector<Token> tokens = tokenize(program);
     const size_t num_tokens = tokens.size();
 
+    Token token;
     State state;
     ParseMode mode = ParseMode::INIT;
     std::vector<ParseMode> mode_stack;
@@ -102,11 +102,11 @@ void Parser::Parse(
 
     const auto CheckName = [&]() {
         state.name = "";
-        if (state.token.type != "name")
+        if (token.type != "name")
             return;
-        if (keywords.find(state.token.value) != keywords.end())
+        if (keywords.find(token.value) != keywords.end())
             return;
-        state.name = state.token.value;
+        state.name = token.value;
     };
 
     const auto Step = [&](uint32_t count = 1) {
@@ -114,12 +114,12 @@ void Parser::Parse(
         num_remaining -= count;
         if (position < num_tokens)
         {
-            state.token = tokens[position];
+            token = tokens[position];
         }
         else
         {
             num_remaining = 0;
-            state.token = {};
+            token = {};
         }
     };
 
@@ -132,21 +132,21 @@ void Parser::Parse(
         case ParseMode::INIT:
             if (parse_type == ShaderParseType::VERTEX)
             {
-                if (state.token.value == "COMPILING_VS")
+                if (token.value == "COMPILING_VS")
                 {
                     mode = ParseMode::NONE;
                 }
             }
             else if (parse_type == ShaderParseType::FRAGMENT)
             {
-                if (state.token.value == "COMPILING_FS")
+                if (token.value == "COMPILING_FS")
                 {
                     mode = ParseMode::NONE;
                 }
             }
             else if (parse_type == ShaderParseType::COMPUTE)
             {
-                if (state.token.value == "COMPILING_CS")
+                if (token.value == "COMPILING_CS")
                 {
                     mode = ParseMode::NONE;
                 }
@@ -154,55 +154,55 @@ void Parser::Parse(
             break;
 
         case ParseMode::NONE:
-            if (state.token.value == "COMPILING_VS" ||
-                state.token.value == "COMPILING_FS" ||
-                state.token.value == "COMPILING_CS")
+            if (token.value == "COMPILING_VS" ||
+                token.value == "COMPILING_FS" ||
+                token.value == "COMPILING_CS")
             {
                 return;
             }
-            if (state.token.value == "in")
+            if (token.value == "in")
             {
                 PushParseMode(ParseMode::ATTRIBUTE);
             }
-            else if (state.token.value == "layout")
+            else if (token.value == "layout")
             {
                 PushParseMode(ParseMode::LAYOUT);
             }
-            else if (state.token.value == "uniform")
+            else if (token.value == "uniform")
             {
                 PushParseMode(ParseMode::UNIFORM);
             }
             break;
 
         case ParseMode::LAYOUT:
-            if (state.token.value == "uniform")
+            if (token.value == "uniform")
             {
                 PushParseMode(ParseMode::UNIFORM_BLOCK);
             }
-            if (state.token.value == "buffer")
+            if (token.value == "buffer")
             {
                 PushParseMode(ParseMode::BUFFER);
             }
-            else if (state.token.value == "location")
+            else if (token.value == "location")
             {
                 PushParseMode(ParseMode::NONE);
             }
-            if (state.token.value == "std140")
+            if (token.value == "std140")
             {
-                state.type = state.token.value;
+                state.type = token.value;
             }
-            else if (state.token.value == "std430")
+            else if (token.value == "std430")
             {
-                state.type = state.token.value;
+                state.type = token.value;
             }
-            else if (state.token.value == ";")
+            else if (token.value == ";")
             {
                 ClearState();
             }
             break;
 
         case ParseMode::ATTRIBUTE:
-            if (state.token.value == ";")
+            if (token.value == ";")
             {
                 // TODO if current_attribute_type == NONE not found error
                 attributes.push_back({
@@ -213,7 +213,7 @@ void Parser::Parse(
             }
             else if (state.type == "")
             {
-                state.type = state.token.value;
+                state.type = token.value;
             }
             else
             {
@@ -222,7 +222,7 @@ void Parser::Parse(
             break;
 
         case ParseMode::UNIFORM:
-            if (state.token.value == ";")
+            if (token.value == ";")
             {
                 uniforms.push_back({
                     state.type,
@@ -233,16 +233,16 @@ void Parser::Parse(
             }
             else if (state.type == "")
             {
-                state.type = state.token.value;
+                state.type = token.value;
             }
             else
             {
-                state.name = state.token.value;
+                state.name = token.value;
             }
             break;
 
         case ParseMode::UNIFORM_BLOCK:
-            if (state.token.value == "{")
+            if (token.value == "{")
             {
                 state.shader_block_name = state.name;
                 state.shader_block_type = state.type;
@@ -256,7 +256,7 @@ void Parser::Parse(
             break;
 
         case ParseMode::UNIFORM_BLOCK_MEMBERS:
-            if (state.token.value == "}")
+            if (token.value == "}")
             {
                 uniform_blocks[state.shader_block_name] = {
                     state.shader_block_type,
@@ -265,7 +265,7 @@ void Parser::Parse(
 
                 ClearState();
             }
-            else if (state.token.value == ";")
+            else if (token.value == ";")
             {
                 state.uniform_list.push_back({
                     state.type,
@@ -277,16 +277,16 @@ void Parser::Parse(
             }
             else if (state.type == "")
             {
-                state.type = state.token.value;
+                state.type = token.value;
             }
             else
             {
-                state.name = state.token.value;
+                state.name = token.value;
             }
             break;
 
         case ParseMode::BUFFER:
-            if (state.token.value == ";")
+            if (token.value == ";")
             {
                 //uniform_block_list.push_back({
                 //    UniformBlockType::BUFFER,
@@ -298,7 +298,7 @@ void Parser::Parse(
 
                 ClearState();
             }
-            if (state.token.value == "{")
+            if (token.value == "{")
             {
                 state.shader_block_name = state.name;
                 ClearUniformBlockState();
