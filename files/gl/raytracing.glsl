@@ -135,7 +135,7 @@
 
         vec3 direction = normalize(
             (c + coords.x * h + coords.y * v).xyz);
-        return Ray(position.xyz, direction, 1.0f / direction);
+        return Ray(position.xyz, direction, 1.0 / direction);
     }
 
     struct Geom {
@@ -306,7 +306,7 @@
 
         r.origin = mix(r.origin, hit.position, hit.exists);
         r.direction = mix(r.direction, new_direction, hit.exists);
-        r.direction_inv = 1.0f / r.direction;
+        r.direction_inv = 1.0 / r.direction;
         acc.xyz *= mix(vec3(1.0), f0, hit.exists);
         acc.w += mix(0.0, hit.t, hit.exists);
     }

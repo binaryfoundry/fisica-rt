@@ -70,7 +70,8 @@ set(SOURCES_GL
     src/gl/FrameBuffer.cpp
     src/gl/Texture2D.cpp
     src/gl/UniformBuffer.cpp
-    src/gl/Pipeline.cpp)
+    src/gl/Pipeline.cpp
+    src/gl/Parser.cpp)
 
 set(HEADERS_GL
     src/gl/OpenGL.hpp
@@ -78,7 +79,8 @@ set(HEADERS_GL
     src/gl/FrameBuffer.hpp
     src/gl/Texture2D.hpp
     src/gl/UniformBuffer.hpp
-    src/gl/Pipeline.hpp)
+    src/gl/Pipeline.hpp
+    src/gl/Parser.hpp)
 
 set(SOURCES_PROPERTIES
     src/properties/Interpolator.cpp

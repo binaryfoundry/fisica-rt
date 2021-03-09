@@ -5,11 +5,11 @@
 
 struct Token
 {
-    std::string type;
-    std::string value;
-    uint32_t from;
-    uint32_t to;
+    std::string type = "";
+    std::string value = "";
+    uint32_t from = 0;
+    uint32_t to = 0;
 };
 
 // Adapted from Douglas Crockford's JS tokenizer
-static std::vector<Token> tokenize(std::string str);
+std::vector<Token> tokenize(std::string str);
