@@ -237,96 +237,9 @@ namespace GL
 
         scene_uniforms->Update();
 
-        //glBindBufferBase(
-        //    GL_UNIFORM_BUFFER,
-        //    raytracing_camera_uniform_location,
-        //    camera_uniforms->gl_buffer_handle);
-
-        //glUniformBlockBinding(
-        //    raytracing_shader_program,
-        //    raytracing_camera_uniform_location,
-        //    raytracing_camera_uniform_location);
-
-        // ...
-
-        //glBindBufferBase(
-        //    GL_UNIFORM_BUFFER,
-        //    raytracing_scene_uniform_location,
-        //    scene_uniforms->gl_buffer_handle);
-
-        //glUniformBlockBinding(
-        //    raytracing_shader_program,
-        //    raytracing_scene_uniform_location,
-        //    raytracing_scene_uniform_location);
-
-        // ...
-
-        glActiveTexture(
-            GL_TEXTURE0);
-
-        glBindTexture(
-            GL_TEXTURE_2D_ARRAY,
-            noise->gl_texture_handle);
-
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-        //glUniform1i(
-        //    raytracing_noise_texture_uniform_location,
-        //    0);
-
-        // ...
-
-        glActiveTexture(
-            GL_TEXTURE1);
-
-        glBindTexture(
-            GL_TEXTURE_2D,
-            environment->gl_texture_handle);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-        //glUniform1i(
-        //    raytracing_environment_texture_uniform_location,
-        //    1);
-
-        // ...
-
-        glActiveTexture(
-            GL_TEXTURE2);
-
-        glBindTexture(
-            GL_TEXTURE_2D,
-            scene->gl_texture_handle);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-        //glUniform1i(
-        //    raytracing_scene_texture_uniform_location,
-        //    2);
-
         // ...
 
         DrawQuad();
-
-        glBindTexture(
-            GL_TEXTURE_2D,
-            NULL);
-
-        glUseProgram(
-            NULL);
-
-        glBindFramebuffer(
-            GL_FRAMEBUFFER,
-            0);
 
         // Render to front buffer
 
@@ -394,45 +307,7 @@ namespace GL
         //glUseProgram(
         //    frontbuffer_shader_program); 
 
-        //glUniformMatrix4fv(
-        //    frontbuffer_projection_uniform_location,
-        //    1,
-        //    false,
-        //    &proj[0][0]);
-
-        //glUniformMatrix4fv(
-        //    frontbuffer_view_uniform_location,
-        //    1,
-        //    false,
-        //    &view[0][0]);
-
-        glActiveTexture(
-            GL_TEXTURE0);
-
-        glBindTexture(
-            GL_TEXTURE_2D,
-            framebuffer->gl_texture_handle);
-
-        glGenerateMipmap(
-            GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-        //glUniform1i(
-        //    frontbuffer_texture_uniform_location,
-        //    0);
-
         DrawQuad();
-
-        glUseProgram(
-            NULL);
-
-        glBindTexture(
-            GL_TEXTURE_2D,
-            NULL);
 
         GL::CheckError();
     }
