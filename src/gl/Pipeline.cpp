@@ -38,7 +38,10 @@ namespace GL
         environment_shader.Link();
 
         Descriptor environment_set_0;
-        environment_shader.Set(environment_set_0, 0);
+
+        environment_shader.Set(
+            environment_set_0,
+            0);
 
         quad_vertex_buffer = GL::GenBuffer(
             quad_vertices_data);
@@ -70,7 +73,8 @@ namespace GL
             environment->Width(),
             environment->Height());
 
-        DrawQuad(environment_shader);
+        DrawQuad(
+            environment_shader);
 
         glBindTexture(
             GL_TEXTURE_2D,
@@ -115,7 +119,10 @@ namespace GL
 
         for (uint16_t i = 0; i < noise_samples; i++)
         {
-            Noise::generate(noise->Data(i), i, noise_samples);
+            Noise::generate(
+                noise->Data(i),
+                i,
+                noise_samples);
         }
 
         noise->Update();
@@ -124,7 +131,8 @@ namespace GL
         defines << "#define SAMPLES " << samples << std::endl;
         defines << "#define BOUNCES " << bounces << std::endl;
 
-        raytracing_shader.Link(defines.str());
+        raytracing_shader.Link(
+            defines.str());
 
         camera_uniforms =
             std::make_unique<GL::UniformBuffer<CameraUniforms>>();
@@ -140,17 +148,45 @@ namespace GL
             framebuffer_height,
             true);
 
-        frontbuffer_set_0.SetSampler2D("tex", *framebuffer);
-        frontbuffer_set_0.SetUniformMat4("view", &view);
-        frontbuffer_set_0.SetUniformMat4("projection", &projection);
-        frontbuffer_shader.Set(frontbuffer_set_0, 0);
+        frontbuffer_set_0.SetSampler2D(
+            "tex",
+            *framebuffer);
 
-        raytracing_set_0.SetUniformBlock("camera", *camera_uniforms);
-        raytracing_set_0.SetUniformBlock("scene", *scene_uniforms);
-        raytracing_set_0.SetSampler2DArray("rand_sampler", *noise);
-        raytracing_set_0.SetSampler2D("scene_sampler", *scene);
-        raytracing_set_0.SetSampler2D("environment_sampler", *environment);
-        raytracing_shader.Set(raytracing_set_0, 0);
+        frontbuffer_set_0.SetUniformMat4(
+            "view",
+            &view);
+
+        frontbuffer_set_0.SetUniformMat4(
+            "projection",
+            &projection);
+
+        frontbuffer_shader.Set(
+            frontbuffer_set_0,
+            0);
+
+        raytracing_set_0.SetUniformBlock(
+            "camera",
+            *camera_uniforms);
+
+        raytracing_set_0.SetUniformBlock(
+            "scene",
+            *scene_uniforms);
+
+        raytracing_set_0.SetSampler2DArray(
+            "rand_sampler",
+            *noise);
+
+        raytracing_set_0.SetSampler2D(
+            "scene_sampler",
+            *scene);
+
+        raytracing_set_0.SetSampler2D(
+            "environment_sampler",
+            *environment);
+
+        raytracing_shader.Set(
+            raytracing_set_0,
+            0);
 
         GL::CheckError();
     }
@@ -246,7 +282,8 @@ namespace GL
 
         scene_uniforms->Update();
 
-        DrawQuad(raytracing_shader);
+        DrawQuad(
+            raytracing_shader);
 
         glBindTexture(
             GL_TEXTURE_2D,
@@ -267,7 +304,8 @@ namespace GL
             window_width,
             window_height);
 
-        glClearColor(0, 0, 0, 1);
+        glClearColor(
+            0, 0, 0, 1);
 
         glClear(
             GL_COLOR_BUFFER_BIT |
@@ -322,10 +360,12 @@ namespace GL
             view,
             scale);
 
-        DrawQuad(frontbuffer_shader);
+        DrawQuad(
+            frontbuffer_shader);
     }
 
-    void Pipeline::DrawQuad(Shader& shader)
+    void Pipeline::DrawQuad(
+        Shader& shader)
     {
         glBindBuffer(
             GL_ARRAY_BUFFER,
