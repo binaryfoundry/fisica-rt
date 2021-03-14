@@ -34,6 +34,15 @@ namespace GL
             quad_indices_data);
     }
 
+    void DeleteQuad()
+    {
+        glDeleteBuffers(
+            1, &quad_vertex_buffer);
+
+        glDeleteBuffers(
+            1, &quad_index_buffer);
+    }
+
     GLuint LoadShader(
         const GLenum type,
         const char* shader_src);

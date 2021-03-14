@@ -62,6 +62,8 @@ namespace GL
 
     void Pipeline::Deinit()
     {
+        DeleteQuad();
+
         environment->Delete();
         scene->Delete();
         noise->Delete();
@@ -69,12 +71,6 @@ namespace GL
         frontbuffer_shader.Delete();
         raytracing_shader.Delete();
         environment_shader.Delete();
-
-        glDeleteBuffers(
-            1, &quad_vertex_buffer);
-
-        glDeleteBuffers(
-            1, &quad_index_buffer);
     }
 
     void Pipeline::InitRaytracing(

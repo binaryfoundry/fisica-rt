@@ -39,6 +39,7 @@ namespace GL
     void CheckError();
 
     extern void CreateQuad();
+    extern void DeleteQuad();
     extern const std::vector<uint32_t> quad_indices_data;
     extern GLuint quad_vertex_buffer;
     extern GLuint quad_index_buffer;
