@@ -10,6 +10,8 @@ const std::map<std::string, uint16_t> attribute_size_map =
     std::make_pair("vec4", 4),
 };
 
+constexpr GLuint gl_not_found = std::numeric_limits<GLuint>::max();
+
 namespace GL
 {
     Shader::~Shader()
@@ -70,7 +72,7 @@ namespace GL
                 gl_shader_handle,
                 name.c_str());
 
-            if (location == std::numeric_limits<GLuint>::max())
+            if (location == gl_not_found)
             {
                 // TODO print warning
                 continue;
@@ -159,7 +161,7 @@ namespace GL
             GLuint location = sampler2D_locations.at(
                 name);
 
-            if (location == std::numeric_limits<GLuint>::max())
+            if (location == gl_not_found)
             {
                 // TODO print warning
                 continue;
@@ -186,7 +188,7 @@ namespace GL
             GLuint location = sampler2D_array_locations.at(
                 name);
 
-            if (location == std::numeric_limits<GLuint>::max())
+            if (location == gl_not_found)
             {
                 // TODO print warning
                 continue;
@@ -213,7 +215,7 @@ namespace GL
             GLuint location = uniform_block_locations.at(
                 name);
 
-            if (location == std::numeric_limits<GLuint>::max())
+            if (location == gl_not_found)
             {
                 // TODO print warning
                 continue;
@@ -240,7 +242,7 @@ namespace GL
             GLuint location = uniform_mat4_locations.at(
                 name);
 
-            if (location == std::numeric_limits<GLuint>::max())
+            if (location == gl_not_found)
             {
                 // TODO print warning
                 continue;
