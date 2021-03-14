@@ -5,6 +5,35 @@
 
 namespace GL
 {
+    const std::vector<float> quad_vertices_data
+    {
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,
+        1.0f, 1.0f
+    };
+
+    const std::vector<uint32_t> quad_indices_data
+    {
+         0, 1, 2, 2, 3, 0
+    };
+
+    GLuint quad_vertex_buffer = 0;
+    GLuint quad_index_buffer = 0;
+
+    void CreateQuad()
+    {
+        quad_vertex_buffer = GL::GenBuffer(
+            quad_vertices_data);
+
+        quad_index_buffer = GL::GenBufferIndex(
+            quad_indices_data);
+    }
+
     GLuint LoadShader(
         const GLenum type,
         const char* shader_src);

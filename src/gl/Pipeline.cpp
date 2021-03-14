@@ -7,29 +7,14 @@
 
 namespace GL
 {
-    static const std::vector<float> quad_vertices_data
-    {
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f
-    };
-
-    static const std::vector<uint32_t> quad_indices_data
-    {
-         0, 1, 2, 2, 3, 0
-    };
-
     Pipeline::Pipeline()
     {
     }
 
     void Pipeline::Init()
     {
+        CreateQuad();
+
         frontbuffer_shader.Load("files/gl/frontbuffer.glsl");
         raytracing_shader.Load("files/gl/raytracing.glsl");
         environment_shader.Load("files/gl/environment.glsl");
@@ -42,12 +27,6 @@ namespace GL
         environment_shader.Set(
             environment_set_0,
             0);
-
-        quad_vertex_buffer = GL::GenBuffer(
-            quad_vertices_data);
-
-        quad_index_buffer = GL::GenBufferIndex(
-            quad_indices_data);
 
         camera_uniforms =
             std::make_unique<GL::UniformBuffer<CameraUniforms>>();
@@ -75,13 +54,6 @@ namespace GL
 
         DrawQuad(
             environment_shader);
-
-        glBindTexture(
-            GL_TEXTURE_2D,
-            NULL);
-
-        glUseProgram(
-            NULL);
 
         glBindFramebuffer(
             GL_FRAMEBUFFER,
@@ -301,13 +273,6 @@ namespace GL
         DrawQuad(
             raytracing_shader);
 
-        glBindTexture(
-            GL_TEXTURE_2D,
-            NULL);
-
-        glUseProgram(
-            NULL);
-
         glBindFramebuffer(
             GL_FRAMEBUFFER,
             0);
@@ -398,5 +363,8 @@ namespace GL
             static_cast<GLsizei>(quad_indices_data.size()),
             GL_UNSIGNED_INT,
             static_cast<char const*>(0));
+
+        glUseProgram(
+            NULL);
     }
 }

@@ -38,9 +38,6 @@ namespace GL
     private:
         bool initialized = false;
 
-        GLuint quad_vertex_buffer = 0;
-        GLuint quad_index_buffer = 0;
-
         const uint32_t scene_data_width = 8;
         const uint32_t scene_data_height = 1024;
 
