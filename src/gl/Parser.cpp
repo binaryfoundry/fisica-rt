@@ -257,11 +257,11 @@ void Parser::Parse(
         case ParseMode::UNIFORM_BLOCK_MEMBERS:
             if (token.value == "}")
             {
-                uniform_blocks.push_back = {
+                uniform_blocks.push_back({
                     state.shader_block_type,
                     state.shader_block_name,
                     state.uniform_list
-                };
+                });
 
                 ClearState();
             }
