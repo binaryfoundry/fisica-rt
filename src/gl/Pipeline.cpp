@@ -22,12 +22,6 @@ namespace GL
         frontbuffer_shader.Link();
         environment_shader.Link();
 
-        //Descriptor environment_set_0;
-
-        //environment_shader.Set(
-        //    environment_set_0,
-        //    0);
-
         camera_uniforms =
             std::make_unique<GL::UniformBuffer<CameraUniforms>>();
 
