@@ -5,14 +5,13 @@
 namespace GL
 {
     template <typename T>
-    class UniformBuffer
+    class UniformBuffer : public GLBufferResource
     {
     private:
         bool created = false;
 
     public:
         T object;
-        GLuint gl_buffer_handle;
 
         UniformBuffer()
         {

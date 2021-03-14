@@ -30,6 +30,12 @@ namespace GL
         GLuint gl_texture_handle = 0;
     };
 
+    class GLBufferResource
+    {
+    public:
+        GLuint gl_buffer_handle = 0;
+    };
+
     void CheckError();
 
     GLuint LinkShaderFile(
