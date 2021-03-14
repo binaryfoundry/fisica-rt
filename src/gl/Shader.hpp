@@ -41,15 +41,15 @@ namespace GL
     public:
         virtual ~Shader();
 
-        void Load(std::string file_path);
-        void Link(std::string additional_defines = "");
+        void Load(const std::string file_path);
+        void Link(const std::string additional_defines = "");
         void Delete();
 
         void Set(
-            Descriptor& descriptor,
-            uint32_t index);
+            const Descriptor& descriptor,
+            const uint32_t index);
 
         void Bind(
-            uint32_t descriptor_set_index = 0);
+            const uint32_t descriptor_set_index = 0);
     };
 }

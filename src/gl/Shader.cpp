@@ -23,7 +23,7 @@ namespace GL
     }
 
     void Shader::Load(
-        std::string file_path)
+        const std::string file_path)
     {
         File file(file_path, "r");
 
@@ -31,7 +31,7 @@ namespace GL
     }
 
     void Shader::Link(
-        std::string additional_defines)
+        const std::string additional_defines)
     {
         initialized = true;
 
@@ -41,11 +41,11 @@ namespace GL
 
         GL::CheckError();
 
-        Parser vertex_info = Parser(
+        const Parser vertex_info = Parser(
             ShaderParseType::VERTEX,
             program);
 
-        Parser fragment_info = Parser(
+        const Parser fragment_info = Parser(
             ShaderParseType::FRAGMENT,
             program);
 
@@ -60,15 +60,15 @@ namespace GL
         Descriptor empty_set;
         Set(empty_set, 0);
 
-        for (auto& attribute : vertex_info.attributes)
+        for (const auto& attribute : vertex_info.attributes)
         {
-            std::string type = std::get<0>(attribute);
-            std::string name = std::get<1>(attribute);
+            const std::string type = std::get<0>(attribute);
+            const std::string name = std::get<1>(attribute);
 
-            uint16_t size = attribute_size_map.at(type);
+            const uint16_t size = attribute_size_map.at(type);
             attributes_total_size += size;
 
-            GLuint location = glGetAttribLocation(
+            const GLuint location = glGetAttribLocation(
                 gl_shader_handle,
                 name.c_str());
 
@@ -81,47 +81,47 @@ namespace GL
             attribute_locations[location] = size;
         }
 
-        for (auto& sampler : fragment_info.uniform_sampler2Ds)
+        for (const auto& sampler : fragment_info.uniform_sampler2Ds)
         {
-            std::string type = std::get<0>(sampler);
-            std::string name = std::get<1>(sampler);
+            const std::string type = std::get<0>(sampler);
+            const std::string name = std::get<1>(sampler);
 
-            GLuint location = glGetUniformLocation(
+            const GLuint location = glGetUniformLocation(
                 gl_shader_handle,
                 name.c_str());
 
             sampler2D_locations[name] = location;
         }
 
-        for (auto& sampler : fragment_info.uniform_sampler2D_arrays)
+        for (const auto& sampler : fragment_info.uniform_sampler2D_arrays)
         {
-            std::string type = std::get<0>(sampler);
-            std::string name = std::get<1>(sampler);
+            const std::string type = std::get<0>(sampler);
+            const std::string name = std::get<1>(sampler);
 
-            GLuint location = glGetUniformLocation(
+            const GLuint location = glGetUniformLocation(
                 gl_shader_handle,
                 name.c_str());
 
             sampler2D_array_locations[name] = location;
         }
 
-        for (auto& uniform_block : fragment_info.uniform_blocks)
+        for (const auto& uniform_block : fragment_info.uniform_blocks)
         {
-            std::string name = uniform_block.name;
+            const std::string name = uniform_block.name;
 
-            GLuint location = glGetUniformBlockIndex(
+            const GLuint location = glGetUniformBlockIndex(
                 gl_shader_handle,
                 name.c_str());
 
             uniform_block_locations[name] = location;
         }
 
-        for (auto& uniform : vertex_info.uniform_mat4s)
+        for (const auto& uniform : vertex_info.uniform_mat4s)
         {
-            std::string type = std::get<0>(uniform);
-            std::string name = std::get<1>(uniform);
+            const std::string type = std::get<0>(uniform);
+            const std::string name = std::get<1>(uniform);
 
-            GLuint location = glGetUniformLocation(
+            const GLuint location = glGetUniformLocation(
                 gl_shader_handle,
                 name.c_str());
 
@@ -141,15 +141,15 @@ namespace GL
     }
 
     void Shader::Set(
-        Descriptor& descriptor,
-        uint32_t index)
+        const Descriptor& descriptor,
+        const uint32_t index)
     {
         DescriptorSet set;
 
-        for (auto& sampler : descriptor.sampler2Ds)
+        for (const auto& sampler : descriptor.sampler2Ds)
         {
-            std::string name = sampler.first;
-            SamplerDescriptor& desc = sampler.second;
+            const std::string name = sampler.first;
+            const SamplerDescriptor& desc = sampler.second;
 
             if (sampler2D_locations.find(name) ==
                 sampler2D_locations.end())
@@ -158,7 +158,7 @@ namespace GL
                     "No matching uniform found");
             }
 
-            GLuint location = sampler2D_locations.at(
+            const GLuint location = sampler2D_locations.at(
                 name);
 
             if (location == gl_not_found)
@@ -173,10 +173,10 @@ namespace GL
             });
         }
 
-        for (auto& sampler : descriptor.sampler2D_arrays)
+        for (const auto& sampler : descriptor.sampler2D_arrays)
         {
-            std::string name = sampler.first;
-            SamplerDescriptor& desc = sampler.second;
+            const std::string name = sampler.first;
+            const SamplerDescriptor& desc = sampler.second;
 
             if (sampler2D_array_locations.find(name) ==
                 sampler2D_array_locations.end())
@@ -185,7 +185,7 @@ namespace GL
                     "No matching uniform found");
             }
 
-            GLuint location = sampler2D_array_locations.at(
+            const GLuint location = sampler2D_array_locations.at(
                 name);
 
             if (location == gl_not_found)
@@ -200,10 +200,10 @@ namespace GL
             });
         }
 
-        for (auto& ubo : descriptor.uniform_blocks)
+        for (const auto& ubo : descriptor.uniform_blocks)
         {
-            std::string name = ubo.first;
-            GLuint handle = ubo.second;
+            const std::string name = ubo.first;
+            const GLuint handle = ubo.second;
 
             if (uniform_block_locations.find(name) ==
                 uniform_block_locations.end())
@@ -212,7 +212,7 @@ namespace GL
                     "No matching uniform block found");
             }
 
-            GLuint location = uniform_block_locations.at(
+            const GLuint location = uniform_block_locations.at(
                 name);
 
             if (location == gl_not_found)
@@ -227,9 +227,9 @@ namespace GL
             });
         }
 
-        for (auto& uniform : descriptor.uniform_mat4s)
+        for (const auto& uniform : descriptor.uniform_mat4s)
         {
-            std::string name = uniform.first;
+            const std::string name = uniform.first;
             glm::mat4* data = uniform.second;
 
             if (uniform_mat4_locations.find(name) ==
@@ -239,7 +239,7 @@ namespace GL
                     "No matching uniform found");
             }
 
-            GLuint location = uniform_mat4_locations.at(
+            const GLuint location = uniform_mat4_locations.at(
                 name);
 
             if (location == gl_not_found)
@@ -258,7 +258,7 @@ namespace GL
     }
 
     void Shader::Bind(
-        uint32_t descriptor_set_index)
+        const uint32_t descriptor_set_index)
     {
         GL::CheckError();
 
@@ -271,8 +271,8 @@ namespace GL
 
         for (auto& attribute : attribute_locations)
         {
-            GLuint location = attribute.first;
-            GLuint size = attribute.second;
+            const GLuint location = attribute.first;
+            const GLuint size = attribute.second;
 
             glEnableVertexAttribArray(
                 location);
@@ -300,10 +300,10 @@ namespace GL
         uint32_t sampler_count = 0;
         DescriptorSet& set = descriptor_sets[descriptor_set_index];
 
-        for (auto& texture : set.sampler2Ds)
+        for (const auto& texture : set.sampler2Ds)
         {
-            GLuint location = std::get<0>(texture);
-            SamplerDescriptor& desc = std::get<1>(texture);
+            const GLuint location = std::get<0>(texture);
+            const SamplerDescriptor& desc = std::get<1>(texture);
 
             glActiveTexture(
                 GL_TEXTURE0 + sampler_count);
@@ -346,10 +346,10 @@ namespace GL
 
         GL::CheckError();
 
-        for (auto& texture : set.sampler2D_arrays)
+        for (const auto& texture : set.sampler2D_arrays)
         {
-            GLuint location = std::get<0>(texture);
-            SamplerDescriptor& desc = std::get<1>(texture);
+            const GLuint location = std::get<0>(texture);
+            const SamplerDescriptor& desc = std::get<1>(texture);
 
             glActiveTexture(
                 GL_TEXTURE0 + sampler_count);
@@ -385,10 +385,10 @@ namespace GL
             sampler_count++;
         }
 
-        for (auto& ubo : set.uniform_blocks)
+        for (const auto& ubo : set.uniform_blocks)
         {
-            GLuint location = std::get<0>(ubo);
-            GLuint handle = std::get<1>(ubo);
+            const GLuint location = std::get<0>(ubo);
+            const GLuint handle = std::get<1>(ubo);
 
             glBindBufferBase(
                 GL_UNIFORM_BUFFER,
@@ -401,10 +401,10 @@ namespace GL
                 location);
         }
 
-        for (auto& uniform : set.uniform_mat4s)
+        for (const auto& uniform : set.uniform_mat4s)
         {
-            GLuint location = std::get<0>(uniform);
-            glm::mat4 data = *std::get<1>(uniform);
+            const GLuint location = std::get<0>(uniform);
+            const glm::mat4 data = *std::get<1>(uniform);
 
             glUniformMatrix4fv(
                 location,
