@@ -24,6 +24,12 @@ namespace GL
         RGBA32F
     };
 
+    class GLTextureResource
+    {
+    public:
+        GLuint gl_texture_handle = 0;
+    };
+
     void CheckError();
 
     GLuint LinkShaderFile(

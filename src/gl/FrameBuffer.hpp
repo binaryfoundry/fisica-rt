@@ -5,7 +5,7 @@
 namespace GL
 {
     template <typename T>
-    class FrameBuffer
+    class FrameBuffer : public GLTextureResource
     {
     private:
         bool created = false;
@@ -23,7 +23,6 @@ namespace GL
         virtual ~FrameBuffer();
 
         GLuint gl_frame_handle = 0;
-        GLuint gl_texture_handle = 0;
         GLuint gl_depth_renderbuffer_handle = 0;
 
         void Create(

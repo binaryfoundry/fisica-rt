@@ -8,7 +8,7 @@
 namespace GL
 {
     template <typename T, size_t E = 1>
-    class Texture2D
+    class Texture2D : public GLTextureResource
     {
     private:
         bool created = false;
@@ -25,8 +25,6 @@ namespace GL
         std::array<std::unique_ptr<std::vector<T>>, E> data;
 
     public:
-        GLuint gl_texture_handle;
-
         Texture2D(
             const std::string& file_path);
 
