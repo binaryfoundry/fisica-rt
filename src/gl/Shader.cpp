@@ -220,6 +220,33 @@ namespace GL
             });
         }
 
+        for (auto& uniform : descriptor.uniform_mat4s)
+        {
+            std::string name = uniform.first;
+            glm::mat4* data = uniform.second;
+
+            if (uniform_mat4_locations.find(name) ==
+                uniform_mat4_locations.end())
+            {
+                throw new std::runtime_error(
+                    "No matching uniform found");
+            }
+
+            GLuint location = uniform_mat4_locations.at(
+                name);
+
+            if (location == std::numeric_limits<GLuint>::max())
+            {
+                // TODO print warning
+                continue;
+            }
+
+            set.uniform_mat4s.push_back({
+                location,
+                data
+            });
+        }
+
         descriptor_sets[index] = set;
     }
 
@@ -334,18 +361,16 @@ namespace GL
                 location);
         }
 
-        /*
-        glUniformMatrix4fv(
-            frontbuffer_projection_uniform_location,
-            1,
-            false,
-            &proj[0][0]);
+        for (auto& uniform : set.uniform_mat4s)
+        {
+            GLuint location = std::get<0>(uniform);
+            glm::mat4 data = *std::get<1>(uniform);
 
-        glUniformMatrix4fv(
-            frontbuffer_view_uniform_location,
-            1,
-            false,
-            &view[0][0]);
-            */
+            glUniformMatrix4fv(
+                location,
+                1,
+                false,
+                &data[0][0]);
+        }
     }
 }

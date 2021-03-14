@@ -141,6 +141,8 @@ namespace GL
             true);
 
         frontbuffer_set_0.SetSampler2D("tex", *framebuffer);
+        frontbuffer_set_0.SetUniformMat4("view", &view);
+        frontbuffer_set_0.SetUniformMat4("projection", &projection);
         frontbuffer_shader.Set(frontbuffer_set_0, 0);
 
         raytracing_set_0.SetUniformBlock("camera", *camera_uniforms);
@@ -302,7 +304,7 @@ namespace GL
         const float vpos =
             std::round((window_height / 2) - (scale.y / 2));
 
-        const glm::mat4 proj = glm::ortho<float>(
+        projection = glm::ortho<float>(
             0,
             static_cast<float>(window_width),
             static_cast<float>(window_height),
@@ -310,7 +312,7 @@ namespace GL
             -1.0f,
             1.0f);
 
-        glm::mat4 view = glm::mat4();
+        view = glm::mat4();
 
         view = glm::translate(
             view,

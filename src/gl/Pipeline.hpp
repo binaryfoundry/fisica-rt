@@ -44,6 +44,9 @@ namespace GL
         const uint32_t scene_data_width = 8;
         const uint32_t scene_data_height = 1024;
 
+        glm::mat4 view;
+        glm::mat4 projection;
+
         std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> framebuffer;
         std::unique_ptr<GL::UniformBuffer<CameraUniforms>> camera_uniforms;
         std::unique_ptr<GL::UniformBuffer<SceneUniforms>> scene_uniforms;
