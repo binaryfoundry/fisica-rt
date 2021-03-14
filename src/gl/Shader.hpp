@@ -11,13 +11,11 @@ namespace GL
     {
     private:
         GLuint gl_shader_handle;
-        std::map<std::string, GLuint> attribute_locations;
+        std::map<GLuint, GLuint> attribute_locations;
         std::map<std::string, GLuint> uniform_locations;
         std::map<std::string, GLuint> uniform_block_locations;
 
         uint16_t attributes_total_size = 0;
-
-        void BindAttributes();
 
         bool initialized = false;
 
@@ -29,5 +27,7 @@ namespace GL
         void Load(std::string file_path);
         void Link(std::string additional_defines = "");
         void Delete();
+
+        void BindAttributes();
     };
 }

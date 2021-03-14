@@ -7,6 +7,7 @@ const std::map<std::string, uint16_t> attribute_size_map =
 {
     std::make_pair("vec2", 2),
     std::make_pair("vec3", 3),
+    std::make_pair("vec4", 4),
 };
 
 namespace GL
@@ -61,7 +62,7 @@ namespace GL
                 gl_shader_handle,
                 name.c_str());
 
-            attribute_locations[name] = location;
+            attribute_locations[location] = size;
         }
 
         for (auto& uniform : fragment_info.uniforms)
@@ -104,24 +105,27 @@ namespace GL
         glUseProgram(
             gl_shader_handle);
 
-        glEnableVertexAttribArray(0);
+        GLuint counter = 0;
+        GLuint accumulated_size = 0;
 
-        glVertexAttribPointer(
-            gl_shader_handle,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            5 * sizeof(GLfloat),
-            (GLvoid*)0);
+        for (auto& attribute : attribute_locations)
+        {
+            GLuint location = attribute.first;
+            GLuint size = attribute.second;
 
-        glEnableVertexAttribArray(1);
+            glEnableVertexAttribArray(
+                location);
 
-        glVertexAttribPointer(
-            gl_shader_handle,
-            2,
-            GL_FLOAT,
-            GL_FALSE,
-            5 * sizeof(GLfloat),
-            (GLvoid*)(3 * sizeof(GLfloat)));
+            glVertexAttribPointer(
+                gl_shader_handle,
+                size,
+                GL_FLOAT,
+                GL_FALSE,
+                attributes_total_size * sizeof(GLfloat),
+                (GLvoid*)(accumulated_size * sizeof(GLfloat)));
+
+            counter++;
+            accumulated_size += size;
+        }
     }
 }

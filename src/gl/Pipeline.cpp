@@ -67,8 +67,7 @@ namespace GL
             environment->Width(),
             environment->Height());
 
-        //glUseProgram(
-        //    environment_shader_program);
+        environment_shader.BindAttributes();
 
         DrawQuad();
 
@@ -219,8 +218,7 @@ namespace GL
             framebuffer->Width(),
             framebuffer->Height());
 
-        //glUseProgram(
-        //    raytracing_shader_program);
+        raytracing_shader.BindAttributes();
 
         camera->Validate();
         camera_uniforms->object.view =
@@ -304,8 +302,7 @@ namespace GL
             view,
             scale);
 
-        //glUseProgram(
-        //    frontbuffer_shader_program); 
+        frontbuffer_shader.BindAttributes();
 
         DrawQuad();
 
@@ -317,8 +314,6 @@ namespace GL
         glBindBuffer(
             GL_ARRAY_BUFFER,
             quad_vertex_buffer);
-
-        // TODO bind shader attributes
 
         glBindBuffer(
             GL_ELEMENT_ARRAY_BUFFER,
