@@ -105,7 +105,6 @@ namespace GL
         glUseProgram(
             gl_shader_handle);
 
-        GLuint counter = 0;
         GLuint accumulated_size = 0;
 
         for (auto& attribute : attribute_locations)
@@ -117,14 +116,13 @@ namespace GL
                 location);
 
             glVertexAttribPointer(
-                gl_shader_handle,
+                location,
                 size,
                 GL_FLOAT,
                 GL_FALSE,
                 attributes_total_size * sizeof(GLfloat),
                 (GLvoid*)(accumulated_size * sizeof(GLfloat)));
 
-            counter++;
             accumulated_size += size;
         }
     }

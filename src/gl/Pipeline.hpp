@@ -72,7 +72,7 @@ namespace GL
         Shader raytracing_shader;
         Shader environment_shader;
 
-        void DrawQuad();
+        void DrawQuad(Shader& shader);
 
     public:
         Pipeline();

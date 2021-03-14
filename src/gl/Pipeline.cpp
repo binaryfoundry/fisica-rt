@@ -67,9 +67,7 @@ namespace GL
             environment->Width(),
             environment->Height());
 
-        environment_shader.BindAttributes();
-
-        DrawQuad();
+        DrawQuad(environment_shader);
 
         glBindTexture(
             GL_TEXTURE_2D,
@@ -237,7 +235,7 @@ namespace GL
 
         // ...
 
-        DrawQuad();
+        DrawQuad(raytracing_shader);
 
         // Render to front buffer
 
@@ -302,14 +300,12 @@ namespace GL
             view,
             scale);
 
-        frontbuffer_shader.BindAttributes();
-
-        DrawQuad();
+        DrawQuad(frontbuffer_shader);
 
         GL::CheckError();
     }
 
-    void Pipeline::DrawQuad()
+    void Pipeline::DrawQuad(Shader& shader)
     {
         glBindBuffer(
             GL_ARRAY_BUFFER,
@@ -318,6 +314,8 @@ namespace GL
         glBindBuffer(
             GL_ELEMENT_ARRAY_BUFFER,
             quad_index_buffer);
+
+        shader.BindAttributes();
 
         glDrawElements(
             GL_TRIANGLES,
