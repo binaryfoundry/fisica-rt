@@ -20,14 +20,16 @@ namespace GL
         }
     }
 
-    void Shader::Load(std::string file_path)
+    void Shader::Load(
+        std::string file_path)
     {
         File file(file_path, "r");
 
         program = file.ReadString();
     }
 
-    void Shader::Link(std::string additional_defines)
+    void Shader::Link(
+        std::string additional_defines)
     {
         initialized = true;
 
