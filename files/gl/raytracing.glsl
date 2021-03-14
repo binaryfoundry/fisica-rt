@@ -7,12 +7,12 @@
     precision lowp int;
     #endif
 
-    in vec4 pos;
-    in vec2 texcoord;
+    layout(location = 0) in vec3 position;
+    layout(location = 1) in vec2 texcoord;
     out vec2 v_texcoord;
     void main() {
         v_texcoord = texcoord;
-        vec2 pos = (pos.xy - vec2(0.5)) * 2.0;
+        vec2 pos = (position.xy - vec2(0.5)) * 2.0;
         gl_Position = vec4(vec2(pos.x, -pos.y), -1.0, 1.0);
     }
 

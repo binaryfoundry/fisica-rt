@@ -17,7 +17,8 @@
     out vec2 v_texcoord;
     void main() {
         v_texcoord = texcoord * vec2(TWOPI, PI);
-        gl_Position = vec4((position.xy - vec2(0.5))  * 2.0, -1.0, 1.0);
+        vec2 pos = (position.xy - vec2(0.5)) * 2.0;
+        gl_Position = vec4(vec2(pos.x, -pos.y), -1.0, 1.0);
     }
 
 #elif defined(COMPILING_FS)
