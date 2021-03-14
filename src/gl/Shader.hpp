@@ -50,6 +50,6 @@ namespace GL
             uint32_t index);
 
         void Bind(
-            uint32_t descriptor_set_index);
+            uint32_t descriptor_set_index = 0);
     };
 }

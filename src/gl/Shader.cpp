@@ -55,6 +55,9 @@ namespace GL
 
         descriptor_sets.clear();
 
+        Descriptor empty_set;
+        Set(empty_set, 0);
+
         for (auto& attribute : vertex_info.attributes)
         {
             std::string type = std::get<0>(attribute);
