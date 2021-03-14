@@ -19,28 +19,23 @@ using TypePair = std::tuple<std::string, std::string>;
 struct UniformBlock
 {
     std::string type;
+    std::string name;
     std::vector<TypePair> members;
 };
 
 class Parser
 {
 private:
-    std::string program;
-
     void Parse(
-        const ShaderParseType parse_type);
+        const ShaderParseType parse_type,
+        const std::string program);
 
 public:
     Parser(
         const ShaderParseType parse_type,
         const std::string program);
 
-    std::string Program() const
-    {
-        return program;
-    }
-
     std::vector<TypePair> attributes;
     std::vector<TypePair> uniforms;
-    std::map<std::string, UniformBlock> uniform_blocks;
+    std::vector<UniformBlock> uniform_blocks;
 };

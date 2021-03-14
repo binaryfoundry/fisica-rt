@@ -6,6 +6,7 @@
 #include "../math/Math.hpp"
 
 #include "OpenGL.hpp"
+#include "Shader.hpp"
 #include "Texture2D.hpp"
 #include "UniformBuffer.hpp"
 #include "FrameBuffer.hpp"
@@ -39,22 +40,22 @@ namespace GL
         GLuint quad_vertex_buffer = 0;
         GLuint quad_index_buffer = 0;
 
-        GLuint frontbuffer_shader_program = 0;
-        GLuint frontbuffer_sampler_state = 0;
-        GLuint frontbuffer_position_attribute_location = 0;
-        GLuint frontbuffer_texcoord_attribute_location = 0;
-        GLuint frontbuffer_projection_uniform_location = 0;
-        GLuint frontbuffer_view_uniform_location = 0;
-        GLuint frontbuffer_texture_uniform_location = 0;
+        //GLuint frontbuffer_shader_program = 0;
+        //GLuint frontbuffer_sampler_state = 0;
+        //GLuint frontbuffer_position_attribute_location = 0;
+        //GLuint frontbuffer_texcoord_attribute_location = 0;
+        //GLuint frontbuffer_projection_uniform_location = 0;
+        //GLuint frontbuffer_view_uniform_location = 0;
+        //GLuint frontbuffer_texture_uniform_location = 0;
 
-        GLuint raytracing_shader_program = 0;
-        GLuint raytracing_camera_uniform_location = 0;
-        GLuint raytracing_scene_uniform_location = 0;
-        GLuint raytracing_noise_texture_uniform_location = 0;
-        GLuint raytracing_environment_texture_uniform_location = 0;
-        GLuint raytracing_scene_texture_uniform_location = 0;
+        //GLuint raytracing_shader_program = 0;
+        //GLuint raytracing_camera_uniform_location = 0;
+        //GLuint raytracing_scene_uniform_location = 0;
+        //GLuint raytracing_noise_texture_uniform_location = 0;
+        //GLuint raytracing_environment_texture_uniform_location = 0;
+        //GLuint raytracing_scene_texture_uniform_location = 0;
 
-        GLuint environment_shader_program = 0;
+        //GLuint environment_shader_program = 0;
 
         const uint32_t scene_data_width = 8;
         const uint32_t scene_data_height = 1024;
@@ -66,6 +67,10 @@ namespace GL
         std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> environment;
         std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> scene;
         std::unique_ptr<GL::Texture2D<TexDataByteRGBA, 64>> noise;
+
+        Shader frontbuffer_shader;
+        Shader raytracing_shader;
+        Shader environment_shader;
 
         void DrawQuad();
 

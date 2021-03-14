@@ -57,14 +57,14 @@ struct State
 
 Parser::Parser(
     const ShaderParseType parse_type,
-    const std::string program) :
-    program(program)
+    const std::string program)
 {
-    Parse(parse_type);
+    Parse(parse_type, program);
 }
 
 void Parser::Parse(
-    const ShaderParseType parse_type)
+    const ShaderParseType parse_type,
+    const std::string program)
 {
     const std::vector<Token> tokens = tokenize(program);
     const size_t num_tokens = tokens.size();
@@ -257,8 +257,9 @@ void Parser::Parse(
         case ParseMode::UNIFORM_BLOCK_MEMBERS:
             if (token.value == "}")
             {
-                uniform_blocks[state.shader_block_name] = {
+                uniform_blocks.push_back = {
                     state.shader_block_type,
+                    state.shader_block_name,
                     state.uniform_list
                 };
 

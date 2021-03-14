@@ -159,10 +159,13 @@ std::vector<Token> tokenize(std::string str)
 
             if (character >= 'a' && character <= 'z')
             {
-                s_val += character;
-                index += 1;
-                throw std::runtime_error(
-                    "Bad number");
+                if (character != 'f')
+                {
+                    s_val += character;
+                    index += 1;
+                    throw std::runtime_error(
+                        "Bad number");
+                }
             }
 
             // Convert the string value to a number.

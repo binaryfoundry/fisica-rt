@@ -1,8 +1,5 @@
 #include "Pipeline.hpp"
 
-#include "Parser.hpp"
-
-#include "../File.hpp"
 #include "../Noise.hpp"
 
 #include <sstream>
@@ -33,56 +30,33 @@ namespace GL
 
     void Pipeline::Init()
     {
+        frontbuffer_shader.Load("files/gl/frontbuffer.glsl");
+        raytracing_shader.Load("files/gl/raytracing.glsl");
+        environment_shader.Load("files/gl/environment.glsl");
+
+        frontbuffer_shader.Link();
+        environment_shader.Link();
+
         quad_vertex_buffer = GL::GenBuffer(
             quad_vertices_data);
 
         quad_index_buffer = GL::GenBufferIndex(
             quad_indices_data);
 
-        camera_uniforms = std::make_unique<GL::UniformBuffer<CameraUniforms>>();
+        camera_uniforms =
+            std::make_unique<GL::UniformBuffer<CameraUniforms>>();
+
+        environment =
+            std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
 
         scene = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(
             scene_data_width,
             scene_data_height);
 
-        File frontbuffer_file("files/gl/frontbuffer.glsl", "r");
-
-        frontbuffer_shader_program = GL::LinkShaderFile(
-            frontbuffer_file.ReadString());
-
-        GL::CheckError();
-
-        frontbuffer_position_attribute_location = glGetAttribLocation(
-            frontbuffer_shader_program,
-            "position");
-
-        frontbuffer_texcoord_attribute_location = glGetAttribLocation(
-            frontbuffer_shader_program,
-            "texcoord");
-
-        frontbuffer_projection_uniform_location = glGetUniformLocation(
-            frontbuffer_shader_program,
-            "projection");
-
-        frontbuffer_view_uniform_location = glGetUniformLocation(
-            frontbuffer_shader_program,
-            "view");
-
-        frontbuffer_texture_uniform_location = glGetUniformLocation(
-            frontbuffer_shader_program,
-            "tex");
-
-        environment = std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
-
         environment->Create(
             256,
             256,
             true);
-
-        File environment_file("files/gl/environment.glsl", "r");
-
-        environment_shader_program = GL::LinkShaderFile(
-            environment_file.ReadString());
 
         glBindFramebuffer(
             GL_FRAMEBUFFER,
@@ -93,8 +67,8 @@ namespace GL
             environment->Width(),
             environment->Height());
 
-        glUseProgram(
-            environment_shader_program);
+        //glUseProgram(
+        //    environment_shader_program);
 
         DrawQuad();
 
@@ -116,14 +90,9 @@ namespace GL
         scene->Delete();
         noise->Delete();
 
-        glDeleteProgram(
-            frontbuffer_shader_program);
-
-        glDeleteProgram(
-            raytracing_shader_program);
-
-        glDeleteProgram(
-            environment_shader_program);
+        frontbuffer_shader.Delete();
+        raytracing_shader.Delete();
+        environment_shader.Delete();
 
         glDeleteBuffers(
             1, &quad_vertex_buffer);
@@ -138,7 +107,9 @@ namespace GL
         const uint16_t samples,
         const uint16_t bounces)
     {
-        noise = std::make_unique<GL::Texture2D<TexDataByteRGBA, 64>>(128, 128);
+        noise = std::make_unique<GL::Texture2D<TexDataByteRGBA, 64>>(
+            128,
+            128);
 
         uint16_t noise_samples = samples * bounces;
 
@@ -149,46 +120,20 @@ namespace GL
 
         noise->Update();
 
-        File raytracing_file("files/gl/raytracing.glsl", "r");
-
         std::stringstream defines;
         defines << "#define SAMPLES " << samples << std::endl;
         defines << "#define BOUNCES " << bounces << std::endl;
 
-        std::string rt_shader = raytracing_file.ReadString();
+        raytracing_shader.Link(defines.str());
 
-        raytracing_shader_program = GL::LinkShaderFile(
-            rt_shader,
-            defines.str());
+        camera_uniforms =
+            std::make_unique<GL::UniformBuffer<CameraUniforms>>();
 
-        GL::CheckError();
+        scene_uniforms =
+            std::make_unique<GL::UniformBuffer<SceneUniforms>>();
 
-        Parser rt(ShaderParseType::FRAGMENT, rt_shader);
-
-        raytracing_camera_uniform_location = glGetUniformBlockIndex(
-            raytracing_shader_program,
-            "camera");
-
-        raytracing_scene_uniform_location = glGetUniformBlockIndex(
-            raytracing_shader_program,
-            "scene");
-
-        raytracing_noise_texture_uniform_location = glGetUniformLocation(
-            raytracing_shader_program,
-            "rand_sampler");
-
-        raytracing_environment_texture_uniform_location = glGetUniformLocation(
-            raytracing_shader_program,
-            "environment_sampler");
-
-        raytracing_scene_texture_uniform_location = glGetUniformLocation(
-            raytracing_shader_program,
-            "scene_sampler");
-
-        camera_uniforms = std::make_unique<GL::UniformBuffer<CameraUniforms>>();
-        scene_uniforms = std::make_unique<GL::UniformBuffer<SceneUniforms>>();
-
-        framebuffer = std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
+        framebuffer =
+            std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
 
         framebuffer->Create(
             framebuffer_width,
@@ -210,8 +155,7 @@ namespace GL
         camera_uniforms->Delete();
         scene_uniforms->Delete();
 
-        glDeleteProgram(
-            raytracing_shader_program);
+        raytracing_shader.Delete();
     }
 
     inline size_t sampler_index(
@@ -275,8 +219,8 @@ namespace GL
             framebuffer->Width(),
             framebuffer->Height());
 
-        glUseProgram(
-            raytracing_shader_program);
+        //glUseProgram(
+        //    raytracing_shader_program);
 
         camera->Validate();
         camera_uniforms->object.view =
@@ -293,27 +237,27 @@ namespace GL
 
         scene_uniforms->Update();
 
-        glBindBufferBase(
-            GL_UNIFORM_BUFFER,
-            raytracing_camera_uniform_location,
-            camera_uniforms->gl_buffer_handle);
+        //glBindBufferBase(
+        //    GL_UNIFORM_BUFFER,
+        //    raytracing_camera_uniform_location,
+        //    camera_uniforms->gl_buffer_handle);
 
-        glUniformBlockBinding(
-            raytracing_shader_program,
-            raytracing_camera_uniform_location,
-            raytracing_camera_uniform_location);
+        //glUniformBlockBinding(
+        //    raytracing_shader_program,
+        //    raytracing_camera_uniform_location,
+        //    raytracing_camera_uniform_location);
 
         // ...
 
-        glBindBufferBase(
-            GL_UNIFORM_BUFFER,
-            raytracing_scene_uniform_location,
-            scene_uniforms->gl_buffer_handle);
+        //glBindBufferBase(
+        //    GL_UNIFORM_BUFFER,
+        //    raytracing_scene_uniform_location,
+        //    scene_uniforms->gl_buffer_handle);
 
-        glUniformBlockBinding(
-            raytracing_shader_program,
-            raytracing_scene_uniform_location,
-            raytracing_scene_uniform_location);
+        //glUniformBlockBinding(
+        //    raytracing_shader_program,
+        //    raytracing_scene_uniform_location,
+        //    raytracing_scene_uniform_location);
 
         // ...
 
@@ -329,9 +273,9 @@ namespace GL
         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-        glUniform1i(
-            raytracing_noise_texture_uniform_location,
-            0);
+        //glUniform1i(
+        //    raytracing_noise_texture_uniform_location,
+        //    0);
 
         // ...
 
@@ -347,9 +291,9 @@ namespace GL
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-        glUniform1i(
-            raytracing_environment_texture_uniform_location,
-            1);
+        //glUniform1i(
+        //    raytracing_environment_texture_uniform_location,
+        //    1);
 
         // ...
 
@@ -365,9 +309,9 @@ namespace GL
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        glUniform1i(
-            raytracing_scene_texture_uniform_location,
-            2);
+        //glUniform1i(
+        //    raytracing_scene_texture_uniform_location,
+        //    2);
 
         // ...
 
@@ -447,20 +391,20 @@ namespace GL
             view,
             scale);
 
-        glUseProgram(
-            frontbuffer_shader_program); 
+        //glUseProgram(
+        //    frontbuffer_shader_program); 
 
-        glUniformMatrix4fv(
-            frontbuffer_projection_uniform_location,
-            1,
-            false,
-            &proj[0][0]);
+        //glUniformMatrix4fv(
+        //    frontbuffer_projection_uniform_location,
+        //    1,
+        //    false,
+        //    &proj[0][0]);
 
-        glUniformMatrix4fv(
-            frontbuffer_view_uniform_location,
-            1,
-            false,
-            &view[0][0]);
+        //glUniformMatrix4fv(
+        //    frontbuffer_view_uniform_location,
+        //    1,
+        //    false,
+        //    &view[0][0]);
 
         glActiveTexture(
             GL_TEXTURE0);
@@ -477,9 +421,9 @@ namespace GL
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        glUniform1i(
-            frontbuffer_texture_uniform_location,
-            0);
+        //glUniform1i(
+        //    frontbuffer_texture_uniform_location,
+        //    0);
 
         DrawQuad();
 
@@ -499,25 +443,7 @@ namespace GL
             GL_ARRAY_BUFFER,
             quad_vertex_buffer);
 
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(
-            frontbuffer_position_attribute_location,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            5 * sizeof(GLfloat),
-            (GLvoid*)0);
-
-        glEnableVertexAttribArray(1);
-
-        glVertexAttribPointer(
-            frontbuffer_texcoord_attribute_location,
-            2,
-            GL_FLOAT,
-            GL_FALSE,
-            5 * sizeof(GLfloat),
-            (GLvoid*)(3 * sizeof(GLfloat)));
+        // TODO bind shader attributes
 
         glBindBuffer(
             GL_ELEMENT_ARRAY_BUFFER,
