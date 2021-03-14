@@ -7,6 +7,7 @@
 
 #include "OpenGL.hpp"
 #include "Shader.hpp"
+#include "Descriptor.hpp"
 #include "Texture2D.hpp"
 #include "UniformBuffer.hpp"
 #include "FrameBuffer.hpp"
@@ -54,6 +55,9 @@ namespace GL
         Shader frontbuffer_shader;
         Shader raytracing_shader;
         Shader environment_shader;
+
+        Descriptor frontbuffer_set_0;
+        Descriptor raytracing_set_0;
 
         void DrawQuad(Shader& shader);
 

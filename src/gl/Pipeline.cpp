@@ -37,6 +37,9 @@ namespace GL
         frontbuffer_shader.Link();
         environment_shader.Link();
 
+        Descriptor environment_set_0;
+        environment_shader.Set(environment_set_0, 0);
+
         quad_vertex_buffer = GL::GenBuffer(
             quad_vertices_data);
 
@@ -137,6 +140,16 @@ namespace GL
             framebuffer_height,
             true);
 
+        frontbuffer_set_0.SetSampler2D("tex", *framebuffer);
+        frontbuffer_shader.Set(frontbuffer_set_0, 0);
+
+        raytracing_set_0.SetUniformBlock("camera", *camera_uniforms);
+        raytracing_set_0.SetUniformBlock("scene", *scene_uniforms);
+        raytracing_set_0.SetSampler2DArray("rand_sampler", *noise);
+        raytracing_set_0.SetSampler2D("scene_sampler", *scene);
+        raytracing_set_0.SetSampler2D("environment_sampler", *environment);
+        raytracing_shader.Set(raytracing_set_0, 0);
+
         GL::CheckError();
     }
 
@@ -216,8 +229,6 @@ namespace GL
             framebuffer->Width(),
             framebuffer->Height());
 
-        raytracing_shader.BindAttributes();
-
         camera->Validate();
         camera_uniforms->object.view =
             camera->View();
@@ -233,9 +244,18 @@ namespace GL
 
         scene_uniforms->Update();
 
-        // ...
-
         DrawQuad(raytracing_shader);
+
+        glBindTexture(
+            GL_TEXTURE_2D,
+            NULL);
+
+        glUseProgram(
+            NULL);
+
+        glBindFramebuffer(
+            GL_FRAMEBUFFER,
+            0);
 
         // Render to front buffer
 
@@ -301,8 +321,6 @@ namespace GL
             scale);
 
         DrawQuad(frontbuffer_shader);
-
-        GL::CheckError();
     }
 
     void Pipeline::DrawQuad(Shader& shader)
@@ -315,7 +333,7 @@ namespace GL
             GL_ELEMENT_ARRAY_BUFFER,
             quad_index_buffer);
 
-        shader.BindAttributes();
+        shader.Bind(0);
 
         glDrawElements(
             GL_TRIANGLES,

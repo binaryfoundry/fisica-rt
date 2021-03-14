@@ -49,8 +49,6 @@
         int scene_padding_2;
     };
 
-    uniform vec4 test;
-
     layout(location = 0) out vec4 out_color;
 
     const float t_min = 0.003;

@@ -36,6 +36,8 @@ public:
         const std::string program);
 
     std::vector<TypePair> attributes;
-    std::vector<TypePair> uniforms;
+    std::vector<TypePair> uniform_sampler2Ds;
+    std::vector<TypePair> uniform_sampler2D_arrays;
     std::vector<UniformBlock> uniform_blocks;
+    std::vector<TypePair> uniform_mat4s;
 };

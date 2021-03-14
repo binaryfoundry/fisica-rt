@@ -223,10 +223,32 @@ void Parser::Parse(
         case ParseMode::UNIFORM:
             if (token.value == ";")
             {
-                uniforms.push_back({
-                    state.type,
-                    state.name
-                });
+                if (state.type == "sampler2D")
+                {
+                    uniform_sampler2Ds.push_back({
+                        state.type,
+                        state.name
+                    });
+                }
+                else if (state.type == "sampler2DArray")
+                {
+                    uniform_sampler2D_arrays.push_back({
+                        state.type,
+                        state.name
+                    });
+                }
+                else if (state.type == "mat4")
+                {
+                    uniform_mat4s.push_back({
+                        state.type,
+                        state.name
+                    });
+                }
+                else
+                {
+                    throw std::runtime_error(
+                        "Unsupported uniform type.");
+                }
 
                 ClearState();
             }

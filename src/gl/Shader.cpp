@@ -47,8 +47,11 @@ namespace GL
 
         attributes_total_size = 0;
         attribute_locations.clear();
-        uniform_locations.clear();
+        sampler2D_locations.clear();
+        sampler2D_array_locations.clear();
         uniform_block_locations.clear();
+
+        descriptor_sets.clear();
 
         for (auto& attribute : vertex_info.attributes)
         {
@@ -62,19 +65,37 @@ namespace GL
                 gl_shader_handle,
                 name.c_str());
 
+            if (location == std::numeric_limits<GLuint>::max())
+            {
+                // TODO print warning
+                continue;
+            }
+
             attribute_locations[location] = size;
         }
 
-        for (auto& uniform : fragment_info.uniforms)
+        for (auto& sampler : fragment_info.uniform_sampler2Ds)
         {
-            std::string type = std::get<0>(uniform);
-            std::string name = std::get<1>(uniform);
+            std::string type = std::get<0>(sampler);
+            std::string name = std::get<1>(sampler);
 
             GLuint location = glGetUniformLocation(
                 gl_shader_handle,
                 name.c_str());
 
-            uniform_locations[name] = location;
+            sampler2D_locations[name] = location;
+        }
+
+        for (auto& sampler : fragment_info.uniform_sampler2D_arrays)
+        {
+            std::string type = std::get<0>(sampler);
+            std::string name = std::get<1>(sampler);
+
+            GLuint location = glGetUniformLocation(
+                gl_shader_handle,
+                name.c_str());
+
+            sampler2D_array_locations[name] = location;
         }
 
         for (auto& uniform_block : fragment_info.uniform_blocks)
@@ -86,6 +107,18 @@ namespace GL
                 name.c_str());
 
             uniform_block_locations[name] = location;
+        }
+
+        for (auto& uniform : vertex_info.uniform_mat4s)
+        {
+            std::string type = std::get<0>(uniform);
+            std::string name = std::get<1>(uniform);
+
+            GLuint location = glGetUniformLocation(
+                gl_shader_handle,
+                name.c_str());
+
+            uniform_mat4_locations[name] = location;
         }
     }
 
@@ -100,10 +133,105 @@ namespace GL
         initialized = false;
     }
 
-    void Shader::BindAttributes()
+    void Shader::Set(
+        Descriptor& descriptor,
+        uint32_t index)
     {
+        DescriptorSet set;
+
+        for (auto& texture : descriptor.sampler2Ds)
+        {
+            std::string name = texture.first;
+            GLuint handle = texture.second;
+
+            if (sampler2D_locations.find(name) ==
+                sampler2D_locations.end())
+            {
+                throw new std::runtime_error(
+                    "No matching uniform found");
+            }
+
+            GLuint location = sampler2D_locations.at(
+                name);
+
+            if (location == std::numeric_limits<GLuint>::max())
+            {
+                // TODO print warning
+                continue;
+            }
+
+            set.sampler2Ds.push_back({
+                location,
+                handle
+            });
+        }
+
+        for (auto& texture : descriptor.sampler2D_arrays)
+        {
+            std::string name = texture.first;
+            GLuint handle = texture.second;
+
+            if (sampler2D_array_locations.find(name) ==
+                sampler2D_array_locations.end())
+            {
+                throw new std::runtime_error(
+                    "No matching uniform found");
+            }
+
+            GLuint location = sampler2D_array_locations.at(
+                name);
+
+            if (location == std::numeric_limits<GLuint>::max())
+            {
+                // TODO print warning
+                continue;
+            }
+
+            set.sampler2D_arrays.push_back({
+                location,
+                handle
+            });
+        }
+
+        for (auto& ubo : descriptor.uniform_blocks)
+        {
+            std::string name = ubo.first;
+            GLuint handle = ubo.second;
+
+            if (uniform_block_locations.find(name) ==
+                uniform_block_locations.end())
+            {
+                throw new std::runtime_error(
+                    "No matching uniform block found");
+            }
+
+            GLuint location = uniform_block_locations.at(
+                name);
+
+            if (location == std::numeric_limits<GLuint>::max())
+            {
+                // TODO print warning
+                continue;
+            }
+
+            set.uniform_blocks.push_back({
+                location,
+                handle
+            });
+        }
+
+        descriptor_sets[index] = set;
+    }
+
+    void Shader::Bind(
+        uint32_t descriptor_set_index)
+    {
+        GL::CheckError();
+
         glUseProgram(
             gl_shader_handle);
+
+        GL::CheckError();
 
         GLuint accumulated_size = 0;
 
@@ -125,5 +253,99 @@ namespace GL
 
             accumulated_size += size;
         }
+
+        GL::CheckError();
+
+        if (descriptor_sets.find(descriptor_set_index) ==
+            descriptor_sets.end())
+        {
+            throw new std::runtime_error(
+                "No matching descriptor set found");
+        }
+
+        uint32_t sampler_count = 0;
+        DescriptorSet& set = descriptor_sets[descriptor_set_index];
+
+        for (auto& texture : set.sampler2Ds)
+        {
+            GLuint location = std::get<0>(texture);
+            GLuint handle = std::get<1>(texture);
+
+            glActiveTexture(
+                GL_TEXTURE0 + sampler_count);
+
+            glBindTexture(
+                GL_TEXTURE_2D,
+                handle);
+
+            // TODO texture parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+            glUniform1i(
+                location,
+                sampler_count);
+
+            sampler_count++;
+        }
+
+        GL::CheckError();
+
+        for (auto& texture : set.sampler2D_arrays)
+        {
+            GLuint location = std::get<0>(texture);
+            GLuint handle = std::get<1>(texture);
+
+            glActiveTexture(
+                GL_TEXTURE0 + sampler_count);
+
+            glBindTexture(
+                GL_TEXTURE_2D_ARRAY,
+                handle);
+
+            // TODO texture parameters
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+            glUniform1i(
+                location,
+                sampler_count);
+
+            sampler_count++;
+        }
+
+        for (auto& ubo : set.uniform_blocks)
+        {
+            GLuint location = std::get<0>(ubo);
+            GLuint handle = std::get<1>(ubo);
+
+            glBindBufferBase(
+                GL_UNIFORM_BUFFER,
+                location,
+                handle);
+
+            glUniformBlockBinding(
+                gl_shader_handle,
+                location,
+                location);
+        }
+
+        /*
+        glUniformMatrix4fv(
+            frontbuffer_projection_uniform_location,
+            1,
+            false,
+            &proj[0][0]);
+
+        glUniformMatrix4fv(
+            frontbuffer_view_uniform_location,
+            1,
+            false,
+            &view[0][0]);
+            */
     }
 }

@@ -1,21 +1,37 @@
 #pragma once
 
 #include "OpenGL.hpp"
+#include "Descriptor.hpp"
 
 #include <map>
+#include <tuple>
+#include <vector>
 #include <string>
 
 namespace GL
 {
+    class DescriptorSet
+    {
+    public:
+        std::vector<std::tuple<GLuint, GLuint>> sampler2Ds;
+        std::vector<std::tuple<GLuint, GLuint>> sampler2D_arrays;
+        std::vector<std::tuple<GLuint, GLuint>> uniform_blocks;
+    };
+
     class Shader
     {
     private:
         GLuint gl_shader_handle;
-        std::map<GLuint, GLuint> attribute_locations;
-        std::map<std::string, GLuint> uniform_locations;
-        std::map<std::string, GLuint> uniform_block_locations;
+
+        std::unordered_map<uint32_t, DescriptorSet> descriptor_sets;
 
         uint16_t attributes_total_size = 0;
+        std::map<GLuint, GLuint> attribute_locations;
+
+        std::map<std::string, GLuint> sampler2D_locations;
+        std::map<std::string, GLuint> sampler2D_array_locations;
+        std::map<std::string, GLuint> uniform_block_locations;
+        std::map<std::string, GLuint> uniform_mat4_locations;
 
         bool initialized = false;
 
@@ -28,6 +44,11 @@ namespace GL
         void Link(std::string additional_defines = "");
         void Delete();
 
-        void BindAttributes();
+        void Set(
+            Descriptor& descriptor,
+            uint32_t index);
+
+        void Bind(
+            uint32_t descriptor_set_index);
     };
 }
