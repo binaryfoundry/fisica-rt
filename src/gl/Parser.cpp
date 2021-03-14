@@ -309,13 +309,8 @@ void Parser::Parse(
         case ParseMode::BUFFER:
             if (token.value == ";")
             {
-                //uniform_block_list.push_back({
-                //    UniformBlockType::BUFFER,
-                //    current_shader_block_name,
-                //    current_uniform_list
-                //});
-
-                assert(false);
+                throw std::runtime_error(
+                    "GLSL Buffer not supported.");
 
                 ClearState();
             }
