@@ -139,10 +139,10 @@ namespace GL
     {
         DescriptorSet set;
 
-        for (auto& texture : descriptor.sampler2Ds)
+        for (auto& sampler : descriptor.sampler2Ds)
         {
-            std::string name = texture.first;
-            GLuint handle = texture.second;
+            std::string name = sampler.first;
+            SamplerDescriptor& desc = sampler.second;
 
             if (sampler2D_locations.find(name) ==
                 sampler2D_locations.end())
@@ -162,14 +162,14 @@ namespace GL
 
             set.sampler2Ds.push_back({
                 location,
-                handle
+                desc
             });
         }
 
-        for (auto& texture : descriptor.sampler2D_arrays)
+        for (auto& sampler : descriptor.sampler2D_arrays)
         {
-            std::string name = texture.first;
-            GLuint handle = texture.second;
+            std::string name = sampler.first;
+            SamplerDescriptor& desc = sampler.second;
 
             if (sampler2D_array_locations.find(name) ==
                 sampler2D_array_locations.end())
@@ -189,7 +189,7 @@ namespace GL
 
             set.sampler2D_arrays.push_back({
                 location,
-                handle
+                desc
             });
         }
 
@@ -296,20 +296,39 @@ namespace GL
         for (auto& texture : set.sampler2Ds)
         {
             GLuint location = std::get<0>(texture);
-            GLuint handle = std::get<1>(texture);
+            SamplerDescriptor& desc = std::get<1>(texture);
 
             glActiveTexture(
                 GL_TEXTURE0 + sampler_count);
 
             glBindTexture(
                 GL_TEXTURE_2D,
-                handle);
+                desc.handle);
 
-            // TODO texture parameters
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(
+                GL_TEXTURE_2D,
+                GL_TEXTURE_MIN_FILTER,
+                desc.min_filter);
+
+            glTexParameteri(
+                GL_TEXTURE_2D,
+                GL_TEXTURE_MAG_FILTER,
+                desc.mag_filter);
+
+            glTexParameteri(
+                GL_TEXTURE_2D,
+                GL_TEXTURE_WRAP_S,
+                desc.wrap_s);
+
+            glTexParameteri(
+                GL_TEXTURE_2D,
+                GL_TEXTURE_WRAP_T,
+                desc.wrap_t);
+
+            glTexParameteri(
+                GL_TEXTURE_2D,
+                GL_TEXTURE_WRAP_R,
+                desc.wrap_r);
 
             glUniform1i(
                 location,
@@ -323,20 +342,34 @@ namespace GL
         for (auto& texture : set.sampler2D_arrays)
         {
             GLuint location = std::get<0>(texture);
-            GLuint handle = std::get<1>(texture);
+            SamplerDescriptor& desc = std::get<1>(texture);
 
             glActiveTexture(
                 GL_TEXTURE0 + sampler_count);
 
             glBindTexture(
                 GL_TEXTURE_2D_ARRAY,
-                handle);
+                desc.handle);
 
-            // TODO texture parameters
-            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(
+                GL_TEXTURE_2D,
+                GL_TEXTURE_MAG_FILTER,
+                desc.mag_filter);
+
+            glTexParameteri(
+                GL_TEXTURE_2D,
+                GL_TEXTURE_WRAP_S,
+                desc.wrap_s);
+
+            glTexParameteri(
+                GL_TEXTURE_2D,
+                GL_TEXTURE_WRAP_T,
+                desc.wrap_t);
+
+            glTexParameteri(
+                GL_TEXTURE_2D,
+                GL_TEXTURE_WRAP_R,
+                desc.wrap_r);
 
             glUniform1i(
                 location,

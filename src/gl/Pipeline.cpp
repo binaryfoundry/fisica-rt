@@ -150,7 +150,11 @@ namespace GL
 
         frontbuffer_set_0.SetSampler2D(
             "tex",
-            *framebuffer);
+            *framebuffer,
+            GL_NEAREST,
+            GL_NEAREST,
+            GL_CLAMP_TO_EDGE,
+            GL_CLAMP_TO_EDGE);
 
         frontbuffer_set_0.SetUniformMat4(
             "view",
@@ -174,15 +178,27 @@ namespace GL
 
         raytracing_set_0.SetSampler2DArray(
             "rand_sampler",
-            *noise);
+            *noise,
+            GL_NEAREST,
+            GL_NEAREST,
+            GL_REPEAT,
+            GL_REPEAT);
 
         raytracing_set_0.SetSampler2D(
             "scene_sampler",
-            *scene);
+            *scene,
+            GL_NEAREST,
+            GL_NEAREST,
+            GL_CLAMP_TO_EDGE,
+            GL_CLAMP_TO_EDGE);
 
         raytracing_set_0.SetSampler2D(
             "environment_sampler",
-            *environment);
+            *environment,
+            GL_LINEAR,
+            GL_LINEAR,
+            GL_REPEAT,
+            GL_REPEAT);
 
         raytracing_shader.Set(
             raytracing_set_0,

@@ -13,8 +13,8 @@ namespace GL
     class DescriptorSet
     {
     public:
-        std::vector<std::tuple<GLuint, GLuint>> sampler2Ds;
-        std::vector<std::tuple<GLuint, GLuint>> sampler2D_arrays;
+        std::vector<std::tuple<GLuint, SamplerDescriptor>> sampler2Ds;
+        std::vector<std::tuple<GLuint, SamplerDescriptor>> sampler2D_arrays;
         std::vector<std::tuple<GLuint, GLuint>> uniform_blocks;
         std::vector<std::tuple<GLuint, glm::mat4*>> uniform_mat4s;
     };

@@ -11,26 +11,60 @@ using namespace Properties;
 
 namespace GL
 {
+    struct SamplerDescriptor
+    {
+        GLuint handle;
+        GLuint min_filter;
+        GLuint mag_filter;
+        GLuint wrap_s;
+        GLuint wrap_t;
+        GLuint wrap_r;
+    };
+
     class Descriptor
     {
     public:
-        std::map<std::string, GLuint> sampler2Ds;
-        std::map<std::string, GLuint> sampler2D_arrays;
+        std::map<std::string, SamplerDescriptor> sampler2Ds;
+        std::map<std::string, SamplerDescriptor> sampler2D_arrays;
         std::map<std::string, GLuint> uniform_blocks;
         std::map<std::string, glm::mat4*> uniform_mat4s;
 
         void SetSampler2D(
             std::string name,
-            GLTextureResource& texture)
+            GLTextureResource& texture,
+            GLuint min_filter,
+            GLuint mag_filter,
+            GLuint wrap_s,
+            GLuint wrap_t,
+            GLuint wrap_r = GL_REPEAT)
         {
-            sampler2Ds[name] = texture.gl_texture_handle;
+            sampler2Ds[name] = {
+                texture.gl_texture_handle,
+                min_filter,
+                mag_filter,
+                wrap_s,
+                wrap_t,
+                wrap_r
+            };
         }
 
         void SetSampler2DArray(
             std::string name,
-            GLTextureResource& texture)
+            GLTextureResource& texture,
+            GLuint min_filter,
+            GLuint mag_filter,
+            GLuint wrap_s,
+            GLuint wrap_t,
+            GLuint wrap_r = GL_REPEAT)
         {
-            sampler2D_arrays[name] = texture.gl_texture_handle;
+            sampler2D_arrays[name] = {
+                texture.gl_texture_handle,
+                min_filter,
+                mag_filter,
+                wrap_s,
+                wrap_t,
+                wrap_r
+            };
         }
 
         void SetUniformBlock(
