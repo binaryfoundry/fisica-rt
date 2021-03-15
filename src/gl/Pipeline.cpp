@@ -296,12 +296,21 @@ namespace GL
             static_cast<float>(framebuffer->Width()) /
             static_cast<float>(framebuffer->Height());
 
-        const float aspect = window_aspect / framebuffer_ratio;
-        const bool wide = window_width / framebuffer_ratio > window_height;
+        const float aspect =
+            window_aspect / framebuffer_ratio;
+
+        const bool wide =
+            window_width / framebuffer_ratio > window_height;
+
+        const glm::vec2 h_scale = glm::vec2(
+            std::floor(window_width / aspect), window_height);
+
+        const glm::vec2 v_scale = glm::vec2(
+            window_width, std::floor(window_height * aspect));
 
         glm::vec3 scale = wide ?
-            glm::vec3(std::floor(window_width / aspect), window_height, 1) :
-            glm::vec3(window_width, std::floor(window_height * aspect), 1);
+            glm::vec3(h_scale, 1) :
+            glm::vec3(v_scale, 1);
 
         if (!upscale)
         {
