@@ -36,22 +36,6 @@ namespace GL
             256,
             256,
             true);
-
-        glBindFramebuffer(
-            GL_FRAMEBUFFER,
-            environment->gl_frame_handle);
-
-        glViewport(
-            0, 0,
-            environment->Width(),
-            environment->Height());
-
-        DrawQuad(
-            environment_shader);
-
-        glBindFramebuffer(
-            GL_FRAMEBUFFER,
-            0);
     }
 
     void Pipeline::Deinit()
@@ -231,6 +215,27 @@ namespace GL
     {
         glDisable(GL_CULL_FACE);
         glCullFace(GL_BACK);
+
+        if (render_environment)
+        {
+            glBindFramebuffer(
+                GL_FRAMEBUFFER,
+                environment->gl_frame_handle);
+
+            glViewport(
+                0, 0,
+                environment->Width(),
+                environment->Height());
+
+            DrawQuad(
+                environment_shader);
+
+            glBindFramebuffer(
+                GL_FRAMEBUFFER,
+                0);
+
+            render_environment = false;
+        }
 
         scene->Update();
 

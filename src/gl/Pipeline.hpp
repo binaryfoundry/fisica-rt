@@ -37,6 +37,7 @@ namespace GL
     {
     private:
         bool initialized = false;
+        bool render_environment = true;
 
         const uint32_t scene_data_width = 8;
         const uint32_t scene_data_height = 1024;
