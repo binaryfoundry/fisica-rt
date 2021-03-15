@@ -18,7 +18,8 @@ namespace GL
             // Must be padded to 16 byte multiples
             assert(sizeof(T) % 16 == 0);
 
-            glGenBuffers(1, &gl_buffer_handle);
+            glGenBuffers(
+                1, &gl_buffer_handle);
         }
 
         virtual ~UniformBuffer()
@@ -30,7 +31,8 @@ namespace GL
         {
             if (created)
             {
-                glDeleteBuffers(1, &gl_buffer_handle);
+                glDeleteBuffers(
+                    1, &gl_buffer_handle);
             }
 
             created = false;
