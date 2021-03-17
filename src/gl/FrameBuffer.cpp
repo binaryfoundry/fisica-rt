@@ -114,6 +114,19 @@ namespace GL
         created = false;
     }
 
+    template <typename T>
+    void FrameBuffer<T>::Bind()
+    {
+        glBindFramebuffer(
+            GL_FRAMEBUFFER,
+            gl_frame_handle);
+
+        glViewport(
+            0, 0,
+            width,
+            height);
+    }
+
     template<>
     void FrameBuffer<TexDataByteRGBA>::SetFormat()
     {

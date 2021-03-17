@@ -207,9 +207,28 @@ namespace GL
             num_geometry);
     }
 
+    void Pipeline::FrontBuffer()
+    {
+        glBindFramebuffer(
+            GL_FRAMEBUFFER,
+            0);
+
+        glViewport(
+            0,
+            0,
+            window_width,
+            window_height);
+    }
+
+    void Pipeline::SetWindowSize(
+        const uint32_t window_width_,
+        const uint32_t window_height_)
+    {
+        window_width = window_width_;
+        window_height = window_height_;
+    }
+
     void Pipeline::Draw(
-        const uint32_t window_width,
-        const uint32_t window_height,
         const std::unique_ptr<Camera>& camera,
         const bool upscale)
     {
@@ -218,21 +237,12 @@ namespace GL
 
         if (render_environment)
         {
-            glBindFramebuffer(
-                GL_FRAMEBUFFER,
-                environment->gl_frame_handle);
-
-            glViewport(
-                0, 0,
-                environment->Width(),
-                environment->Height());
+            environment->Bind();
 
             DrawQuad(
                 environment_shader);
 
-            glBindFramebuffer(
-                GL_FRAMEBUFFER,
-                0);
+            FrontBuffer();
 
             render_environment = false;
         }
@@ -241,14 +251,7 @@ namespace GL
 
         // Draw to FBO
 
-        glBindFramebuffer(
-            GL_FRAMEBUFFER,
-            framebuffer->gl_frame_handle);
-
-        glViewport(
-            0, 0,
-            framebuffer->Width(),
-            framebuffer->Height());
+        framebuffer->Bind();
 
         camera->Validate();
         camera_uniforms->object.view =
@@ -268,17 +271,9 @@ namespace GL
         DrawQuad(
             raytracing_shader);
 
-        glBindFramebuffer(
-            GL_FRAMEBUFFER,
-            0);
-
         // Render to front buffer
 
-        glViewport(
-            0,
-            0,
-            window_width,
-            window_height);
+        FrontBuffer();
 
         glClearColor(
             0, 0, 0, 1);

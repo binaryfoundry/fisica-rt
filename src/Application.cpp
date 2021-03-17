@@ -222,9 +222,11 @@ void Application::Update()
 
     pipeline.Update(geometry);
 
-    pipeline.Draw(
+    pipeline.SetWindowSize(
         window_width,
-        window_height,
+        window_height);
+
+    pipeline.Draw(
         camera,
         upscale);
 

@@ -32,6 +32,8 @@ namespace GL
 
         void Delete();
 
+        void Bind();
+
         uint32_t Width() const
         {
             return width;

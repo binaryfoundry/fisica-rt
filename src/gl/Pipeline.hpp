@@ -36,6 +36,9 @@ namespace GL
     class Pipeline
     {
     private:
+        uint32_t window_width = 0;
+        uint32_t window_height = 0;
+
         bool initialized = false;
         bool render_environment = true;
 
@@ -61,6 +64,7 @@ namespace GL
         Descriptor raytracing_set_0;
 
         void DrawQuad(Shader& shader);
+        void FrontBuffer();
 
     public:
         Pipeline();
@@ -80,9 +84,11 @@ namespace GL
         void Update(
             const std::vector<Sphere>& geometry);
 
+        void SetWindowSize(
+            const uint32_t window_width_,
+            const uint32_t window_height_);
+
         void Draw(
-            const uint32_t window_width,
-            const uint32_t window_height,
             const std::unique_ptr<Camera>& camera,
             const bool upscale);
     };
