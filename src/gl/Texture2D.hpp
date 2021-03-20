@@ -5,6 +5,15 @@
 #include <vector>
 #include <array>
 
+// TODO generic location
+enum class Filter
+{
+    NEAREST,
+    LINEAR,
+    REPEAT,
+    CLAMP_TO_EDGE
+};
+
 namespace GL
 {
     template <typename T, size_t E = 1>

@@ -5,7 +5,6 @@
 
 #include "../math/Math.hpp"
 
-#include "../gl/OpenGL.hpp"
 #include "../gl/Pipeline.hpp"
 #include "../gl/Shader.hpp"
 #include "../gl/Descriptor.hpp"

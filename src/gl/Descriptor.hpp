@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "OpenGL.hpp"
+#include "Texture2D.hpp"
 
 #include "../properties/Property.hpp"
 
@@ -14,11 +15,11 @@ namespace GL
     struct SamplerDescriptor
     {
         GLuint handle;
-        GLuint min_filter;
-        GLuint mag_filter;
-        GLuint wrap_s;
-        GLuint wrap_t;
-        GLuint wrap_r;
+        Filter min_filter;
+        Filter mag_filter;
+        Filter wrap_s;
+        Filter wrap_t;
+        Filter wrap_r;
     };
 
     class Descriptor
@@ -33,11 +34,11 @@ namespace GL
         void SetSampler2D(
             std::string name,
             GLTextureResource& texture,
-            GLuint min_filter,
-            GLuint mag_filter,
-            GLuint wrap_s,
-            GLuint wrap_t,
-            GLuint wrap_r = GL_REPEAT)
+            Filter min_filter,
+            Filter mag_filter,
+            Filter wrap_s,
+            Filter wrap_t,
+            Filter wrap_r = Filter::REPEAT)
         {
             sampler2Ds[name] = {
                 texture.gl_texture_handle,
@@ -52,11 +53,11 @@ namespace GL
         void SetSampler2DArray(
             std::string name,
             GLTextureResource& texture,
-            GLuint min_filter,
-            GLuint mag_filter,
-            GLuint wrap_s,
-            GLuint wrap_t,
-            GLuint wrap_r = GL_REPEAT)
+            Filter min_filter,
+            Filter mag_filter,
+            Filter wrap_s,
+            Filter wrap_t,
+            Filter wrap_r = Filter::REPEAT)
         {
             sampler2D_arrays[name] = {
                 texture.gl_texture_handle,

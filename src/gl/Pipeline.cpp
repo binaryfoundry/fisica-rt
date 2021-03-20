@@ -26,6 +26,12 @@ namespace GL
     void Pipeline::DrawQuad(
         Shader& shader)
     {
+        glDisable(
+            GL_CULL_FACE);
+
+        glCullFace(
+            GL_BACK);
+
         glBindBuffer(
             GL_ARRAY_BUFFER,
             quad_vertex_buffer);
@@ -44,5 +50,16 @@ namespace GL
 
         glUseProgram(
             NULL);
+    }
+
+    void Pipeline::Clear()
+    {
+        glClearColor(
+            0, 0, 0, 1);
+
+        glClear(
+            GL_COLOR_BUFFER_BIT |
+            GL_DEPTH_BUFFER_BIT |
+            GL_STENCIL_BUFFER_BIT);
     }
 }

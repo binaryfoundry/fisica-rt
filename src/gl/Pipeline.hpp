@@ -24,6 +24,7 @@ namespace GL
 
         void DrawQuad(Shader& shader);
         void FrontBuffer();
+        void Clear();
 
     public:
         virtual void Init() = 0;

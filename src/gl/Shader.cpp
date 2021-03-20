@@ -1,6 +1,7 @@
 #include "Shader.hpp"
 
 #include "Parser.hpp"
+#include "Texture2D.hpp"
 #include "../File.hpp"
 
 const std::map<std::string, uint16_t> attribute_size_map =
@@ -11,6 +12,25 @@ const std::map<std::string, uint16_t> attribute_size_map =
 };
 
 constexpr GLuint gl_not_found = std::numeric_limits<GLuint>::max();
+
+GLint filter_gl_enum(Filter filter)
+{
+    switch (filter)
+    {
+    case Filter::NEAREST:
+        return GL_NEAREST;
+    case Filter::LINEAR:
+        return GL_LINEAR;
+    case Filter::REPEAT:
+        return GL_REPEAT;
+    case Filter::CLAMP_TO_EDGE:
+        return GL_CLAMP_TO_EDGE;
+    }
+
+    assert(false);
+
+    return 0;
+}
 
 namespace GL
 {
@@ -396,27 +416,27 @@ namespace GL
             glTexParameteri(
                 GL_TEXTURE_2D,
                 GL_TEXTURE_MIN_FILTER,
-                desc.min_filter);
+                filter_gl_enum(desc.min_filter));
 
             glTexParameteri(
                 GL_TEXTURE_2D,
                 GL_TEXTURE_MAG_FILTER,
-                desc.mag_filter);
+                filter_gl_enum(desc.mag_filter));
 
             glTexParameteri(
                 GL_TEXTURE_2D,
                 GL_TEXTURE_WRAP_S,
-                desc.wrap_s);
+                filter_gl_enum(desc.wrap_s));
 
             glTexParameteri(
                 GL_TEXTURE_2D,
                 GL_TEXTURE_WRAP_T,
-                desc.wrap_t);
+                filter_gl_enum(desc.wrap_t));
 
             glTexParameteri(
                 GL_TEXTURE_2D,
                 GL_TEXTURE_WRAP_R,
-                desc.wrap_r);
+                filter_gl_enum(desc.wrap_r));
 
             glUniform1i(
                 location,
@@ -442,22 +462,22 @@ namespace GL
             glTexParameteri(
                 GL_TEXTURE_2D,
                 GL_TEXTURE_MAG_FILTER,
-                desc.mag_filter);
+                filter_gl_enum(desc.mag_filter));
 
             glTexParameteri(
                 GL_TEXTURE_2D,
                 GL_TEXTURE_WRAP_S,
-                desc.wrap_s);
+                filter_gl_enum(desc.wrap_s));
 
             glTexParameteri(
                 GL_TEXTURE_2D,
                 GL_TEXTURE_WRAP_T,
-                desc.wrap_t);
+                filter_gl_enum(desc.wrap_t));
 
             glTexParameteri(
                 GL_TEXTURE_2D,
                 GL_TEXTURE_WRAP_R,
-                desc.wrap_r);
+                filter_gl_enum(desc.wrap_r));
 
             glUniform1i(
                 location,

@@ -97,10 +97,10 @@ namespace Pipelines
         frontbuffer_set_0.SetSampler2D(
             "tex",
             *framebuffer,
-            GL_NEAREST,
-            GL_NEAREST,
-            GL_CLAMP_TO_EDGE,
-            GL_CLAMP_TO_EDGE);
+            Filter::NEAREST,
+            Filter::NEAREST,
+            Filter::CLAMP_TO_EDGE,
+            Filter::CLAMP_TO_EDGE);
 
         frontbuffer_set_0.SetUniformMat4(
             "view",
@@ -129,26 +129,26 @@ namespace Pipelines
         raytracing_set_0.SetSampler2DArray(
             "rand_sampler",
             *noise,
-            GL_NEAREST,
-            GL_NEAREST,
-            GL_REPEAT,
-            GL_REPEAT);
+            Filter::NEAREST,
+            Filter::NEAREST,
+            Filter::REPEAT,
+            Filter::REPEAT);
 
         raytracing_set_0.SetSampler2D(
             "scene_sampler",
             *scene,
-            GL_NEAREST,
-            GL_NEAREST,
-            GL_CLAMP_TO_EDGE,
-            GL_CLAMP_TO_EDGE);
+            Filter::NEAREST,
+            Filter::NEAREST,
+            Filter::CLAMP_TO_EDGE,
+            Filter::CLAMP_TO_EDGE);
 
         raytracing_set_0.SetSampler2D(
             "environment_sampler",
             *environment,
-            GL_LINEAR,
-            GL_LINEAR,
-            GL_REPEAT,
-            GL_REPEAT);
+            Filter::LINEAR,
+            Filter::LINEAR,
+            Filter::REPEAT,
+            Filter::REPEAT);
 
         raytracing_shader.Set(
             raytracing_set_0,
@@ -220,9 +220,6 @@ namespace Pipelines
         projection = projection_;
         view = view_;
 
-        glDisable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-
         if (render_environment)
         {
             environment->Bind();
@@ -263,13 +260,7 @@ namespace Pipelines
 
         FrontBuffer();
 
-        glClearColor(
-            0, 0, 0, 1);
-
-        glClear(
-            GL_COLOR_BUFFER_BIT |
-            GL_DEPTH_BUFFER_BIT |
-            GL_STENCIL_BUFFER_BIT);
+        Clear();
 
         DrawQuad(
             frontbuffer_shader);
