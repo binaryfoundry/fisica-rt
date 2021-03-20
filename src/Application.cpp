@@ -220,19 +220,84 @@ void Application::Update()
             raytracing_bounces);
     }
 
-    pipeline.Update(geometry);
-
     pipeline.SetWindowSize(
         window_width,
         window_height);
 
+    ViewScale();
+
+    pipeline.Update(
+        geometry);
+
     pipeline.Draw(
         camera,
+        projection,
+        view,
         upscale);
 
     gui.Draw(
         window_width,
         window_height);
+}
+
+void Application::ViewScale()
+{
+    const float window_aspect =
+        static_cast<float>(window_width) /
+        window_height;
+
+    const float framebuffer_ratio =
+        static_cast<float>(raytracing_framebuffer_width) /
+        static_cast<float>(raytracing_framebuffer_height);
+
+    const float aspect =
+        window_aspect / framebuffer_ratio;
+
+    const bool wide =
+        window_width / framebuffer_ratio > window_height;
+
+    const glm::vec2 h_scale = glm::vec2(
+        std::floor(window_width / aspect), window_height);
+
+    const glm::vec2 v_scale = glm::vec2(
+        window_width, std::floor(window_height * aspect));
+
+    glm::vec3 scale = wide ?
+        glm::vec3(h_scale, 1) :
+        glm::vec3(v_scale, 1);
+
+    if (!upscale)
+    {
+        scale.x = std::min<float>(
+            scale.x, static_cast<float>(raytracing_framebuffer_width));
+
+        scale.y = std::min<float>(
+            scale.y, static_cast<float>(raytracing_framebuffer_height));
+    }
+
+    const float hpos =
+        std::round((window_width / 2) - (scale.x / 2));
+
+    const float vpos =
+        std::round((window_height / 2) - (scale.y / 2));
+
+    projection = glm::ortho<float>(
+        0,
+        static_cast<float>(window_width),
+        static_cast<float>(window_height),
+        0,
+        -1.0f,
+        1.0f);
+
+    view = glm::mat4();
+
+    view = glm::translate(
+        view,
+        glm::vec3(hpos, vpos, 0.0f));
+
+    view = glm::scale(
+        view,
+        scale);
 }
 
 bool Application::GuiUpdate()

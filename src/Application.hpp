@@ -35,6 +35,9 @@ private:
     uint32_t raytracing_framebuffer_width = 0;
     uint32_t raytracing_framebuffer_height = 0;
 
+    glm::mat4 projection;
+    glm::mat4 view;
+
     GUI gui;
     Pipelines::Raytracing pipeline;
 
@@ -43,6 +46,7 @@ private:
     std::vector<Sphere> geometry;
     std::unique_ptr<Camera> camera;
 
+    void ViewScale();
     void SetupScene();
     bool GuiUpdate();
 

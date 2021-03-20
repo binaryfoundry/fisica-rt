@@ -209,8 +209,13 @@ namespace Pipelines
 
     void Raytracing::Draw(
         const std::unique_ptr<Camera>& camera,
+        const glm::mat4 projection_,
+        const glm::mat4 view_,
         const bool upscale)
     {
+        projection = projection_;
+        view = view_;
+
         glDisable(GL_CULL_FACE);
         glCullFace(GL_BACK);
 
@@ -261,63 +266,6 @@ namespace Pipelines
             GL_COLOR_BUFFER_BIT |
             GL_DEPTH_BUFFER_BIT |
             GL_STENCIL_BUFFER_BIT);
-
-        const float window_aspect =
-            static_cast<float>(window_width) /
-            window_height;
-
-        const float framebuffer_ratio =
-            static_cast<float>(framebuffer->Width()) /
-            static_cast<float>(framebuffer->Height());
-
-        const float aspect =
-            window_aspect / framebuffer_ratio;
-
-        const bool wide =
-            window_width / framebuffer_ratio > window_height;
-
-        const glm::vec2 h_scale = glm::vec2(
-            std::floor(window_width / aspect), window_height);
-
-        const glm::vec2 v_scale = glm::vec2(
-            window_width, std::floor(window_height * aspect));
-
-        glm::vec3 scale = wide ?
-            glm::vec3(h_scale, 1) :
-            glm::vec3(v_scale, 1);
-
-        if (!upscale)
-        {
-            scale.x = std::min<float>(
-                scale.x, static_cast<float>(framebuffer->Width()));
-
-            scale.y = std::min<float>(
-                scale.y, static_cast<float>(framebuffer->Height()));
-        }
-
-        const float hpos =
-            std::round((window_width / 2) - (scale.x / 2));
-
-        const float vpos =
-            std::round((window_height / 2) - (scale.y / 2));
-
-        projection = glm::ortho<float>(
-            0,
-            static_cast<float>(window_width),
-            static_cast<float>(window_height),
-            0,
-            -1.0f,
-            1.0f);
-
-        view = glm::mat4();
-
-        view = glm::translate(
-            view,
-            glm::vec3(hpos, vpos, 0.0f));
-
-        view = glm::scale(
-            view,
-            scale);
 
         DrawQuad(
             frontbuffer_shader);

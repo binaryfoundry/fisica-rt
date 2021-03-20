@@ -82,6 +82,8 @@ namespace Pipelines
 
         void Draw(
             const std::unique_ptr<Camera>& camera,
+            const glm::mat4 projection,
+            const glm::mat4 view,
             const bool upscale);
     };
 }
