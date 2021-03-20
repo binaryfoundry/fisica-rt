@@ -127,6 +127,18 @@ namespace GL
 
             uniform_mat4_locations[name] = location;
         }
+
+        for (const auto& uniform : fragment_info.uniform_floats)
+        {
+            const std::string type = std::get<0>(uniform);
+            const std::string name = std::get<1>(uniform);
+
+            const GLuint location = glGetUniformLocation(
+                gl_shader_handle,
+                name.c_str());
+
+            uniform_float_locations[name] = location;
+        }
     }
 
     void Shader::Delete()
@@ -249,6 +261,33 @@ namespace GL
             }
 
             set.uniform_mat4s.push_back({
+                location,
+                data
+            });
+        }
+
+        for (const auto& uniform : descriptor.uniform_floats)
+        {
+            const std::string name = uniform.first;
+            float* data = uniform.second;
+
+            if (uniform_float_locations.find(name) ==
+                uniform_float_locations.end())
+            {
+                throw new std::runtime_error(
+                    "No matching uniform found");
+            }
+
+            const GLuint location = uniform_float_locations.at(
+                name);
+
+            if (location == gl_not_found)
+            {
+                // TODO print warning
+                continue;
+            }
+
+            set.uniform_floats.push_back({
                 location,
                 data
             });
@@ -411,6 +450,16 @@ namespace GL
                 1,
                 false,
                 &data[0][0]);
+        }
+
+        for (const auto& uniform : set.uniform_floats)
+        {
+            const GLuint location = std::get<0>(uniform);
+            const GLfloat data = *std::get<1>(uniform);
+
+            glUniform1f(
+                location,
+                data);
         }
     }
 }

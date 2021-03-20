@@ -39,7 +39,7 @@
         mat4 projection;
         vec4 viewport;
         vec4 position;
-        vec4 exposure;
+        vec4 padding_0;
     };
 
     layout(std140) uniform scene{
@@ -330,7 +330,7 @@
         }
         acc /= float(SAMPLES);
 
-        out_color = vec4(acc.xyz * exposure.x , 1.0);
+        out_color = vec4(acc.xyz , 1.0);
     }
 
 #endif

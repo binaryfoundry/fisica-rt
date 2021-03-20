@@ -40,4 +40,5 @@ public:
     std::vector<TypePair> uniform_sampler2D_arrays;
     std::vector<UniformBlock> uniform_blocks;
     std::vector<TypePair> uniform_mat4s;
+    std::vector<TypePair> uniform_floats;
 };

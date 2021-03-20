@@ -28,6 +28,7 @@ namespace GL
         std::map<std::string, SamplerDescriptor> sampler2D_arrays;
         std::map<std::string, GLuint> uniform_blocks;
         std::map<std::string, glm::mat4*> uniform_mat4s;
+        std::map<std::string, float*> uniform_floats;
 
         void SetSampler2D(
             std::string name,
@@ -79,6 +80,13 @@ namespace GL
             glm::mat4* mat4)
         {
             uniform_mat4s[name] = mat4;
+        }
+
+        void SetUniformFloat(
+            std::string name,
+            float* value)
+        {
+            uniform_floats[name] = value;
         }
     };
 }

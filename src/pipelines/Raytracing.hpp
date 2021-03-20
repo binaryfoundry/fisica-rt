@@ -41,6 +41,8 @@ namespace Pipelines
         bool initialized = false;
         bool render_environment = true;
 
+        float exposure = 1.0f;
+
         const uint32_t scene_data_width = 8;
         const uint32_t scene_data_height = 1024;
 

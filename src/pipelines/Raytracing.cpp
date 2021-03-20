@@ -110,6 +110,10 @@ namespace Pipelines
             "projection",
             &projection);
 
+        frontbuffer_set_0.SetUniformFloat(
+            "exposure",
+            &exposure);
+
         frontbuffer_shader.Set(
             frontbuffer_set_0,
             0);
@@ -246,8 +250,6 @@ namespace Pipelines
             camera->viewport;
         camera_uniforms->object.position = glm::vec4(
             camera->position, 1.0f);
-        camera_uniforms->object.exposure = glm::vec4(
-            camera->exposure, 0.0, 0.0, 0.0);
         camera_uniforms->Update();
 
         scene_uniforms->Update();
@@ -256,6 +258,8 @@ namespace Pipelines
             raytracing_shader);
 
         // Render to front buffer
+
+        exposure = camera->exposure;
 
         FrontBuffer();
 

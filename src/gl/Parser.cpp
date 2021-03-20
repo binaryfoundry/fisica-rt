@@ -244,6 +244,13 @@ void Parser::Parse(
                         state.name
                     });
                 }
+                else if (state.type == "float")
+                {
+                    uniform_floats.push_back({
+                        state.type,
+                        state.name
+                    });
+                }
                 else
                 {
                     throw std::runtime_error(

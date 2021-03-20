@@ -23,6 +23,8 @@
     precision mediump float;
     #endif
 
+    uniform float exposure;
+
     in vec2 v_texcoord;
     uniform sampler2D tex;
     layout(location = 0) out vec4 out_color;
@@ -43,7 +45,7 @@
         return a / b;
     }
 
-    vec3 tone_map(vec3 color, float exposure) {
+    vec3 tone_map(vec3 color) {
         color = (color * exposure) * ACESInputMat;
         color = RRTAndODTFit(color);
         color = color * ACESOutputMat;
@@ -57,7 +59,7 @@
 
     void main() {
         vec3 c = texture(tex, v_texcoord).xyz;
-        out_color = vec4(to_gamma_approx(tone_map(c, 1.0f)), 1.0);
+        out_color = vec4(to_gamma_approx(tone_map(c)), 1.0);
     }
 
 #endif

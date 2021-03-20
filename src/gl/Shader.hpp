@@ -17,6 +17,7 @@ namespace GL
         std::vector<std::tuple<GLuint, SamplerDescriptor>> sampler2D_arrays;
         std::vector<std::tuple<GLuint, GLuint>> uniform_blocks;
         std::vector<std::tuple<GLuint, glm::mat4*>> uniform_mat4s;
+        std::vector<std::tuple<GLuint, float*>> uniform_floats;
     };
 
     class Shader
@@ -33,6 +34,7 @@ namespace GL
         std::map<std::string, GLuint> sampler2D_array_locations;
         std::map<std::string, GLuint> uniform_block_locations;
         std::map<std::string, GLuint> uniform_mat4_locations;
+        std::map<std::string, GLuint> uniform_float_locations;
 
         bool initialized = false;
 
