@@ -54,6 +54,8 @@ namespace GL
         sampler2D_locations.clear();
         sampler2D_array_locations.clear();
         uniform_block_locations.clear();
+        uniform_mat4_locations.clear();
+        uniform_float_locations.clear();
 
         descriptor_sets.clear();
 
@@ -81,7 +83,47 @@ namespace GL
             attribute_locations[location] = size;
         }
 
-        for (const auto& sampler : fragment_info.uniform_sampler2Ds)
+        auto uniform_sampler2Ds =
+            vertex_info.uniform_sampler2Ds;
+
+        auto uniform_sampler2D_arrays =
+            vertex_info.uniform_sampler2D_arrays;
+
+        auto uniform_blocks =
+            vertex_info.uniform_blocks;
+
+        auto uniform_mat4s =
+            vertex_info.uniform_mat4s;
+
+        auto uniform_floats =
+            vertex_info.uniform_floats;
+
+        uniform_sampler2Ds.insert(
+            std::end(uniform_sampler2Ds),
+            std::begin(fragment_info.uniform_sampler2Ds),
+            std::end(fragment_info.uniform_sampler2Ds));
+
+        uniform_sampler2D_arrays.insert(
+            std::end(uniform_sampler2D_arrays),
+            std::begin(fragment_info.uniform_sampler2D_arrays),
+            std::end(fragment_info.uniform_sampler2D_arrays));
+
+        uniform_blocks.insert(
+            std::end(uniform_blocks),
+            std::begin(fragment_info.uniform_blocks),
+            std::end(fragment_info.uniform_blocks));
+
+        uniform_mat4s.insert(
+            std::end(uniform_mat4s),
+            std::begin(fragment_info.uniform_mat4s),
+            std::end(fragment_info.uniform_mat4s));
+
+        uniform_floats.insert(
+            std::end(uniform_floats),
+            std::begin(fragment_info.uniform_floats),
+            std::end(fragment_info.uniform_floats));
+
+        for (const auto& sampler : uniform_sampler2Ds)
         {
             const std::string type = std::get<0>(sampler);
             const std::string name = std::get<1>(sampler);
@@ -93,7 +135,7 @@ namespace GL
             sampler2D_locations[name] = location;
         }
 
-        for (const auto& sampler : fragment_info.uniform_sampler2D_arrays)
+        for (const auto& sampler : uniform_sampler2D_arrays)
         {
             const std::string type = std::get<0>(sampler);
             const std::string name = std::get<1>(sampler);
@@ -105,7 +147,7 @@ namespace GL
             sampler2D_array_locations[name] = location;
         }
 
-        for (const auto& uniform_block : fragment_info.uniform_blocks)
+        for (const auto& uniform_block : uniform_blocks)
         {
             const std::string name = uniform_block.name;
 
@@ -116,7 +158,7 @@ namespace GL
             uniform_block_locations[name] = location;
         }
 
-        for (const auto& uniform : vertex_info.uniform_mat4s)
+        for (const auto& uniform : uniform_mat4s)
         {
             const std::string type = std::get<0>(uniform);
             const std::string name = std::get<1>(uniform);
@@ -128,7 +170,7 @@ namespace GL
             uniform_mat4_locations[name] = location;
         }
 
-        for (const auto& uniform : fragment_info.uniform_floats)
+        for (const auto& uniform : uniform_floats)
         {
             const std::string type = std::get<0>(uniform);
             const std::string name = std::get<1>(uniform);
