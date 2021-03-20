@@ -25,6 +25,14 @@ GLint filter_gl_enum(Filter filter)
         return GL_REPEAT;
     case Filter::CLAMP_TO_EDGE:
         return GL_CLAMP_TO_EDGE;
+    case Filter::LINEAR_MIPMAP_LINEAR:
+        return GL_LINEAR_MIPMAP_LINEAR;
+    case Filter::LINEAR_MIPMAP_NEAREST:
+        return GL_LINEAR_MIPMAP_NEAREST;
+    case Filter::NEAREST_MIPMAP_LINEAR:
+        return GL_LINEAR_MIPMAP_LINEAR;
+    case Filter::NEAREST_MIPMAP_NEAREST:
+        return GL_LINEAR_MIPMAP_NEAREST;
     }
 
     assert(false);
