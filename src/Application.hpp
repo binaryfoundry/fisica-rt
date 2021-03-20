@@ -7,6 +7,7 @@
 
 #include "properties/Property.hpp"
 #include "interfaces/IApplication.hpp"
+#include "pipelines/Raytracing.hpp"
 
 #include "gl/ImGui.hpp"
 #include "gl/OpenGL.hpp"
@@ -35,7 +36,7 @@ private:
     uint32_t raytracing_framebuffer_height = 0;
 
     GUI gui;
-    GL::Pipeline pipeline;
+    Pipelines::Raytracing pipeline;
 
     Properties::Property<float> prop;
 

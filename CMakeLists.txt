@@ -42,6 +42,12 @@ set(SOURCES_INTERFACES
 set(HEADERS_INTERFACES
     src/interfaces/IApplication.hpp)
 
+set(SOURCES_PIPELINES
+    src/pipelines/Raytracing.cpp)
+
+set(HEADERS_PIPELINES
+    src/pipelines/Raytracing.hpp)
+
 set(SOURCES_MATH
     src/math/Math.cpp
     src/math/Angles.cpp
@@ -120,6 +126,9 @@ SOURCE_GROUP("Source" FILES ${HEADERS})
 SOURCE_GROUP("Source\\interfaces" FILES ${SOURCES_INTERFACES})
 SOURCE_GROUP("Source\\interfaces" FILES ${HEADERS_INTERFACES})
 
+SOURCE_GROUP("Source\\pipelines" FILES ${SOURCES_PIPELINES})
+SOURCE_GROUP("Source\\pipelines" FILES ${HEADERS_PIPELINES})
+
 SOURCE_GROUP("Source\\math" FILES ${SOURCES_MATH})
 SOURCE_GROUP("Source\\math" FILES ${HEADERS_MATH})
 
@@ -177,6 +186,8 @@ add_executable(
     ${HEADERS}
     ${SOURCES_INTERFACES}
     ${HEADERS_INTERFACES}
+    ${SOURCES_PIPELINES}
+    ${HEADERS_PIPELINES}
     ${SOURCES_MATH}
     ${HEADERS_MATH}
     ${SOURCES_SDL}
