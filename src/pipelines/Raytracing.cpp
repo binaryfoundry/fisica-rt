@@ -149,8 +149,6 @@ namespace Pipelines
         raytracing_shader.Set(
             raytracing_set_0,
             0);
-
-        GL::CheckError();
     }
 
     void Raytracing::DeinitRaytracing()
