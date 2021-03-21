@@ -25,7 +25,7 @@ namespace GL
     GLuint quad_vertex_buffer = 0;
     GLuint quad_index_buffer = 0;
 
-    void CreateQuad()
+    void Init()
     {
         quad_vertex_buffer = GL::GenBuffer(
             quad_vertices_data);
@@ -34,7 +34,7 @@ namespace GL
             quad_indices_data);
     }
 
-    void DeleteQuad()
+    void Deinit()
     {
         glDeleteBuffers(
             1, &quad_vertex_buffer);

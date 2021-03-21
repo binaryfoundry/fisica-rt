@@ -13,8 +13,6 @@ namespace Pipelines
 
     void Raytracing::Init()
     {
-        GL::CreateQuad();
-
         frontbuffer_shader.Load("files/gl/frontbuffer.glsl");
         raytracing_shader.Load("files/gl/raytracing.glsl");
         environment_shader.Load("files/gl/environment.glsl");
@@ -40,8 +38,6 @@ namespace Pipelines
 
     void Raytracing::Deinit()
     {
-        GL::DeleteQuad();
-
         environment->Delete();
         scene->Delete();
         noise->Delete();

@@ -58,6 +58,8 @@ int sdl_init(std::unique_ptr<IApplication>& app)
 
     application->Init();
 
+    GL::Init();
+
     bool done = false;
 
     while (!done)
@@ -77,6 +79,8 @@ int sdl_init(std::unique_ptr<IApplication>& app)
     }
 
     application->Deinit();
+
+    GL::Deinit();
 
     sdl_imgui_destroy();
     SDL_GL_DeleteContext(gl);

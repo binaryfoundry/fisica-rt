@@ -290,11 +290,15 @@ int sdl_init(std::unique_ptr<IApplication>& app)
     sdl_imgui_initialise();
     sdl_init_graphics();
 
+    GL::Init();
+
     application->Init();
 
     sdl_run();
 
     application->Deinit();
+
+    GL::Deinit();
 
     SDL_DestroyWindow(sdl_window);
     SDL_Quit();
