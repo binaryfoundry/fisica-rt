@@ -10,12 +10,16 @@ enum class Filter
 {
     NEAREST,
     LINEAR,
-    REPEAT,
-    CLAMP_TO_EDGE,
     LINEAR_MIPMAP_LINEAR,
     LINEAR_MIPMAP_NEAREST,
     NEAREST_MIPMAP_LINEAR,
     NEAREST_MIPMAP_NEAREST
+};
+
+enum class Wrap
+{
+    REPEAT,
+    CLAMP_TO_EDGE
 };
 
 namespace GL

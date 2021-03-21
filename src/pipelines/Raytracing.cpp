@@ -99,8 +99,8 @@ namespace Pipelines
             *framebuffer,
             Filter::NEAREST,
             Filter::NEAREST,
-            Filter::CLAMP_TO_EDGE,
-            Filter::CLAMP_TO_EDGE);
+            Wrap::CLAMP_TO_EDGE,
+            Wrap::CLAMP_TO_EDGE);
 
         frontbuffer_set_0.SetUniformMat4(
             "view",
@@ -131,24 +131,24 @@ namespace Pipelines
             *noise,
             Filter::NEAREST,
             Filter::NEAREST,
-            Filter::REPEAT,
-            Filter::REPEAT);
+            Wrap::REPEAT,
+            Wrap::REPEAT);
 
         raytracing_set_0.SetSampler2D(
             "scene_sampler",
             *scene,
             Filter::NEAREST,
             Filter::NEAREST,
-            Filter::CLAMP_TO_EDGE,
-            Filter::CLAMP_TO_EDGE);
+            Wrap::CLAMP_TO_EDGE,
+            Wrap::CLAMP_TO_EDGE);
 
         raytracing_set_0.SetSampler2D(
             "environment_sampler",
             *environment,
             Filter::LINEAR,
             Filter::LINEAR,
-            Filter::REPEAT,
-            Filter::REPEAT);
+            Wrap::REPEAT,
+            Wrap::REPEAT);
 
         raytracing_shader.Set(
             raytracing_set_0,

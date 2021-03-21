@@ -17,9 +17,9 @@ namespace GL
         GLuint handle;
         Filter min_filter;
         Filter mag_filter;
-        Filter wrap_s;
-        Filter wrap_t;
-        Filter wrap_r;
+        Wrap wrap_s;
+        Wrap wrap_t;
+        Wrap wrap_r;
     };
 
     class Descriptor
@@ -36,9 +36,9 @@ namespace GL
             GLTextureResource& texture,
             Filter min_filter,
             Filter mag_filter,
-            Filter wrap_s,
-            Filter wrap_t,
-            Filter wrap_r = Filter::REPEAT)
+            Wrap wrap_s,
+            Wrap wrap_t,
+            Wrap wrap_r = Wrap::REPEAT)
         {
             sampler2Ds[name] = {
                 texture.gl_texture_handle,
@@ -55,9 +55,9 @@ namespace GL
             GLTextureResource& texture,
             Filter min_filter,
             Filter mag_filter,
-            Filter wrap_s,
-            Filter wrap_t,
-            Filter wrap_r = Filter::REPEAT)
+            Wrap wrap_s,
+            Wrap wrap_t,
+            Wrap wrap_r = Wrap::REPEAT)
         {
             sampler2D_arrays[name] = {
                 texture.gl_texture_handle,
