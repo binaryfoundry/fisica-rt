@@ -15,11 +15,11 @@ namespace GL
     struct SamplerDescriptor
     {
         GLuint handle;
-        Filter min_filter;
-        Filter mag_filter;
-        Wrap wrap_s;
-        Wrap wrap_t;
-        Wrap wrap_r;
+        GLint min_filter;
+        GLint mag_filter;
+        GLint wrap_s;
+        GLint wrap_t;
+        GLint wrap_r;
     };
 
     class Descriptor
@@ -38,17 +38,7 @@ namespace GL
             Filter mag_filter,
             Wrap wrap_s,
             Wrap wrap_t,
-            Wrap wrap_r = Wrap::REPEAT)
-        {
-            sampler2Ds[name] = {
-                texture.gl_texture_handle,
-                min_filter,
-                mag_filter,
-                wrap_s,
-                wrap_t,
-                wrap_r
-            };
-        }
+            Wrap wrap_r = Wrap::REPEAT);
 
         void SetSampler2DArray(
             std::string name,
@@ -57,37 +47,18 @@ namespace GL
             Filter mag_filter,
             Wrap wrap_s,
             Wrap wrap_t,
-            Wrap wrap_r = Wrap::REPEAT)
-        {
-            sampler2D_arrays[name] = {
-                texture.gl_texture_handle,
-                min_filter,
-                mag_filter,
-                wrap_s,
-                wrap_t,
-                wrap_r
-            };
-        }
+            Wrap wrap_r = Wrap::REPEAT);
 
         void SetUniformBlock(
             std::string name,
-            GLBufferResource& uniform_block)
-        {
-            uniform_blocks[name] = uniform_block.gl_buffer_handle;
-        }
+            GLBufferResource& uniform_block);
 
         void SetUniformMat4(
             std::string name,
-            glm::mat4* mat4)
-        {
-            uniform_mat4s[name] = mat4;
-        }
+            glm::mat4* mat4);
 
         void SetUniformFloat(
             std::string name,
-            float* value)
-        {
-            uniform_floats[name] = value;
-        }
+            float* value);
     };
 }
