@@ -24,7 +24,8 @@ set(SOURCES
     src/Input.cpp
     src/File.cpp
     src/Parsing.cpp
-    src/Graphics.cpp)
+    src/Graphics.cpp
+    src/Platform.cpp)
 
 set(HEADERS
     src/Application.hpp
@@ -36,7 +37,8 @@ set(HEADERS
     src/Input.hpp
     src/File.hpp
     src/Parsing.hpp
-    src/Graphics.hpp)
+    src/Graphics.hpp
+    src/Platform.hpp)
 
 set(SOURCES_INTERFACES
     src/interfaces/IApplication.cpp)

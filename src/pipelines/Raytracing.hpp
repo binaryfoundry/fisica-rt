@@ -1,17 +1,11 @@
 #pragma once
 
+#include "../Platform.hpp"
 #include "../Camera.hpp"
+#include "../Graphics.hpp"
 #include "../Geometry.hpp"
 
 #include "../math/Math.hpp"
-
-#include "../gl/Pipeline.hpp"
-#include "../gl/Shader.hpp"
-#include "../gl/Descriptor.hpp"
-#include "../gl/Texture2D.hpp"
-#include "../gl/UniformBuffer.hpp"
-#include "../gl/FrameBuffer.hpp"
-#include "../gl/Pipeline.hpp"
 
 #include <memory>
 
@@ -34,7 +28,7 @@ namespace Pipelines
         uint32_t padding_2;
     };
 
-    class Raytracing : public GL::Pipeline
+    class Raytracing : public Pipeline
     {
     private:
         bool initialized = false;
@@ -48,20 +42,20 @@ namespace Pipelines
         glm::mat4 view;
         glm::mat4 projection;
 
-        std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> framebuffer;
-        std::unique_ptr<GL::UniformBuffer<CameraUniforms>> camera_uniforms;
-        std::unique_ptr<GL::UniformBuffer<SceneUniforms>> scene_uniforms;
+        std::unique_ptr<FrameBuffer<TexDataFloatRGBA>> framebuffer;
+        std::unique_ptr<UniformBuffer<CameraUniforms>> camera_uniforms;
+        std::unique_ptr<UniformBuffer<SceneUniforms>> scene_uniforms;
 
-        std::unique_ptr<GL::FrameBuffer<TexDataFloatRGBA>> environment;
-        std::unique_ptr<GL::Texture2D<TexDataFloatRGBA>> scene;
-        std::unique_ptr<GL::Texture2D<TexDataByteRGBA, 64>> noise;
+        std::unique_ptr<FrameBuffer<TexDataFloatRGBA>> environment;
+        std::unique_ptr<Texture2D<TexDataFloatRGBA>> scene;
+        std::unique_ptr<Texture2D<TexDataByteRGBA, 64>> noise;
 
-        GL::Shader frontbuffer_shader;
-        GL::Shader raytracing_shader;
-        GL::Shader environment_shader;
+        Shader frontbuffer_shader;
+        Shader raytracing_shader;
+        Shader environment_shader;
 
-        GL::Descriptor frontbuffer_set_0;
-        GL::Descriptor raytracing_set_0;
+        Descriptor frontbuffer_set_0;
+        Descriptor raytracing_set_0;
 
     public:
         Raytracing();

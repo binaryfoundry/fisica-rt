@@ -23,12 +23,12 @@ namespace Pipelines
         environment_shader.Link();
 
         camera_uniforms =
-            std::make_unique<GL::UniformBuffer<CameraUniforms>>();
+            std::make_unique<UniformBuffer<CameraUniforms>>();
 
         environment =
-            std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
+            std::make_unique<FrameBuffer<TexDataFloatRGBA>>();
 
-        scene = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(
+        scene = std::make_unique<Texture2D<TexDataFloatRGBA>>(
             scene_data_width,
             scene_data_height);
 
@@ -81,13 +81,13 @@ namespace Pipelines
             defines.str());
 
         camera_uniforms =
-            std::make_unique<GL::UniformBuffer<CameraUniforms>>();
+            std::make_unique<UniformBuffer<CameraUniforms>>();
 
         scene_uniforms =
-            std::make_unique<GL::UniformBuffer<SceneUniforms>>();
+            std::make_unique<UniformBuffer<SceneUniforms>>();
 
         framebuffer =
-            std::make_unique<GL::FrameBuffer<TexDataFloatRGBA>>();
+            std::make_unique<FrameBuffer<TexDataFloatRGBA>>();
 
         framebuffer->Create(
             framebuffer_width,

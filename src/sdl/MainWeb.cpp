@@ -2,6 +2,8 @@
 
 #if defined(EMSCRIPTEN)
 
+#define OPENGL
+
 #include "../Input.hpp"
 #include "../gl/OpenGL.hpp"
 
