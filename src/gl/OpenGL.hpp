@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Graphics.hpp"
 #include "../math/Math.hpp"
 
 #if !defined (EMSCRIPTEN)
@@ -24,13 +25,13 @@ namespace GL
         RGBA32F
     };
 
-    class GLTextureResource
+    class GLTextureResource : public Texture2DResource
     {
     public:
         GLuint gl_texture_handle = 0;
     };
 
-    class GLBufferResource
+    class GLBufferResource : public BufferResource
     {
     public:
         GLuint gl_buffer_handle = 0;

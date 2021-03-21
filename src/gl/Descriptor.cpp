@@ -45,15 +45,18 @@ namespace GL
 
     void Descriptor::SetSampler2D(
         std::string name,
-        GLTextureResource& texture,
+        Texture2DResource& texture,
         Filter min_filter,
         Filter mag_filter,
         Wrap wrap_s,
         Wrap wrap_t,
         Wrap wrap_r)
     {
+        auto gl_texture = static_cast<GLTextureResource&>(
+            texture);
+
         sampler2Ds[name] = {
-            texture.gl_texture_handle,
+            gl_texture.gl_texture_handle,
             filter_gl_enum(min_filter),
             filter_gl_enum(mag_filter),
             wrap_gl_enum(wrap_s),
@@ -64,15 +67,18 @@ namespace GL
 
     void Descriptor::SetSampler2DArray(
         std::string name,
-        GLTextureResource& texture,
+        Texture2DResource& texture,
         Filter min_filter,
         Filter mag_filter,
         Wrap wrap_s,
         Wrap wrap_t,
         Wrap wrap_r)
     {
+        auto gl_texture = static_cast<GLTextureResource&>(
+            texture);
+
         sampler2D_arrays[name] = {
-            texture.gl_texture_handle,
+            gl_texture.gl_texture_handle,
             filter_gl_enum(min_filter),
             filter_gl_enum(mag_filter),
             wrap_gl_enum(wrap_s),
@@ -83,9 +89,12 @@ namespace GL
 
     void Descriptor::SetUniformBlock(
         std::string name,
-        GLBufferResource& uniform_block)
+        BufferResource& uniform_block)
     {
-        uniform_blocks[name] = uniform_block.gl_buffer_handle;
+        auto gl_uniform_block = static_cast<GLBufferResource&>(
+            uniform_block);
+
+        uniform_blocks[name] = gl_uniform_block.gl_buffer_handle;
     }
 
     void Descriptor::SetUniformMat4(

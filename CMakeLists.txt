@@ -23,7 +23,8 @@ set(SOURCES
     src/Timing.cpp
     src/Input.cpp
     src/File.cpp
-    src/Parsing.cpp)
+    src/Parsing.cpp
+    src/Graphics.cpp)
 
 set(HEADERS
     src/Application.hpp
@@ -34,7 +35,8 @@ set(HEADERS
     src/Timing.hpp
     src/Input.hpp
     src/File.hpp
-    src/Parsing.hpp)
+    src/Parsing.hpp
+    src/Graphics.hpp)
 
 set(SOURCES_INTERFACES
     src/interfaces/IApplication.cpp)

@@ -6,6 +6,7 @@
 #include "OpenGL.hpp"
 #include "Texture2D.hpp"
 
+#include "../Graphics.hpp"
 #include "../properties/Property.hpp"
 
 using namespace Properties;
@@ -38,7 +39,7 @@ namespace GL
     public:
         void SetSampler2D(
             std::string name,
-            GLTextureResource& texture,
+            Texture2DResource& texture,
             Filter min_filter,
             Filter mag_filter,
             Wrap wrap_s,
@@ -47,7 +48,7 @@ namespace GL
 
         void SetSampler2DArray(
             std::string name,
-            GLTextureResource& texture,
+            Texture2DResource& texture,
             Filter min_filter,
             Filter mag_filter,
             Wrap wrap_s,
@@ -56,7 +57,7 @@ namespace GL
 
         void SetUniformBlock(
             std::string name,
-            GLBufferResource& uniform_block);
+            BufferResource& uniform_block);
 
         void SetUniformMat4(
             std::string name,
