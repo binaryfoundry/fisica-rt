@@ -22,15 +22,20 @@ namespace GL
         GLint wrap_r;
     };
 
+    class Shader;
+
     class Descriptor
     {
-    public:
+        friend class Shader;
+
+    private:
         std::map<std::string, SamplerDescriptor> sampler2Ds;
         std::map<std::string, SamplerDescriptor> sampler2D_arrays;
         std::map<std::string, GLuint> uniform_blocks;
         std::map<std::string, glm::mat4*> uniform_mat4s;
         std::map<std::string, float*> uniform_floats;
 
+    public:
         void SetSampler2D(
             std::string name,
             GLTextureResource& texture,
