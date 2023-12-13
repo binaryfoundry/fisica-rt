@@ -1,4 +1,5 @@
 #include "Parsing.hpp"
+#include <stdexcept>
 
 std::vector<Token> tokenize(std::string str)
 {

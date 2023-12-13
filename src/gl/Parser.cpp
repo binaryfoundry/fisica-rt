@@ -2,6 +2,7 @@
 
 #include <set>
 #include <assert.h>
+#include <stdexcept>
 
 enum class ParseMode
 {
