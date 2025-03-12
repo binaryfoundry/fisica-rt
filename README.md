@@ -1,10 +1,14 @@
-A Filament type project for real-time ray tracing.
+# Physically Based Ray Tracing Demo.
 
 ![](docs/fisica.png)
 
+## Live Demo
+
+https://binaryfoundry.github.io/fisica-rt/
+
 # Understanding PBR
 
-https://mechanicsfoundry.github.io/Physically-Based-Rendering-and-BRDFs/
+https://binaryfoundry.github.io/Physically-Based-Rendering-and-BRDFs/
 
 # Build
 
