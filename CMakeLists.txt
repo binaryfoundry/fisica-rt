@@ -164,11 +164,20 @@ if (WIN32)
     set(SDL2_IMAGE_PATH ${PROJECT_SOURCE_DIR}/lib/sdl/win/sdl2-image)
     set(SDL2_IMAGE_LIB_PATH ${SDL2_IMAGE_PATH}/lib/x64)
 
+    set(PVR_PATH ${PROJECT_SOURCE_DIR}/lib/pvr)
+    set(PVR_LIB_PATH ${PVR_PATH}/Windows/x86_64)
+
+    include_directories(${PVR_PATH}/Include)
+    link_directories(${PVR_LIB_PATH})
+
     include_directories(${SDL2_PATH}/include)
     link_directories(${SDL2_LIB_PATH})
 
     include_directories(${SDL2_IMAGE_PATH}/include)
     link_directories(${SDL2_IMAGE_LIB_PATH})
+
+    include_directories(${PVR_PATH}/Include)
+    link_directories(${PVR_LIB_PATH})
 
 elseif (EMSCRIPTEN)
     message(STATUS "Platform: HTML5")
