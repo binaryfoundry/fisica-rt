@@ -1,8 +1,8 @@
 A Filament type project for real-time ray tracing.
 
-# Understanding PBR in Rasterisation
-
 ![](docs/fisica.png)
+
+# Understanding PBR
 
 https://mechanicsfoundry.github.io/Physically-Based-Rendering-and-BRDFs/
 
