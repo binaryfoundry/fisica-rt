@@ -45,10 +45,10 @@ namespace Properties
             const float duration,
             const EasingFunction func,
             const Callback callback) :
+            func(func),
             value_0(origin),
             value_1(target),
-            duration(duration),
-            func(func)
+            duration(duration)
         {
             on_complete = callback;
         }
@@ -58,7 +58,7 @@ namespace Properties
             return complete;
         }
 
-        T [[nodiscard]] Update(const float time_step)
+        T Update(const float time_step)
         {
             time += time_step;
             float percent = time / duration;
