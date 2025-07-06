@@ -1,11 +1,13 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.10)
 
-set(PROJECT_NAME fisica-rt)
-set(PROJECT_files_NAME fisica-rt-files)
+set(PROJECT_NAME cascades)
+set(PROJECT_files_NAME cascades-files)
 
 project(${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 17)
+
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -19,7 +21,6 @@ set(SOURCES
     src/Context.cpp
     src/Camera.cpp
     src/Geometry.cpp
-    src/Noise.cpp
     src/Timing.cpp
     src/Input.cpp
     src/File.cpp
@@ -32,7 +33,6 @@ set(HEADERS
     src/Context.hpp
     src/Camera.hpp
     src/Geometry.hpp
-    src/Noise.hpp
     src/Timing.hpp
     src/Input.hpp
     src/File.hpp
@@ -47,10 +47,10 @@ set(HEADERS_INTERFACES
     src/interfaces/IApplication.hpp)
 
 set(SOURCES_PIPELINES
-    src/pipelines/Raytracing.cpp)
+    src/pipelines/Cascades.cpp)
 
 set(HEADERS_PIPELINES
-    src/pipelines/Raytracing.hpp)
+    src/pipelines/Cascades.hpp)
 
 set(SOURCES_MATH
     src/math/Math.cpp
@@ -262,6 +262,7 @@ elseif (EMSCRIPTEN)
     set_target_properties(
         ${PROJECT_NAME}
         PROPERTIES SUFFIX ".html"
-        LINK_FLAGS "--bind -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_WEBGL2=1 -s WASM=1 -s NO_EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -s --emrun -std=c++11 -O3 --preload-file files --shell-file \"${PROJECT_SOURCE_DIR}/shell.html\" --use-preload-plugins --no-heap-copy")
+        LINK_FLAGS "--bind -s WASM=1 -s NO_EXIT_RUNTIME=1 -s TOTAL_MEMORY=134217728 -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=12 -s ASSERTIONS=2 -s -std=c++20 -O3 --use-preload-plugins --shell-file \"${PROJECT_SOURCE_DIR}/shell.html\"")
 
+    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
 endif ()
