@@ -269,6 +269,50 @@ bool Application::GuiUpdate()
     ImGui::Text("C - Clear scene");
 
     ImGui::Separator();
+    ImGui::Text("Radiance Cascades");
+
+    ImGui::SliderFloat(
+        "Exposure",
+        &pipeline.Exposure(),
+        0.1f,
+        5.0f);
+
+    ImGui::SliderFloat(
+        "Base Interval",
+        &pipeline.BaseInterval(),
+        4.0f,
+        64.0f,
+        "%.0f");
+
+    ImGui::SliderFloat(
+        "Ray Count",
+        &pipeline.RayCount(),
+        12.0f,
+        96.0f,
+        "%.0f");
+
+    {
+        bool bf = pipeline.BilinearFix() > 0.5f;
+        if (ImGui::Checkbox("Bilinear Fix", &bf))
+            pipeline.BilinearFix() = bf ? 1.0f : 0.0f;
+    }
+    {
+        bool rf = pipeline.RingingFix() > 0.5f;
+        if (ImGui::Checkbox("Ringing Fix", &rf))
+            pipeline.RingingFix() = rf ? 1.0f : 0.0f;
+    }
+    {
+        bool sf = pipeline.SrgbFalloff() > 0.5f;
+        if (ImGui::Checkbox("sRGB Falloff", &sf))
+            pipeline.SrgbFalloff() = sf ? 1.0f : 0.0f;
+    }
+    {
+        bool b4 = pipeline.Use4xBranching() > 0.5f;
+        if (ImGui::Checkbox("4x Branching", &b4))
+            pipeline.Use4xBranching() = b4 ? 1.0f : 0.0f;
+    }
+
+    ImGui::Separator();
     ImGui::Text(
         "%.3f ms/frame (%.1f FPS)",
         fps_time_avg,

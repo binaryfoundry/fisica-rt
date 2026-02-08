@@ -382,7 +382,7 @@ static int sdl_init_graphics()
     attr.enableExtensionsByDefault = 1;
     attr.premultipliedAlpha = 0;
     attr.explicitSwapControl = 0;
-    attr.majorVersion = 3;
+    attr.majorVersion = 2;  // WebGL 2 (maps to OpenGL ES 3.0)
     attr.minorVersion = 0;
 
     EMSCRIPTEN_WEBGL_CONTEXT_HANDLE ctx = emscripten_webgl_create_context(

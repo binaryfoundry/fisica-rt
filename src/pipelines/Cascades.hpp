@@ -12,8 +12,6 @@ namespace Pipelines
     class Cascades : public Pipeline
     {
     private:
-        bool initialized = false;
-
         glm::mat4 projection;
         glm::mat4 view;
 
@@ -30,7 +28,6 @@ namespace Pipelines
         Shader cascades_shader;
         Descriptor cascades_set_0;
 
-        // Cascade uniforms (float for descriptor system compatibility)
         float cascade_level = 0.0f;
         float cascade_res_x = 512.0f;
         float cascade_res_y = 512.0f;
@@ -38,6 +35,11 @@ namespace Pipelines
         float input_res_y = 1024.0f;
         float ray_count_f = 48.0f;
         float base_interval_f = 16.0f;
+        float prev_cascade_res = 256.0f;
+        float bilinear_fix = 1.0f;
+        float ringing_fix = 1.0f;
+        float srgb_falloff = 1.0f;
+        float use_4x_branching = 0.0f;
 
     public:
         Cascades();
@@ -51,19 +53,22 @@ namespace Pipelines
             const glm::mat4 view_,
             const bool upscale);
 
-        // Paint into the input buffer at UV coordinates.
-        // u,v in [0,1], brush_radius in pixels.
-        // color is the RGBA value to paint (e.g. emitter or occluder).
         void Paint(
             float u, float v,
             float brush_radius,
             const glm::vec4& color);
 
-        // Clear the input buffer to empty (transparent black).
         void ClearInput();
 
-        // Get the input texture dimensions for coordinate mapping.
         uint32_t InputWidth() const;
         uint32_t InputHeight() const;
+
+        float& Exposure() { return exposure; }
+        float& BaseInterval() { return base_interval_f; }
+        float& RayCount() { return ray_count_f; }
+        float& BilinearFix() { return bilinear_fix; }
+        float& RingingFix() { return ringing_fix; }
+        float& SrgbFalloff() { return srgb_falloff; }
+        float& Use4xBranching() { return use_4x_branching; }
     };
 }

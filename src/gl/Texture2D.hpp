@@ -2,6 +2,13 @@
 
 #include "OpenGL.hpp"
 
+// Forward declarations for stb_image (implementation in Texture2D.cpp)
+extern "C" {
+unsigned char* stbi_load(char const* filename, int* x, int* y, int* comp, int req_comp);
+float* stbi_loadf(char const* filename, int* x, int* y, int* comp, int req_comp);
+void stbi_image_free(void* retval_from_stbi_load);
+}
+
 #include <vector>
 #include <array>
 
@@ -202,14 +209,14 @@ namespace GL
             {
                 int t_width, t_height, t_channels;
 
-                const auto* loaded = stbi_load(
+                auto* loaded = stbi_load(
                     file.c_str(),
                     &t_width,
                     &t_height,
                     &t_channels,
-                    STBI_rgb_alpha);
+                    4);
 
-                const auto* raw_data = reinterpret_cast<TexDataByteRGBA*>(
+                auto* raw_data = reinterpret_cast<TexDataByteRGBA*>(
                     loaded);
 
                 const size_t raw_data_size =
@@ -233,14 +240,14 @@ namespace GL
             {
                 int t_width, t_height, t_channels;
 
-                const auto* loaded = stbi_loadf(
+                auto* loaded = stbi_loadf(
                     file.c_str(),
                     &t_width,
                     &t_height,
                     &t_channels,
-                    STBI_rgb_alpha);
+                    4);
 
-                const auto* raw_data = reinterpret_cast<TexDataFloatRGBA*>(
+                auto* raw_data = reinterpret_cast<TexDataFloatRGBA*>(
                     loaded);
 
                 const size_t raw_data_size =
