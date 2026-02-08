@@ -137,7 +137,7 @@ void Application::Update()
                         emitter_color[0] * emitter_intensity,
                         emitter_color[1] * emitter_intensity,
                         emitter_color[2] * emitter_intensity,
-                        1.0f);
+                        0.0f);
                     pipeline.Paint(u, v, brush_radius_emitter, color);
                 }
                 else

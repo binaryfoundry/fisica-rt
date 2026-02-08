@@ -69,6 +69,15 @@
         float interval_start = base_dist * (pow(2.0, cascade_level) - 1.0);
         float interval_end = base_dist * (pow(2.0, cascade_level + 1.0) - 1.0);
 
+        // Add interval overlap to prevent light leaking at cascade boundaries.
+        // Extends the ray march by the diagonal of the next cascade's probe
+        // spacing, ensuring continuous coverage across the spatial transition
+        // between cascades (per Yaazarai/GMShaders reference).
+        if (cascade_level < float(NUM_CASCADES - 1)) {
+            float next_probe_spacing = pow(2.0, cascade_level + 1.0) / input_res_x;
+            interval_end += 1.414 * next_probe_spacing;
+        }
+
         float step_size = (interval_end - interval_start) / float(NUM_STEPS);
 
         // Per-pixel angular jitter to break up banding artifacts.
