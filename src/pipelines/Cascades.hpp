@@ -21,7 +21,7 @@ namespace Pipelines
 
         std::unique_ptr<Texture2D<TexDataFloatRGBA>> input;
 
-        static constexpr int NUM_CASCADES = 5;
+        static constexpr int NUM_CASCADES = 6;
         std::unique_ptr<FrameBuffer<TexDataFloatRGBA>> cascade_fbs[NUM_CASCADES];
 
         Shader frontbuffer_shader;
@@ -34,9 +34,9 @@ namespace Pipelines
         float cascade_level = 0.0f;
         float cascade_res_x = 512.0f;
         float cascade_res_y = 512.0f;
-        float input_res_x = 512.0f;
-        float input_res_y = 512.0f;
-        float ray_count_f = 64.0f;
+        float input_res_x = 1024.0f;
+        float input_res_y = 1024.0f;
+        float ray_count_f = 48.0f;
         float base_interval_f = 16.0f;
 
     public:

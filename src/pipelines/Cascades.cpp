@@ -4,15 +4,15 @@
 #include <algorithm>
 #include <cmath>
 
-#define WIDTH 512
-#define HEIGHT 512
+#define WIDTH 1024
+#define HEIGHT 1024
 
-#define NUM_CASCADE_LEVELS 5
+#define NUM_CASCADE_LEVELS 6
 
 namespace Pipelines
 {
     static const int cascade_resolutions[NUM_CASCADE_LEVELS] = {
-        512, 256, 128, 64, 32
+        512, 256, 128, 64, 32, 16
     };
 
     Cascades::Cascades()

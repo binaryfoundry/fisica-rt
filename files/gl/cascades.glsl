@@ -39,9 +39,9 @@
     layout(location = 0) out vec4 out_color;
 
     #define PI 3.14159265359
-    #define RAY_COUNT 64
-    #define NUM_STEPS 32
-    #define NUM_CASCADES 5
+    #define RAY_COUNT 48
+    #define NUM_STEPS 24
+    #define NUM_CASCADES 6
 
     // Sample scene from input texture
     // Returns vec4(emission.rgb, opacity)
