@@ -280,7 +280,7 @@ bool Application::GuiUpdate()
     ImGui::SliderFloat(
         "Base Interval",
         &pipeline.BaseInterval(),
-        4.0f,
+        8.0f,
         64.0f,
         "%.0f");
 

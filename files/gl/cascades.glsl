@@ -44,7 +44,7 @@
     layout(location = 0) out vec4 out_color;
 
     #define PI 3.14159265359
-    #define NUM_STEPS 24
+    #define NUM_STEPS 48
     #define NUM_CASCADES 6
 
     const float GAMMA = 2.2;
@@ -54,10 +54,14 @@
         return pow(max(c, vec3(0.0)), vec3(GAMMA));
     }
 
-    // Sample scene from input texture
-    // Returns vec4(emission.rgb, opacity)
+    // Sample scene from input texture (nearest-neighbor for hard occlusion)
+    // Returns vec4(emission.rgb, opacity). Using texelFetch avoids bilinear
+    // alpha blending at occluder edges which causes light leakage.
     vec4 get_scene(vec2 uv) {
-        vec4 val = texture(input_sampler, uv);
+        ivec2 res = textureSize(input_sampler, 0);
+        ivec2 texel = ivec2(floor(uv * vec2(res)));
+        texel = clamp(texel, ivec2(0), res - ivec2(1));
+        vec4 val = texelFetch(input_sampler, texel, 0);
         if (srgb_falloff > 0.5) {
             val.rgb = toLinear(val.rgb);
         }
@@ -135,13 +139,16 @@
             interval_end = base_dist * (pow(2.0, cascade_level + 1.0) - 1.0);
         }
 
-        // Add interval overlap to prevent light leaking at cascade boundaries.
         if (cascade_level < float(NUM_CASCADES - 1)) {
             float next_probe_spacing = pow(2.0, cascade_level + 1.0) / input_res_x;
             interval_end += 1.414 * next_probe_spacing;
         }
 
-        float step_size = (interval_end - interval_start) / float(NUM_STEPS);
+        // Adaptive steps: sample at least every 0.5 pixels to avoid stepping over occluders
+        float interval_len = interval_end - interval_start;
+        float interval_pixels = interval_len * input_res_x;
+        int num_steps = int(clamp(interval_pixels * 2.0, 48.0, 192.0));
+        float step_size = interval_len / float(num_steps);
 
         int RAY_COUNT = int(ray_count_f);
 
@@ -160,7 +167,8 @@
             float transmittance = 1.0;
 
             // March along the ray within this cascade's interval
-            for (int s = 0; s < NUM_STEPS; s++) {
+            for (int s = 0; s < 192; s++) {
+                if (s >= num_steps) break;
                 float t = interval_start + step_size * (float(s) + 0.5);
                 vec2 sample_pos = uv + dir * t;
 
@@ -180,13 +188,16 @@
                 if (transmittance < 0.01) break;
             }
 
-            // Hierarchical cascade merging: add far-field radiance
-            // from the previous (coarser) cascade at the ray endpoint
+            // Hierarchical cascade merging: add far-field radiance from the previous
+            // (coarser) cascade at the ray endpoint. prev_cascade stores irradiance;
+            // approximate radiance(dir) ≈ irradiance/RAY_COUNT for propagation.
             if (cascade_level < float(NUM_CASCADES - 1)) {
                 vec2 ray_end = uv + dir * interval_end;
                 ray_end = clamp(ray_end, vec2(0.001), vec2(0.999));
-                vec3 far_field = sample_prev_cascade(ray_end);
-                ray_radiance += transmittance * far_field;
+                vec4 scene_at_end = get_scene(ray_end);
+                float far_block = 1.0 - scene_at_end.a;
+                vec3 far_field = sample_prev_cascade(ray_end) * far_block;
+                ray_radiance += transmittance * far_field / float(RAY_COUNT);
             }
 
             total_radiance += ray_radiance;

@@ -33,13 +33,13 @@ namespace Pipelines
         float cascade_res_y = 512.0f;
         float input_res_x = 1024.0f;
         float input_res_y = 1024.0f;
-        float ray_count_f = 48.0f;
-        float base_interval_f = 16.0f;
+        float ray_count_f = 64.0f;
+        float base_interval_f = 24.0f;
         float prev_cascade_res = 256.0f;
         float bilinear_fix = 1.0f;
         float ringing_fix = 1.0f;
         float srgb_falloff = 1.0f;
-        float use_4x_branching = 0.0f;
+        float use_4x_branching = 1.0f;
 
     public:
         Cascades();

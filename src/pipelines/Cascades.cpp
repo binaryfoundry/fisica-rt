@@ -9,6 +9,7 @@
 
 namespace Pipelines
 {
+    // Coarsest (n) to finest (0): each level has 2x more probes per axis
     static const int cascade_resolutions[] = {
         512, 256, 128, 64, 32, 16
     };
@@ -114,6 +115,8 @@ namespace Pipelines
             }
             else
             {
+                // Coarsest level: no previous cascade; disable far-field merge
+                prev_cascade_res = 0.0f;
                 cascades_set_0.SetSampler2D(
                     "prev_cascade",
                     *input,
