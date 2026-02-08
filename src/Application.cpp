@@ -24,10 +24,13 @@ void Application::Init()
 
     gui.Init();
 
-    key_down_callback = [=](Scancode key)
+    key_down_callback = [this](Scancode key)
     {
         switch (key)
         {
+        case Scancode::S_C:
+            pipeline.ClearInput();
+            break;
         default:
             break;
         }
@@ -84,6 +87,56 @@ void Application::Update()
         window_height);
 
     ViewScale();
+
+    // Mouse painting into the radiance input buffer
+    {
+        ImGuiIO& io = ImGui::GetIO();
+        const bool left_down = io.MouseDown[0];
+        const bool right_down = io.MouseDown[1];
+
+        if ((left_down || right_down) && !io.WantCaptureMouse)
+        {
+            // Map window mouse coords to input texture UV using the same
+            // viewport rect that ViewScale uses for the rendered quad
+            const float window_aspect =
+                static_cast<float>(window_width) / window_height;
+            const float fb_ratio =
+                static_cast<float>(raytracing_framebuffer_width) /
+                static_cast<float>(raytracing_framebuffer_height);
+            const float aspect = window_aspect / fb_ratio;
+            const bool wide =
+                window_width / fb_ratio > window_height;
+            float scale_x = wide
+                ? std::floor(window_width / aspect)
+                : static_cast<float>(window_width);
+            float scale_y = wide
+                ? static_cast<float>(window_height)
+                : std::floor(window_height * aspect);
+            if (!upscale)
+            {
+                scale_x = std::min<float>(
+                    scale_x, static_cast<float>(raytracing_framebuffer_width));
+                scale_y = std::min<float>(
+                    scale_y, static_cast<float>(raytracing_framebuffer_height));
+            }
+            const float hpos =
+                std::round((window_width / 2) - (scale_x / 2));
+            const float vpos =
+                std::round((window_height / 2) - (scale_y / 2));
+
+            const float local_x = static_cast<float>(mouse_x) - hpos;
+            const float local_y = static_cast<float>(mouse_y) - vpos;
+            const float u = local_x / scale_x;
+            const float v = local_y / scale_y;
+
+            if (u >= 0.0f && u <= 1.0f && v >= 0.0f && v <= 1.0f)
+            {
+                const float brush_radius = left_down ? 4.0f : 8.0f;
+                const bool emitter = left_down;
+                pipeline.Paint(u, v, brush_radius, emitter);
+            }
+        }
+    }
 
     pipeline.Draw(
         projection,

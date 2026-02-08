@@ -19,8 +19,8 @@ private:
 
     bool upscale = true;
 
-    uint32_t raytracing_framebuffer_width = 1920;
-    uint32_t raytracing_framebuffer_height = 1080;
+    uint32_t raytracing_framebuffer_width = 512;
+    uint32_t raytracing_framebuffer_height = 512;
 
     glm::mat4 projection;
     glm::mat4 view;
