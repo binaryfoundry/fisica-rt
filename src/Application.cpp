@@ -131,9 +131,21 @@ void Application::Update()
 
             if (u >= 0.0f && u <= 1.0f && v >= 0.0f && v <= 1.0f)
             {
-                const float brush_radius = left_down ? 4.0f : 8.0f;
-                const bool emitter = left_down;
-                pipeline.Paint(u, v, brush_radius, emitter);
+                if (left_down)
+                {
+                    const glm::vec4 color = glm::vec4(
+                        emitter_color[0] * emitter_intensity,
+                        emitter_color[1] * emitter_intensity,
+                        emitter_color[2] * emitter_intensity,
+                        1.0f);
+                    pipeline.Paint(u, v, brush_radius_emitter, color);
+                }
+                else
+                {
+                    const glm::vec4 occluder = glm::vec4(
+                        0.0f, 0.0f, 0.0f, 1.0f);
+                    pipeline.Paint(u, v, brush_radius_occluder, occluder);
+                }
             }
         }
     }
@@ -225,14 +237,40 @@ bool Application::GuiUpdate()
         "Upscale",
         &upscale);
 
-    //ImGui::SliderFloat(
-    //    "Exposure",
-    //    &camera->exposure,
-    //    0,
-    //    2);
+    ImGui::Separator();
+    ImGui::Text("Emitter (Left Click)");
 
+    ImGui::ColorEdit3(
+        "Color",
+        emitter_color);
+
+    ImGui::SliderFloat(
+        "Intensity",
+        &emitter_intensity,
+        0.1f,
+        20.0f);
+
+    ImGui::SliderFloat(
+        "Brush Size##emitter",
+        &brush_radius_emitter,
+        1.0f,
+        32.0f);
+
+    ImGui::Separator();
+    ImGui::Text("Occluder (Right Click)");
+
+    ImGui::SliderFloat(
+        "Brush Size##occluder",
+        &brush_radius_occluder,
+        1.0f,
+        32.0f);
+
+    ImGui::Separator();
+    ImGui::Text("C - Clear scene");
+
+    ImGui::Separator();
     ImGui::Text(
-        "Application average %.3f ms/frame (%.1f FPS)",
+        "%.3f ms/frame (%.1f FPS)",
         fps_time_avg,
         1000.0f / fps_time_avg);
 

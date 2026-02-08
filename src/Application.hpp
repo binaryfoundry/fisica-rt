@@ -19,6 +19,12 @@ private:
 
     bool upscale = true;
 
+    // Painting controls
+    float emitter_color[3] = { 1.0f, 0.67f, 0.17f };
+    float emitter_intensity = 3.0f;
+    float brush_radius_emitter = 4.0f;
+    float brush_radius_occluder = 8.0f;
+
     uint32_t raytracing_framebuffer_width = 512;
     uint32_t raytracing_framebuffer_height = 512;
 

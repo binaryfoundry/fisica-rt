@@ -51,13 +51,13 @@ namespace Pipelines
             const glm::mat4 view_,
             const bool upscale);
 
-        // Paint an emitter or occluder into the input buffer.
+        // Paint into the input buffer at UV coordinates.
         // u,v in [0,1], brush_radius in pixels.
-        // If emitter is true, paints a light source; otherwise an occluder.
+        // color is the RGBA value to paint (e.g. emitter or occluder).
         void Paint(
             float u, float v,
             float brush_radius,
-            bool emitter);
+            const glm::vec4& color);
 
         // Clear the input buffer to empty (transparent black).
         void ClearInput();

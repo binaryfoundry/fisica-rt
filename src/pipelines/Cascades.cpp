@@ -212,7 +212,7 @@ namespace Pipelines
     void Cascades::Paint(
         float u, float v,
         float brush_radius,
-        bool emitter)
+        const glm::vec4& color)
     {
         const uint32_t w = input->Width();
         const uint32_t h = input->Height();
@@ -222,10 +222,6 @@ namespace Pipelines
         const int cx = static_cast<int>(u * w);
         const int cy = static_cast<int>(v * h);
         const int r = static_cast<int>(brush_radius);
-
-        const glm::vec4 color = emitter
-            ? glm::vec4(3.0f, 2.0f, 0.5f, 1.0f)   // bright emitter
-            : glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);   // opaque occluder
 
         for (int dy = -r; dy <= r; dy++)
         {
