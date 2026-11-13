@@ -2,8 +2,10 @@
 
 Build bin/web/Release first, then run: python tests/test_application.py
 Requires playwright, its Chromium browser, Pillow, and numpy.
+Use --site-root <directory> --page index.html to test a deployed static folder.
 """
 
+import argparse
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -15,23 +17,23 @@ from playwright.sync_api import sync_playwright
 
 
 class Handler(SimpleHTTPRequestHandler):
-    def end_headers(self):
-        self.send_header("Cross-Origin-Opener-Policy", "same-origin")
-        self.send_header("Cross-Origin-Embedder-Policy", "require-corp")
-        super().end_headers()
-
     def log_message(self, *args):
         pass
 
 
 def main():
     root = Path(__file__).resolve().parents[1]
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--site-root", type=Path, default=root / "bin" / "web" / "Release")
+    parser.add_argument("--page", default="cascades.html")
+    args = parser.parse_args()
     output = root / "bin" / "validation"
     output.mkdir(parents=True, exist_ok=True)
-    server = ThreadingHTTPServer(("127.0.0.1", 0), partial(Handler, directory=str(root / "bin" / "web" / "Release")))
+    server = ThreadingHTTPServer(("127.0.0.1", 0), partial(Handler, directory=str(args.site_root)))
     Thread(target=server.serve_forever, daemon=True).start()
     errors = []
     logs = []
+    failed_responses = []
     try:
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(headless=True)
@@ -46,9 +48,11 @@ def main():
             """)
             page.on("pageerror", lambda error: errors.append(str(error)))
             page.on("console", lambda message: logs.append(message.text))
-            page.goto(f"http://127.0.0.1:{server.server_port}/cascades.html")
+            page.on("response", lambda response: failed_responses.append(f"{response.status} {response.url}") if response.status >= 400 else None)
+            page.goto(f"http://127.0.0.1:{server.server_port}/{args.page}")
             page.wait_for_function("typeof Module !== 'undefined' && Module.calledRun", timeout=30000)
             page.wait_for_timeout(1000)
+            assert not page.evaluate("crossOriginIsolated"), "Test must use ordinary static hosting without isolation headers"
             compiled = page.evaluate("compiledShaderSources")
             for name in ("distance", "cascades", "gather", "frontbuffer"):
                 body = (root / "files" / "gl" / f"{name}.glsl").read_text().split("\n", 1)[1]
@@ -86,12 +90,13 @@ def main():
             cleared = np.asarray(Image.open(output / "app-cleared.png").convert("RGB"))
             assert np.max(cleared[200:520, 460:980]) == 0, "Clear left stale light or geometry"
             assert not errors, errors
+            assert not failed_responses, failed_responses
             assert not any("gl error:" in line or "compile error" in line or "link error" in line for line in logs), logs
-            print(f"Application smoke test passed: continuous strokes, shadows ({before:.1f} -> {after:.1f}), clear; no shader/GL errors.")
+            print(f"Static deployment smoke test passed: continuous strokes, shadows ({before:.1f} -> {after:.1f}), clear; no missing assets or shader/GL errors; no isolation headers.")
             browser.close()
     finally:
         server.shutdown()
-        (output / "application-console.log").write_text("\n".join(logs + errors))
+        (output / "application-console.log").write_text("\n".join(logs + errors + failed_responses))
 
 
 if __name__ == "__main__":

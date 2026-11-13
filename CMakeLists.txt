@@ -181,7 +181,7 @@ if (WIN32)
 
 elseif (EMSCRIPTEN)
     message(STATUS "Platform: HTML5")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -sUSE_SDL=2 -sUSE_SDL_IMAGE=2")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -sUSE_SDL=2 -sUSE_SDL_IMAGE=2")
     set(CMAKE_CXX_FLAGS_DEBUG "-g")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
@@ -259,15 +259,22 @@ if (WIN32)
 
 elseif (EMSCRIPTEN)
 
+    # Keep assertion diagnostics useful without embedding local source paths.
+    file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}" CASCADES_NATIVE_SOURCE_DIR)
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        "-ffile-prefix-map=${PROJECT_SOURCE_DIR}=."
+        "-ffile-prefix-map=${CASCADES_NATIVE_SOURCE_DIR}=.")
+
     # --preload-file packages runtime assets during linking. Shader changes
     # must relink the web executable, not just copy files beside the build.
     file(GLOB_RECURSE CASCADES_RUNTIME_FILES "${PROJECT_SOURCE_DIR}/files/*")
-    set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_DEPENDS ${CASCADES_RUNTIME_FILES})
+    set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_DEPENDS
+        ${CASCADES_RUNTIME_FILES} "${PROJECT_SOURCE_DIR}/shell.html")
 
     set_target_properties(
         ${PROJECT_NAME}
         PROPERTIES SUFFIX ".html"
-        LINK_FLAGS "--bind -s WASM=1 -s NO_EXIT_RUNTIME=1 -s TOTAL_MEMORY=134217728 -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=12 -s ASSERTIONS=2 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -s -std=c++20 -O3 --use-preload-plugins --preload-file \"${PROJECT_SOURCE_DIR}/files@/files\" --shell-file \"${PROJECT_SOURCE_DIR}/shell.html\"")
+        LINK_FLAGS "--bind -s WASM=1 -s NO_EXIT_RUNTIME=1 -s TOTAL_MEMORY=134217728 -s ASSERTIONS=2 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -s -std=c++20 -O3 --use-preload-plugins --preload-file \"${PROJECT_SOURCE_DIR}/files@/files\" --shell-file \"${PROJECT_SOURCE_DIR}/shell.html\"")
 
     set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
 endif ()

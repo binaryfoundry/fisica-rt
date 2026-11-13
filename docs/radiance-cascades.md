@@ -62,8 +62,11 @@ Build the Windows application with `cmake --build bin/win --config Release`.
 Build the Emscripten application with `cmake --build bin/web/Release` from an
 environment with the configured build tool available (NMake for the existing
 Windows configuration).
-Web link dependencies include runtime assets so editing a shader also
-regenerates the preloaded data package.
+Web link dependencies include runtime assets and the HTML shell so editing
+either regenerates the web package. The web application does not use CPU
+threads; it builds without pthreads so static hosting needs no cross-origin
+isolation headers or service worker.
+Compiler prefix maps keep assertion paths relative in the distributed WebAssembly.
 
 Run `python tests/test_radiance.py` for production-shader WebGL 2 checks:
 analytic disk illumination, symmetry, sRGB, empty-scene transmittance,
@@ -74,7 +77,18 @@ After building the web application, run `python tests/test_application.py`
 to exercise its C++ painting and rendering through the browser. It verifies
 stroke continuity, a wall shadow, clearing, and absence of shader/GL errors.
 This test additionally requires Pillow and NumPy. It serves the application
-locally with the isolation headers required by its WebAssembly threads.
+locally without special headers and checks that all requested assets load.
 
 Test reports, console logs, and rendered PNGs are saved in the ignored
 `bin/validation` directory.
+
+## Static deployment
+
+Copy `bin/web/Release/cascades.html` to the destination as `index.html`, and
+copy `cascades.js`, `cascades.wasm`, and `cascades.data` alongside it without
+renaming them. Include the project `LICENCE` as `LICENCE.txt`. Runtime shaders
+are already inside the data package; build files and loose shader copies
+are not needed on the server.
+
+Verify the deployed folder with
+`python tests/test_application.py --site-root <deployment-directory> --page index.html`.
