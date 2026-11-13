@@ -1,91 +1,139 @@
 #include "Cascades.hpp"
 
-#include <sstream>
 #include <algorithm>
 #include <cmath>
 
-#define WIDTH 1024
-#define HEIGHT 1024
+namespace
+{
+    void SetTexture(GL::Descriptor& descriptor, const std::string& name, Texture2DResource& texture)
+    {
+        descriptor.SetSampler2D(name, texture,
+            Filter::NEAREST, Filter::NEAREST,
+            Wrap::CLAMP_TO_EDGE, Wrap::CLAMP_TO_EDGE);
+    }
+}
 
 namespace Pipelines
 {
-    // Coarsest (n) to finest (0): each level has 2x more probes per axis
-    static const int cascade_resolutions[] = {
-        512, 256, 128, 64, 32, 16
-    };
-
     Cascades::Cascades()
     {
     }
 
     void Cascades::Init()
     {
-        input = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(WIDTH, HEIGHT);
+        input = std::make_unique<GL::Texture2D<TexDataFloatRGBA>>(INPUT_WIDTH, INPUT_HEIGHT);
+        std::fill(input->Data()->begin(), input->Data()->end(), glm::vec4(0.0f));
         input->Update();
+        scene_dirty = true;
+        rendered_interval = rendered_srgb = -1.0f;
 
-        for (int i = 0; i < NUM_CASCADES; i++)
+        for (auto& cascade : cascade_fbs)
         {
-            cascade_fbs[i] = std::make_unique<FrameBuffer<TexDataFloatRGBA>>();
-            cascade_fbs[i]->Create(cascade_resolutions[i], cascade_resolutions[i], true);
+            cascade = std::make_unique<FrameBuffer<TexDataFloatRGBA>>();
+            cascade->Create(ATLAS_SIZE, ATLAS_SIZE, true);
         }
+        for (auto& distance : distance_fbs)
+        {
+            distance = std::make_unique<FrameBuffer<TexDataFloatRGBA>>();
+            distance->Create(INPUT_WIDTH, INPUT_HEIGHT, true);
+        }
+        gather_fb = std::make_unique<FrameBuffer<TexDataFloatRGBA>>();
+        gather_fb->Create(INPUT_WIDTH, INPUT_HEIGHT, true);
 
         frontbuffer_shader.Load("files/gl/frontbuffer.glsl");
         frontbuffer_shader.Link();
-
-        frontbuffer_set_0.SetSampler2D(
-            "tex",
-            *cascade_fbs[0],
-            Filter::LINEAR,
-            Filter::LINEAR,
-            Wrap::CLAMP_TO_EDGE,
-            Wrap::CLAMP_TO_EDGE);
+        SetTexture(frontbuffer_set_0, "tex", *gather_fb);
         frontbuffer_set_0.SetUniformFloat("exposure", &exposure);
+        frontbuffer_set_0.SetUniformFloat("srgb_falloff", &srgb_falloff);
         frontbuffer_set_0.SetUniformMat4("view", &view);
         frontbuffer_set_0.SetUniformMat4("projection", &projection);
         frontbuffer_shader.Set(frontbuffer_set_0, 0);
 
+        distance_shader.Load("files/gl/distance.glsl");
+        distance_shader.Link();
+        SetTexture(distance_set_0, "scene_tex", *input);
+        SetTexture(distance_set_0, "seeds_tex", *input);
+        distance_set_0.SetUniformFloat("jump_distance", &jump_distance);
+
         cascades_shader.Load("files/gl/cascades.glsl");
         cascades_shader.Link();
-
-        cascades_set_0.SetSampler2D(
-            "input_sampler",
-            *input,
-            Filter::LINEAR,
-            Filter::LINEAR,
-            Wrap::CLAMP_TO_EDGE,
-            Wrap::CLAMP_TO_EDGE);
-        cascades_set_0.SetSampler2D(
-            "prev_cascade",
-            *input,
-            Filter::LINEAR,
-            Filter::LINEAR,
-            Wrap::CLAMP_TO_EDGE,
-            Wrap::CLAMP_TO_EDGE);
+        SetTexture(cascades_set_0, "scene_tex", *input);
+        SetTexture(cascades_set_0, "distance_tex", *distance_fbs[0]);
+        SetTexture(cascades_set_0, "prev_atlas", *cascade_fbs[0]);
         cascades_set_0.SetUniformFloat("cascade_level", &cascade_level);
-        cascades_set_0.SetUniformFloat("cascade_res_x", &cascade_res_x);
-        cascades_set_0.SetUniformFloat("cascade_res_y", &cascade_res_y);
-        cascades_set_0.SetUniformFloat("input_res_x", &input_res_x);
-        cascades_set_0.SetUniformFloat("input_res_y", &input_res_y);
-        cascades_set_0.SetUniformFloat("ray_count_f", &ray_count_f);
+        cascades_set_0.SetUniformFloat("cascade_count", &cascade_count);
         cascades_set_0.SetUniformFloat("base_interval_f", &base_interval_f);
-        cascades_set_0.SetUniformFloat("prev_cascade_res", &prev_cascade_res);
-        cascades_set_0.SetUniformFloat("bilinear_fix", &bilinear_fix);
-        cascades_set_0.SetUniformFloat("ringing_fix", &ringing_fix);
         cascades_set_0.SetUniformFloat("srgb_falloff", &srgb_falloff);
-        cascades_set_0.SetUniformFloat("use_4x_branching", &use_4x_branching);
-        cascades_shader.Set(cascades_set_0, 0);
 
-        input_res_x = static_cast<float>(WIDTH);
-        input_res_y = static_cast<float>(HEIGHT);
+        gather_shader.Load("files/gl/gather.glsl");
+        gather_shader.Link();
+        SetTexture(gather_set_0, "atlas", *cascade_fbs[0]);
+        SetTexture(gather_set_0, "scene_tex", *input);
+        gather_set_0.SetUniformFloat("srgb_falloff", &srgb_falloff);
+        gather_shader.Set(gather_set_0, 0);
     }
 
     void Cascades::Deinit()
     {
-        for (int i = 0; i < NUM_CASCADES; i++)
-            cascade_fbs[i]->Delete();
+        for (auto& cascade : cascade_fbs) cascade->Delete();
+        for (auto& distance : distance_fbs) distance->Delete();
+        gather_fb->Delete();
         input->Delete();
         frontbuffer_shader.Delete();
+        distance_shader.Delete();
         cascades_shader.Delete();
+        gather_shader.Delete();
+    }
+
+    void Cascades::UpdateDistanceField()
+    {
+        // Upload once per frame, even when a stroke changes many pixels.
+        input->Update();
+        jump_distance = 0.0f;
+        SetTexture(distance_set_0, "seeds_tex", *input);
+        distance_shader.Set(distance_set_0, 0);
+        distance_fbs[0]->Bind();
+        DrawQuad(distance_shader);
+
+        int current = 0;
+        int largest_jump = 1;
+        while (largest_jump < std::max(INPUT_WIDTH, INPUT_HEIGHT)) largest_jump *= 2;
+        for (int jump = largest_jump / 2; jump >= 1; jump /= 2)
+        {
+            jump_distance = static_cast<float>(jump);
+            SetTexture(distance_set_0, "seeds_tex", *distance_fbs[current]);
+            distance_shader.Set(distance_set_0, 0);
+            distance_fbs[1 - current]->Bind();
+            DrawQuad(distance_shader);
+            current = 1 - current;
+        }
+
+        // JFA+1 improves nearest-seed accuracy at geometry boundaries.
+        jump_distance = 1.0f;
+        SetTexture(distance_set_0, "seeds_tex", *distance_fbs[current]);
+        distance_shader.Set(distance_set_0, 0);
+        distance_fbs[1 - current]->Bind();
+        DrawQuad(distance_shader);
+        SetTexture(cascades_set_0, "distance_tex", *distance_fbs[1 - current]);
+    }
+
+    void Cascades::RenderRadiance()
+    {
+        for (int i = NUM_CASCADES - 1; i >= 0; --i)
+        {
+            cascade_level = static_cast<float>(i);
+            // The terminal cascade only queries this texture's dimensions.
+            SetTexture(cascades_set_0, "prev_atlas",
+                *cascade_fbs[i == NUM_CASCADES - 1 ? 0 : i + 1]);
+            cascades_shader.Set(cascades_set_0, 0);
+            cascade_fbs[i]->Bind();
+            DrawQuad(cascades_shader);
+        }
+
+        gather_fb->Bind();
+        DrawQuad(gather_shader);
+        rendered_interval = base_interval_f;
+        rendered_srgb = srgb_falloff;
     }
 
     void Cascades::Draw(
@@ -95,42 +143,15 @@ namespace Pipelines
     {
         projection = projection_;
         view = view_;
+        glDisable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_SCISSOR_TEST);
 
-        for (int i = NUM_CASCADES - 1; i >= 0; i--)
+        if (scene_dirty || rendered_interval != base_interval_f || rendered_srgb != srgb_falloff)
         {
-            cascade_level = static_cast<float>(i);
-            cascade_res_x = static_cast<float>(cascade_resolutions[i]);
-            cascade_res_y = static_cast<float>(cascade_resolutions[i]);
-
-            if (i < NUM_CASCADES - 1)
-            {
-                prev_cascade_res = static_cast<float>(cascade_resolutions[i + 1]);
-                cascades_set_0.SetSampler2D(
-                    "prev_cascade",
-                    *cascade_fbs[i + 1],
-                    Filter::LINEAR,
-                    Filter::LINEAR,
-                    Wrap::CLAMP_TO_EDGE,
-                    Wrap::CLAMP_TO_EDGE);
-            }
-            else
-            {
-                // Coarsest level: no previous cascade; disable far-field merge
-                prev_cascade_res = 0.0f;
-                cascades_set_0.SetSampler2D(
-                    "prev_cascade",
-                    *input,
-                    Filter::LINEAR,
-                    Filter::LINEAR,
-                    Wrap::CLAMP_TO_EDGE,
-                    Wrap::CLAMP_TO_EDGE);
-            }
-
-            cascades_shader.Set(cascades_set_0, 0);
-
-            cascade_fbs[i]->Bind();
-            Clear();
-            DrawQuad(cascades_shader);
+            if (scene_dirty) UpdateDistanceField();
+            RenderRadiance();
+            scene_dirty = false;
         }
 
         FrontBuffer();
@@ -139,41 +160,52 @@ namespace Pipelines
     }
 
     void Cascades::Paint(
-        float u, float v,
-        float brush_radius,
-        const glm::vec4& color)
+        float u, float v, float brush_radius, const glm::vec4& color)
     {
-        const uint32_t w = input->Width();
-        const uint32_t h = input->Height();
-        auto& data = input->Data();
+        PaintStroke(glm::vec2(u, v), glm::vec2(u, v), brush_radius, color);
+    }
 
-        const int cx = static_cast<int>(u * w);
-        const int cy = static_cast<int>(v * h);
-        const int r = static_cast<int>(brush_radius);
+    void Cascades::PaintStroke(
+        const glm::vec2& from, const glm::vec2& to,
+        float brush_radius, const glm::vec4& color)
+    {
+        const glm::vec2 resolution(input->Width(), input->Height());
+        const glm::vec2 start = glm::clamp(from * resolution, glm::vec2(0.0f), resolution - 1.0f);
+        const glm::vec2 end = glm::clamp(to * resolution, glm::vec2(0.0f), resolution - 1.0f);
+        const glm::vec2 segment = end - start;
+        const float squared_length = glm::dot(segment, segment);
+        const float squared_radius = brush_radius * brush_radius;
+        const glm::vec2 lower = glm::min(start, end) - brush_radius;
+        const glm::vec2 upper = glm::max(start, end) + brush_radius;
+        const int min_x = std::max(0, static_cast<int>(std::floor(lower.x)));
+        const int min_y = std::max(0, static_cast<int>(std::floor(lower.y)));
+        const int max_x = std::min(static_cast<int>(input->Width()) - 1, static_cast<int>(std::ceil(upper.x)));
+        const int max_y = std::min(static_cast<int>(input->Height()) - 1, static_cast<int>(std::ceil(upper.y)));
+        auto& data = *input->Data();
 
-        for (int dy = -r; dy <= r; dy++)
+        for (int y = min_y; y <= max_y; ++y)
         {
-            for (int dx = -r; dx <= r; dx++)
+            for (int x = min_x; x <= max_x; ++x)
             {
-                if (dx * dx + dy * dy > r * r) continue;
-                const int px = cx + dx;
-                const int py = cy + dy;
-                if (px < 0 || px >= static_cast<int>(w) || py < 0 || py >= static_cast<int>(h))
-                    continue;
-                (*data)[py * w + px] = color;
+                const glm::vec2 offset = glm::vec2(x + 0.5f, y + 0.5f) - start;
+                const float t = squared_length > 0.0f
+                    ? glm::clamp(glm::dot(offset, segment) / squared_length, 0.0f, 1.0f) : 0.0f;
+                const glm::vec2 distance = offset - segment * t;
+                if (glm::dot(distance, distance) > squared_radius) continue;
+                auto& pixel = data[y * input->Width() + x];
+                if (pixel != color)
+                {
+                    pixel = color;
+                    scene_dirty = true;
+                }
             }
         }
-        input->Update();
     }
 
     void Cascades::ClearInput()
     {
-        const uint32_t w = input->Width();
-        const uint32_t h = input->Height();
-        auto& data = input->Data();
-        for (uint32_t i = 0; i < w * h; i++)
-            (*data)[i] = glm::vec4(0.0f);
-        input->Update();
+        std::fill(input->Data()->begin(), input->Data()->end(), glm::vec4(0.0f));
+        scene_dirty = true;
     }
 
     uint32_t Cascades::InputWidth() const { return input->Width(); }

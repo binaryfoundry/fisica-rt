@@ -259,6 +259,11 @@ if (WIN32)
 
 elseif (EMSCRIPTEN)
 
+    # --preload-file packages runtime assets during linking. Shader changes
+    # must relink the web executable, not just copy files beside the build.
+    file(GLOB_RECURSE CASCADES_RUNTIME_FILES "${PROJECT_SOURCE_DIR}/files/*")
+    set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_DEPENDS ${CASCADES_RUNTIME_FILES})
+
     set_target_properties(
         ${PROJECT_NAME}
         PROPERTIES SUFFIX ".html"

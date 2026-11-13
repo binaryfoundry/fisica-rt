@@ -30,6 +30,7 @@ void Application::Init()
         {
         case Scancode::S_C:
             pipeline.ClearInput();
+            paint_button = -1;
             break;
         default:
             break;
@@ -124,29 +125,42 @@ void Application::Update()
             const float vpos =
                 std::round((window_height / 2) - (scale_y / 2));
 
-            const float local_x = static_cast<float>(mouse_x) - hpos;
-            const float local_y = static_cast<float>(mouse_y) - vpos;
+            const float local_x = io.MousePos.x - hpos;
+            const float local_y = io.MousePos.y - vpos;
             const float u = local_x / scale_x;
             const float v = local_y / scale_y;
 
             if (u >= 0.0f && u <= 1.0f && v >= 0.0f && v <= 1.0f)
             {
+                const glm::vec2 uv(u, v);
+                const int button = left_down ? 0 : 1;
+                const glm::vec2 from = paint_button == button ? previous_paint_uv : uv;
                 if (left_down)
                 {
                     const glm::vec4 color = glm::vec4(
                         emitter_color[0] * emitter_intensity,
                         emitter_color[1] * emitter_intensity,
                         emitter_color[2] * emitter_intensity,
-                        0.0f);
-                    pipeline.Paint(u, v, brush_radius_emitter, color);
+                        1.0f);
+                    pipeline.PaintStroke(from, uv, brush_radius_emitter, color);
                 }
                 else
                 {
                     const glm::vec4 occluder = glm::vec4(
                         0.0f, 0.0f, 0.0f, 1.0f);
-                    pipeline.Paint(u, v, brush_radius_occluder, occluder);
+                    pipeline.PaintStroke(from, uv, brush_radius_occluder, occluder);
                 }
+                previous_paint_uv = uv;
+                paint_button = button;
             }
+            else
+            {
+                paint_button = -1;
+            }
+        }
+        else
+        {
+            paint_button = -1;
         }
     }
 
@@ -209,7 +223,7 @@ void Application::ViewScale()
         -1.0f,
         1.0f);
 
-    view = glm::mat4();
+    view = glm::mat4(1.0f);
 
     view = glm::translate(
         view,
@@ -280,36 +294,14 @@ bool Application::GuiUpdate()
     ImGui::SliderFloat(
         "Base Interval",
         &pipeline.BaseInterval(),
-        8.0f,
-        64.0f,
+        1.0f,
+        32.0f,
         "%.0f");
 
-    ImGui::SliderFloat(
-        "Ray Count",
-        &pipeline.RayCount(),
-        12.0f,
-        96.0f,
-        "%.0f");
-
-    {
-        bool bf = pipeline.BilinearFix() > 0.5f;
-        if (ImGui::Checkbox("Bilinear Fix", &bf))
-            pipeline.BilinearFix() = bf ? 1.0f : 0.0f;
-    }
-    {
-        bool rf = pipeline.RingingFix() > 0.5f;
-        if (ImGui::Checkbox("Ringing Fix", &rf))
-            pipeline.RingingFix() = rf ? 1.0f : 0.0f;
-    }
     {
         bool sf = pipeline.SrgbFalloff() > 0.5f;
         if (ImGui::Checkbox("sRGB Falloff", &sf))
             pipeline.SrgbFalloff() = sf ? 1.0f : 0.0f;
-    }
-    {
-        bool b4 = pipeline.Use4xBranching() > 0.5f;
-        if (ImGui::Checkbox("4x Branching", &b4))
-            pipeline.Use4xBranching() = b4 ? 1.0f : 0.0f;
     }
 
     ImGui::Separator();

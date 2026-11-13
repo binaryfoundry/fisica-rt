@@ -24,6 +24,8 @@ private:
     float emitter_intensity = 3.0f;
     float brush_radius_emitter = 4.0f;
     float brush_radius_occluder = 8.0f;
+    glm::vec2 previous_paint_uv = glm::vec2(0.0f);
+    int paint_button = -1;
 
     uint32_t raytracing_framebuffer_width = 512;
     uint32_t raytracing_framebuffer_height = 512;

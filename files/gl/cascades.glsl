@@ -1,212 +1,145 @@
 #version 300 es
 
 #if defined(COMPILING_VS)
-
-    #ifdef GL_ES
     precision highp float;
-    precision highp int;
-    #endif
-
     layout(location = 0) in vec3 position;
     layout(location = 1) in vec2 texcoord;
     out vec2 v_texcoord;
     void main() {
         v_texcoord = texcoord;
-        vec2 pos = (position.xy - vec2(0.5)) * 2.0;
-        gl_Position = vec4(pos, -1.0, 1.0);
+        gl_Position = vec4(position.xy * 2.0 - 1.0, -1.0, 1.0);
     }
-
 #elif defined(COMPILING_FS)
-
-    #ifdef GL_ES
     precision highp float;
     precision highp int;
-    #endif
+    precision highp sampler2D;
 
     in vec2 v_texcoord;
-
-    uniform sampler2D input_sampler;
-    uniform sampler2D prev_cascade;
-
+    uniform sampler2D scene_tex;
+    uniform sampler2D distance_tex;
+    uniform sampler2D prev_atlas;
     uniform float cascade_level;
-    uniform float cascade_res_x;
-    uniform float cascade_res_y;
-    uniform float input_res_x;
-    uniform float input_res_y;
-    uniform float ray_count_f;
+    uniform float cascade_count;
     uniform float base_interval_f;
-    uniform float prev_cascade_res;
-    uniform float bilinear_fix;
-    uniform float ringing_fix;
     uniform float srgb_falloff;
-    uniform float use_4x_branching;
-
     layout(location = 0) out vec4 out_color;
 
-    #define PI 3.14159265359
-    #define NUM_STEPS 48
-    #define NUM_CASCADES 6
+    const float TAU = 6.28318530718;
 
-    const float GAMMA = 2.2;
+    // Every interval stores (radiance, transmittance). Empty space has
+    // alpha 1; opaque emitters and walls have alpha 0.
+    vec4 trace_interval(vec2 start, vec2 end) {
+        ivec2 resolution = textureSize(scene_tex, 0);
+        vec2 delta = end - start;
+        float ray_length = length(delta);
+        vec2 direction = delta / max(ray_length, 0.00001);
+        float traveled = 0.0;
 
-    // sRGB to linear (for emission when painted in sRGB)
-    vec3 toLinear(vec3 c) {
-        return pow(max(c, vec3(0.0)), vec3(GAMMA));
+        // Jump through empty space; walk pixel boundaries near surfaces.
+        // A ray crosses at most width + height pixel boundaries.
+        int max_steps = resolution.x + resolution.y + 1;
+        for (int iteration = 0; iteration < max_steps && traveled < ray_length; ++iteration) {
+            vec2 pos = start + direction * traveled;
+            if (any(lessThan(pos, vec2(0.0))) ||
+                any(greaterThanEqual(pos, vec2(resolution)))) break;
+
+            ivec2 pixel = ivec2(floor(pos));
+            vec4 surface = texelFetch(scene_tex, pixel, 0);
+            if (surface.a > 0.0) {
+                vec3 emission = max(surface.rgb, vec3(0.0));
+                if (srgb_falloff > 0.5) emission = pow(emission, vec3(2.2));
+                return vec4(emission, 0.0);
+            }
+
+            vec2 seed = texelFetch(distance_tex, pixel, 0).xy;
+            if (seed.x < 0.0) break; // The scene is empty.
+
+            // Seeds are pixel centers. Include their pixel extents in the
+            // distance bound rather than jumping straight to the centers.
+            float safe_distance = max(length(seed - pos) - 1.414214, 0.0);
+            vec2 boundary = floor(pos) + step(vec2(0.0), direction);
+            vec2 to_boundary = (boundary - pos) /
+                mix(vec2(0.000001), direction, greaterThan(abs(direction), vec2(0.000001)));
+            if (abs(direction.x) < 0.000001) to_boundary.x = 1e20;
+            if (abs(direction.y) < 0.000001) to_boundary.y = 1e20;
+            float pixel_step = max(min(to_boundary.x, to_boundary.y), 0.0) + 0.001;
+            traveled += max(safe_distance, pixel_step);
+        }
+        return vec4(0.0, 0.0, 0.0, 1.0);
     }
 
-    // Sample scene from input texture (nearest-neighbor for hard occlusion)
-    // Returns vec4(emission.rgb, opacity). Using texelFetch avoids bilinear
-    // alpha blending at occluder edges which causes light leakage.
-    vec4 get_scene(vec2 uv) {
-        ivec2 res = textureSize(input_sampler, 0);
-        ivec2 texel = ivec2(floor(uv * vec2(res)));
-        texel = clamp(texel, ivec2(0), res - ivec2(1));
-        vec4 val = texelFetch(input_sampler, texel, 0);
-        if (srgb_falloff > 0.5) {
-            val.rgb = toLinear(val.rgb);
-        }
-        return val;
+    vec4 merge_probe(ivec2 probe, ivec2 tile, ivec2 probe_count,
+        vec2 ray_start, vec2 direction, float interval_end) {
+        vec2 center = (vec2(probe) + 0.5) *
+            vec2(textureSize(scene_tex, 0)) / vec2(probe_count);
+        vec4 near_interval = trace_interval(ray_start, center + direction * interval_end);
+        vec4 far_interval = texelFetch(prev_atlas, tile + probe, 0);
+        return vec4(near_interval.rgb + near_interval.a * far_interval.rgb,
+            near_interval.a * far_interval.a);
     }
 
-    // Spatial hash for per-pixel angular jitter (reduces banding)
-    float hash21(vec2 p) {
-        p = fract(p * vec2(123.34, 456.21));
-        p += dot(p, p + 45.32);
-        return fract(p.x * p.y);
-    }
+    vec4 upper_radiance(int direction_index, vec2 probe_position, int tiles,
+        vec2 ray_start, vec2 direction, float interval_end) {
+        ivec2 size = textureSize(prev_atlas, 0) / tiles;
+        ivec2 tile = ivec2(direction_index % tiles, direction_index / tiles) * size;
+        vec2 position = probe_position * 0.5 - 0.25;
+        ivec2 base = ivec2(floor(position));
+        vec2 weight = fract(position);
 
-    // Sample prev_cascade with optional bilinear/ringing fixes.
-    // - Bilinear fix: sample at 4 probe centers and interpolate (reduces occlusion artifacts)
-    // - Ringing fix: sample at nearest probe center (reduces ringing at cascade boundaries)
-    vec3 sample_prev_cascade(vec2 uv) {
-        if (prev_cascade_res < 1.0) return vec3(0.0);
-
-        vec2 texel_coord = uv * prev_cascade_res;
-        vec2 texel_frac = fract(texel_coord);
-        ivec2 texel_base = ivec2(floor(texel_coord));
-
-        // Clamp to valid range for texelFetch
-        ivec2 res = ivec2(int(prev_cascade_res));
-        texel_base = clamp(texel_base, ivec2(0), res - ivec2(1));
-
-        if (ringing_fix > 0.5) {
-            // Ringing fix: nearest-neighbor at probe center
-            ivec2 nearest = clamp(ivec2(texel_coord + 0.5), ivec2(0), res - ivec2(1));
-            return texelFetch(prev_cascade, nearest, 0).rgb;
-        }
-
-        if (bilinear_fix > 0.5) {
-            // Bilinear fix: sample at 4 probe centers, manual interpolation
-            // Ensures rays align with coarser cascade's probe grid for continuity
-            ivec2 p00 = clamp(texel_base, ivec2(0), res - ivec2(1));
-            ivec2 p10 = clamp(texel_base + ivec2(1, 0), ivec2(0), res - ivec2(1));
-            ivec2 p01 = clamp(texel_base + ivec2(0, 1), ivec2(0), res - ivec2(1));
-            ivec2 p11 = clamp(texel_base + ivec2(1, 1), ivec2(0), res - ivec2(1));
-
-            vec3 c00 = texelFetch(prev_cascade, p00, 0).rgb;
-            vec3 c10 = texelFetch(prev_cascade, p10, 0).rgb;
-            vec3 c01 = texelFetch(prev_cascade, p01, 0).rgb;
-            vec3 c11 = texelFetch(prev_cascade, p11, 0).rgb;
-
-            vec3 c0 = mix(c00, c10, texel_frac.x);
-            vec3 c1 = mix(c01, c11, texel_frac.x);
-            return mix(c0, c1, texel_frac.y);
-        }
-
-        // Vanilla: standard texture lookup (implicit bilinear)
-        return texture(prev_cascade, uv).rgb;
+        // Clamp probes inside this direction's tile. Clamping packed atlas
+        // coordinates instead would sample a different ray at the edges.
+        ivec2 p00 = clamp(base, ivec2(0), size - 1);
+        ivec2 p10 = clamp(base + ivec2(1, 0), ivec2(0), size - 1);
+        ivec2 p01 = clamp(base + ivec2(0, 1), ivec2(0), size - 1);
+        ivec2 p11 = clamp(base + ivec2(1, 1), ivec2(0), size - 1);
+        // Merge each reprojected interval BEFORE interpolation. Interpolating
+        // far radiance first lets probes on the other side of a wall leak light.
+        vec4 c00 = merge_probe(p00, tile, size, ray_start, direction, interval_end);
+        vec4 c10 = merge_probe(p10, tile, size, ray_start, direction, interval_end);
+        vec4 c01 = merge_probe(p01, tile, size, ray_start, direction, interval_end);
+        vec4 c11 = merge_probe(p11, tile, size, ray_start, direction, interval_end);
+        return mix(mix(c00, c10, weight.x), mix(c01, c11, weight.x), weight.y);
     }
 
     void main() {
-        vec2 uv = v_texcoord;
+        // Direction-first packing with four rays averaged per texel, as in
+        // radiance-cascades.com. Level zero holds one fluence sample per probe.
+        int tiles = int(exp2(cascade_level));
+        ivec2 size = textureSize(scene_tex, 0);
+        // Every cascade has the same atlas dimensions.
+        ivec2 probe_count = textureSize(prev_atlas, 0) / tiles;
+        ivec2 coord = ivec2(gl_FragCoord.xy);
+        ivec2 probe = coord % probe_count;
+        ivec2 ray_tile = coord / probe_count;
+        int first_ray = (ray_tile.x + tiles * ray_tile.y) * 4;
+        float ray_count = float(tiles * tiles * 4);
+        vec2 center = (vec2(probe) + 0.5) * vec2(size) / vec2(probe_count);
 
-        // Compute ray interval for this cascade level (in UV space)
-        // Reference uses 4x branching (Yaazarai, m4xc): interval length scale = 4^level
-        // C0: [0, base], C1: [base, 5*base], C2: [5*base, 21*base], ...
-        float base_dist = base_interval_f / input_res_x;
-        float interval_start;
-        float interval_end;
+        float scale = pow(4.0, cascade_level);
+        float interval_start = base_interval_f * (scale - 1.0) / 3.0;
+        float interval_end = interval_start + base_interval_f * scale;
+        // Cover the angular footprint of the ray's sector. Without overlap,
+        // a child ray can start beyond a wall that its parent ray missed.
+        interval_end /= cos(0.5 * TAU / ray_count);
+        bool last_cascade = cascade_level >= cascade_count - 1.0;
+        if (last_cascade) interval_end = max(interval_end, length(vec2(size)));
 
-        if (use_4x_branching > 0.5) {
-            // 4x branching (Yaazarai, m4xc): interval length = 4^level
-            // C0: [0, base], C1: [base, 5*base], C2: [5*base, 21*base], ...
-            float scale_cur = pow(4.0, cascade_level);
-            interval_start = base_dist * (scale_cur - 1.0) / 3.0;
-            interval_end = interval_start + base_dist * scale_cur;
-        } else {
-            // 2x branching
-            interval_start = base_dist * (pow(2.0, cascade_level) - 1.0);
-            interval_end = base_dist * (pow(2.0, cascade_level + 1.0) - 1.0);
-        }
-
-        if (cascade_level < float(NUM_CASCADES - 1)) {
-            float next_probe_spacing = pow(2.0, cascade_level + 1.0) / input_res_x;
-            interval_end += 1.414 * next_probe_spacing;
-        }
-
-        // Adaptive steps: sample at least every 0.5 pixels to avoid stepping over occluders
-        float interval_len = interval_end - interval_start;
-        float interval_pixels = interval_len * input_res_x;
-        int num_steps = int(clamp(interval_pixels * 2.0, 48.0, 192.0));
-        float step_size = interval_len / float(num_steps);
-
-        int RAY_COUNT = int(ray_count_f);
-
-        // Per-pixel angular jitter to break up banding artifacts.
-        float jitter = hash21(uv * vec2(cascade_res_x, cascade_res_y));
-        float angle_offset = jitter * (2.0 * PI / float(RAY_COUNT));
-
-        vec3 total_radiance = vec3(0.0);
-
-        for (int r = 0; r < RAY_COUNT; r++) {
-            // Evenly distributed ray directions with half-pixel offset + jitter
-            float angle = (float(r) + 0.5) / float(RAY_COUNT) * 2.0 * PI + angle_offset;
-            vec2 dir = vec2(cos(angle), sin(angle));
-
-            vec3 ray_radiance = vec3(0.0);
-            float transmittance = 1.0;
-
-            // March along the ray within this cascade's interval
-            for (int s = 0; s < 192; s++) {
-                if (s >= num_steps) break;
-                float t = interval_start + step_size * (float(s) + 0.5);
-                vec2 sample_pos = uv + dir * t;
-
-                // Boundary check
-                if (sample_pos.x < 0.0 || sample_pos.x > 1.0 ||
-                    sample_pos.y < 0.0 || sample_pos.y > 1.0) break;
-
-                vec4 scene_val = get_scene(sample_pos);
-
-                // Accumulate emission weighted by current transmittance
-                ray_radiance += transmittance * scene_val.rgb;
-
-                // Update transmittance (Beer's law style occlusion)
-                transmittance *= (1.0 - scene_val.a);
-
-                // Early termination if fully occluded
-                if (transmittance < 0.01) break;
+        vec4 radiance = vec4(0.0);
+        for (int ray = 0; ray < 4; ++ray) {
+            int index = first_ray + ray;
+            float angle = TAU * (float(index) + 0.5) / ray_count;
+            vec2 direction = vec2(cos(angle), sin(angle));
+            vec2 ray_start = center + direction * interval_start;
+            vec4 merged = vec4(0.0, 0.0, 0.0, 1.0);
+            if (all(greaterThanEqual(ray_start, vec2(0.0))) &&
+                all(lessThan(ray_start, vec2(size)))) {
+                merged = last_cascade
+                    ? trace_interval(ray_start, center + direction * interval_end)
+                    : upper_radiance(index, vec2(probe), tiles * 2,
+                        ray_start, direction, interval_end);
             }
-
-            // Hierarchical cascade merging: add far-field radiance from the previous
-            // (coarser) cascade at the ray endpoint. prev_cascade stores irradiance;
-            // approximate radiance(dir) ≈ irradiance/RAY_COUNT for propagation.
-            if (cascade_level < float(NUM_CASCADES - 1)) {
-                vec2 ray_end = uv + dir * interval_end;
-                ray_end = clamp(ray_end, vec2(0.001), vec2(0.999));
-                vec4 scene_at_end = get_scene(ray_end);
-                float far_block = 1.0 - scene_at_end.a;
-                vec3 far_field = sample_prev_cascade(ray_end) * far_block;
-                ray_radiance += transmittance * far_field / float(RAY_COUNT);
-            }
-
-            total_radiance += ray_radiance;
+            radiance += merged * 0.25;
         }
-
-        // Average over all ray directions
-        total_radiance /= float(RAY_COUNT);
-
-        out_color = vec4(total_radiance, 1.0);
+        out_color = radiance;
     }
-
 #endif
