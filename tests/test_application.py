@@ -3,6 +3,7 @@
 Build bin/web/Release first, then run: python tests/test_application.py
 Requires playwright, its Chromium browser, Pillow, and numpy.
 Use --site-root <directory> --page index.html to test a deployed static folder.
+Use --url <public-url> to verify the published application.
 """
 
 import argparse
@@ -26,11 +27,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--site-root", type=Path, default=root / "bin" / "web" / "Release")
     parser.add_argument("--page", default="cascades.html")
+    parser.add_argument("--url", help="Test an existing deployment instead of starting a local server")
     args = parser.parse_args()
     output = root / "bin" / "validation"
     output.mkdir(parents=True, exist_ok=True)
-    server = ThreadingHTTPServer(("127.0.0.1", 0), partial(Handler, directory=str(args.site_root)))
-    Thread(target=server.serve_forever, daemon=True).start()
+    server = None
+    if args.url:
+        application_url = args.url
+    else:
+        server = ThreadingHTTPServer(("127.0.0.1", 0), partial(Handler, directory=str(args.site_root)))
+        Thread(target=server.serve_forever, daemon=True).start()
+        application_url = f"http://127.0.0.1:{server.server_port}/{args.page}"
     errors = []
     logs = []
     failed_responses = []
@@ -49,7 +56,7 @@ def main():
             page.on("pageerror", lambda error: errors.append(str(error)))
             page.on("console", lambda message: logs.append(message.text))
             page.on("response", lambda response: failed_responses.append(f"{response.status} {response.url}") if response.status >= 400 else None)
-            page.goto(f"http://127.0.0.1:{server.server_port}/{args.page}")
+            page.goto(application_url)
             page.wait_for_function("typeof Module !== 'undefined' && Module.calledRun", timeout=30000)
             page.wait_for_timeout(1000)
             assert not page.evaluate("crossOriginIsolated"), "Test must use ordinary static hosting without isolation headers"
@@ -70,11 +77,21 @@ def main():
                 page.mouse.up(button=button)
                 frame()
 
+            page.screenshot(path=str(output / "app-example.png"))
+            example = np.asarray(Image.open(output / "app-example.png").convert("RGB"))
+            assert example[70, 539, 0] > 200 and example[70, 539, 1] > 150, "Starting example light is missing"
+            assert np.max(example[422, 500]) == 0, "Starting example shadow bar is missing"
+            assert example[300:380, 460:600, 0].mean() > 10, "Starting example does not illuminate the scene"
+            page.keyboard.press("c")
+            frame()
+
             stroke(500, 220, 500, 500, "left")
             page.screenshot(path=str(output / "app-emitter.png"))
             unblocked = np.asarray(Image.open(output / "app-emitter.png").convert("RGB"))
             # A single mouse jump must paint a continuous vertical line.
             assert np.all(unblocked[240:480, 500, 0] > 200), "Emitter stroke has gaps or did not render"
+            blue = float(unblocked[240:480, 500, 2].mean())
+            assert 60 <= blue <= 70, f"Default emitter intensity should be 1.5: painted blue channel is {blue}"
             before = float(unblocked[300:420, 850:950, 0].mean())
             assert before > 10, f"Distant scene received no light: {before}"
 
@@ -89,13 +106,19 @@ def main():
             page.screenshot(path=str(output / "app-cleared.png"))
             cleared = np.asarray(Image.open(output / "app-cleared.png").convert("RGB"))
             assert np.max(cleared[200:520, 460:980]) == 0, "Clear left stale light or geometry"
+            page.keyboard.press("r")
+            frame()
+            page.screenshot(path=str(output / "app-example-reset.png"))
+            restored = np.asarray(Image.open(output / "app-example-reset.png").convert("RGB"))
+            assert np.array_equal(example[20:700, 400:980], restored[20:700, 400:980]), "Reset did not restore the starting example"
             assert not errors, errors
             assert not failed_responses, failed_responses
             assert not any("gl error:" in line or "compile error" in line or "link error" in line for line in logs), logs
-            print(f"Static deployment smoke test passed: continuous strokes, shadows ({before:.1f} -> {after:.1f}), clear; no missing assets or shader/GL errors; no isolation headers.")
+            print(f"Deployment smoke test passed: starting example, default intensity 1.5, continuous strokes, shadows ({before:.1f} -> {after:.1f}), clear and reset; no missing assets or shader/GL errors; no isolation headers.")
             browser.close()
     finally:
-        server.shutdown()
+        if server:
+            server.shutdown()
         (output / "application-console.log").write_text("\n".join(logs + errors + failed_responses))
 
 

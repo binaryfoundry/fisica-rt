@@ -21,7 +21,7 @@ private:
 
     // Painting controls
     float emitter_color[3] = { 1.0f, 0.67f, 0.17f };
-    float emitter_intensity = 3.0f;
+    float emitter_intensity = 1.5f;
     float brush_radius_emitter = 4.0f;
     float brush_radius_occluder = 8.0f;
     glm::vec2 previous_paint_uv = glm::vec2(0.0f);
@@ -40,6 +40,7 @@ private:
 
     void ViewScale();
     bool GuiUpdate();
+    void LoadExampleScene();
 
 public:
     void Init();

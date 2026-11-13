@@ -5,6 +5,7 @@
 #include "math/Random.hpp"
 
 #include <array>
+#include <cmath>
 
 #if !defined(EMSCRIPTEN)
 #include "sdl/Main.hpp"
@@ -23,6 +24,7 @@ void Application::Init()
     pipeline.Init();
 
     gui.Init();
+    LoadExampleScene();
 
     key_down_callback = [this](Scancode key)
     {
@@ -31,6 +33,9 @@ void Application::Init()
         case Scancode::S_C:
             pipeline.ClearInput();
             paint_button = -1;
+            break;
+        case Scancode::S_R:
+            LoadExampleScene();
             break;
         default:
             break;
@@ -56,6 +61,39 @@ void Application::Init()
             std::cout << "Complete!\n";
         }
     );
+}
+
+void Application::LoadExampleScene()
+{
+    pipeline.ClearInput();
+    paint_button = -1;
+
+    // The reference demo draws this curve and shadow bar on a 512px canvas.
+    const float canvas_size = 512.0f;
+    const float radius = 4.0f * static_cast<float>(pipeline.InputWidth()) / canvas_size;
+    const glm::vec4 light(
+        (249.0f / 255.0f) * emitter_intensity,
+        (168.0f / 255.0f) * emitter_intensity,
+        (117.0f / 255.0f) * emitter_intensity,
+        1.0f);
+
+    glm::vec2 previous(0.0f);
+    for (int point = 0; point < 34; ++point)
+    {
+        const float t = static_cast<float>(point) * 0.3f;
+        const float angle = t * 0.1f * PIf;
+        const glm::vec2 position = glm::vec2(
+            100.0f + 100.0f * std::sin(angle + 1.0f) * std::cos(angle * 0.25f),
+            50.0f + 100.0f * std::sin(angle * 0.7f)) / canvas_size;
+        if (point == 0) previous = position;
+        pipeline.PaintStroke(previous, position, radius, light);
+        previous = position;
+    }
+
+    pipeline.PaintStroke(
+        glm::vec2(90.0f, 300.0f) / canvas_size,
+        glm::vec2(246.8f, 300.0f) / canvas_size,
+        radius, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 }
 
 void Application::Deinit()
@@ -281,6 +319,8 @@ bool Application::GuiUpdate()
 
     ImGui::Separator();
     ImGui::Text("C - Clear scene");
+    if (ImGui::Button("Reset example (R)"))
+        LoadExampleScene();
 
     ImGui::Separator();
     ImGui::Text("Radiance Cascades");

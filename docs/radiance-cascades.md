@@ -10,6 +10,11 @@ empty pixels have alpha zero; emitters and black occluders have alpha one.
 Emitter RGB stores the painted color multiplied by the intensity control.
 Brush strokes fill a capsule between successive mouse positions, including
 the first point, so fast mouse movement does not leave holes in walls.
+The application opens with the reference demo's warm curved emitter and
+horizontal black shadow bar, scaled from its 512px canvas to the scene.
+The ImGui emitter intensity defaults to 1.5. Press C to clear the scene;
+press R or click **Reset example** to restore the example using the current
+intensity setting.
 
 `Cascades::UpdateDistanceField` seeds occupied pixels and runs jump flooding
 with an additional unit step (JFA+1). Its two textures store nearest occupied
@@ -76,6 +81,8 @@ one-pixel walls, a sealed room, atlas edges, interval bounds, and full-size
 After building the web application, run `python tests/test_application.py`
 to exercise its C++ painting and rendering through the browser. It verifies
 stroke continuity, a wall shadow, clearing, and absence of shader/GL errors.
+It also checks the visible starting example, the 1.5 default intensity,
+and restoration of the example after clearing.
 This test additionally requires Pillow and NumPy. It serves the application
 locally without special headers and checks that all requested assets load.
 
@@ -92,3 +99,5 @@ are not needed on the server.
 
 Verify the deployed folder with
 `python tests/test_application.py --site-root <deployment-directory> --page index.html`.
+After publishing, the same checks can run against the public site with
+`python tests/test_application.py --url <public-url>`.
